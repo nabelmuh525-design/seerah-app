@@ -1,0 +1,27 @@
+{
+  "$schema_note": "قالب استيراد محتوى موثق لتطبيق سِيرَة (لا تضع بيانات غير موثقة)",
+  "events": [
+    {
+      "title": "",
+      "stage_code": "BATTLES_AND_EXPEDITIONS",
+      "event_type": "GHAZWAH",
+      "chronological_order": 1,
+      "hijri_date": "",
+      "gregorian_date": "",
+      "date_disputed": false,
+      "short_summary": "",
+      "detailed_analysis": "",
+      "cause_text": "",
+      "preparation_text": "",
+      "outcome_text": "",
+      "map_id": "badr",
+      "verification_status": "VERIFIED",
+      "source_citation": ""
+    }
+  ],
+  "people": [],
+  "places": [],
+  "narrations": [],
+  "hadiths": [],
+  "quran_verses": []
+}

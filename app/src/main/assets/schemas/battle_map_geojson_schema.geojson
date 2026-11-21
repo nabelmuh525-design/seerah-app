@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "map_id": "badr",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "feature_example_schema_only",
+      "properties": {
+        "name": "اسم المعلم الموثق",
+        "layer": "wells",
+        "feature_type": "WELL",
+        "phase": 1,
+        "certainty": "CONFIRMED",
+        "source": "المصدر الجغرافي والتاريخي الموثق"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [0.0, 0.0]
+      }
+    }
+  ]
+}
