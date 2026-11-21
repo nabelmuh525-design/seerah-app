@@ -7,7 +7,7 @@ package com.seerah.core.text
  */
 object ArabicNormalizer {
     private val diacriticsRegex = Regex("[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]")
-    private val multiSpaceRegex = Regex("\s+")
+    private val multiSpaceRegex = Regex("\\s+")
 
     fun normalize(input: String): String {
         if (input.isBlank()) return ""
@@ -33,7 +33,7 @@ object ArabicNormalizer {
             .split(" ")
             .filter { it.isNotBlank() }
             .joinToString(" ") { token ->
-                val safe = token.replace(""", "").replace("*", "")
+                val safe = token.replace("\"", "").replace("*", "")
                 "${safe}*"
             }
     }

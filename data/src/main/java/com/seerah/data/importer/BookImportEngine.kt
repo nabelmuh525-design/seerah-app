@@ -136,10 +136,10 @@ class BookImportEngine(
                 if (!entry.isDirectory && (lower.endsWith(".xhtml") || lower.endsWith(".html") || lower.endsWith(".htm"))) {
                     val rawHtml = BufferedReader(InputStreamReader(zis, Charsets.UTF_8)).readText()
                     val plain = rawHtml
-                        .replace(Regex("<script[\s\S]*?</script>", RegexOption.IGNORE_CASE), " ")
-                        .replace(Regex("<style[\s\S]*?</style>", RegexOption.IGNORE_CASE), " ")
+                        .replace(Regex("<script[\\s\\S]*?</script>", RegexOption.IGNORE_CASE), " ")
+                        .replace(Regex("<style[\\s\\S]*?</style>", RegexOption.IGNORE_CASE), " ")
                         .replace(Regex("<[^>]+>"), " ")
-                        .replace(Regex("\s+"), " ")
+                        .replace(Regex("\\s+"), " ")
                         .trim()
                     if (plain.isNotBlank()) {
                         extractedPages.add(entry.name.substringAfterLast('/') to plain)
