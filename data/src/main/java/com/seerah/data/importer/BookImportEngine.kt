@@ -185,8 +185,7 @@ class BookImportEngine(
                     XmlPullParser.TEXT -> {
                         val txt = parser.text?.trim().orEmpty()
                         if (txt.isNotBlank()) {
-                            buffer.append(txt).append("
-")
+                            buffer.append(txt).append("\n")
                             if (buffer.length >= 2200) {
                                 pages.add(currentTag to buffer.toString().trim())
                                 buffer.clear()
@@ -225,8 +224,7 @@ class BookImportEngine(
     ): ImportReport {
         val lines = file.readLines(Charsets.UTF_8).filter { it.isNotBlank() }
         val pages = lines.chunked(30).mapIndexed { idx, block ->
-            "مجموعة سجلات ${idx + 1}" to block.joinToString("
-")
+            "مجموعة سجلات ${idx + 1}" to block.joinToString("\n")
         }
         return persistBookWithPages(
             title = fileName.substringBeforeLast('.'),
@@ -393,7 +391,7 @@ class BookImportEngine(
                 while (tables.moveToNext()) {
                     val tableName = tables.getString(0)
                     if (tableName.startsWith("sqlite_") || tableName == "android_metadata") continue
-                    extDb.rawQuery("SELECT * FROM "$tableName" LIMIT 200", null).use { rows ->
+                    extDb.rawQuery("SELECT * FROM `$tableName` LIMIT 200", null).use { rows ->
                         val colCount = rows.columnCount
                         while (rows.moveToNext()) {
                             val line = (0 until colCount).mapNotNull { idx ->
