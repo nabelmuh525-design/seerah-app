@@ -1,0 +1,60 @@
+name: Build & Release SEERAH APK
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'رقم الإصدار للنشر داخل التطبيق (مثل v1.0.1)'
+        required: false
+        default: 'v1.0.1'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Run Unit Tests
+        run: gradle testDebugUnitTest --stacktrace
+
+      - name: Build Signed Release APK
+        run: gradle :app:assembleRelease --stacktrace
+
+      - name: Rename Release APK
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/release/*.apk dist/seerah-release.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: seerah-release-apk
+          path: dist/seerah-release.apk
+
+      - name: Publish GitHub Release (for In-App Auto-Updater)
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || inputs.release_tag }}
+          name: "سِيرَة | SEERAH ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || inputs.release_tag }}"
+          body: "إصدار موقّع وجاهز للتحديث المباشر من داخل تطبيق سِيرَة."
+          files: dist/seerah-release.apk
