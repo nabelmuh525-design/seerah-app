@@ -76,21 +76,59 @@ fun HistoricalAtlasScreen(
                 }
             }
 
-            // لوحة الخريطة التفاعلية
+            // لوحة الخريطة التفاعلية مع أزرار التكبير العائمة وبطاقة المسار السفلية
             item {
-                HistoricalMapCanvas(
-                    mapDefinition = selectedMap,
-                    enabledLayers = enabledLayers.toSet(),
-                    features = features,
-                    zoom = zoom,
-                    panOffset = panOffset,
-                    onTransform = { zDelta, pDelta ->
-                        zoom = (zoom * zDelta).coerceIn(0.6f, 4.0f)
-                        panOffset += pDelta
-                    },
-                    onFeatureSelected = { selectedFeature = it },
-                    modifier = Modifier.height(360.dp)
-                )
+                Box(modifier = Modifier.fillMaxWidth().height(390.dp)) {
+                    HistoricalMapCanvas(
+                        mapDefinition = selectedMap,
+                        enabledLayers = enabledLayers.toSet(),
+                        features = features,
+                        zoom = zoom,
+                        panOffset = panOffset,
+                        onTransform = { zDelta, pDelta ->
+                            zoom = (zoom * zDelta).coerceIn(0.6f, 4.0f)
+                            panOffset += pDelta
+                        },
+                        onFeatureSelected = { selectedFeature = it },
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                    // أزرار + / - العائمة على جانب الخريطة
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        FilledTonalIconButton(onClick = { zoom = (zoom + 0.35f).coerceAtMost(4.0f) }) {
+                            Text("+", style = MaterialTheme.typography.titleLarge)
+                        }
+                        FilledTonalIconButton(onClick = { zoom = (zoom - 0.35f).coerceAtLeast(0.6f) }) {
+                            Text("-", style = MaterialTheme.typography.titleLarge)
+                        }
+                        FilledTonalIconButton(onClick = { zoom = 1f; panOffset = Offset.Zero }) {
+                            Icon(Icons.Outlined.MyLocation, contentDescription = "إعادة ضبط")
+                        }
+                    }
+
+                    // بطاقة المعلومات العائمة أسفل الخريطة
+                    selectedFeature?.let { feat ->
+                        Card(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = SeerahIvory.copy(alpha = 0.96f)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, SeerahAntiqueGold)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(feat.label, style = MaterialTheme.typography.titleMedium, color = SeerahEmerald)
+                                Text(feat.certainty.arabicLabel, style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                                Text("المصدر: ${feat.sourceCitation}", style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                }
             }
 
             // بطاقة المعلم المختار باللمس على الخريطة

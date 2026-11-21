@@ -112,28 +112,15 @@ fun TimelineScreen(
                     )
                 }
             } else {
-                items(filtered) { event ->
-                    SeerahEncyclopediaCard(onClick = { onOpenEvent(event.id) }) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            CitationBadge(label = SeerahStage.fromCode(event.stageCode).arabicTitle)
-                            if (!event.mapId.isNullOrBlank()) {
-                                TextButton(onClick = { onOpenMap(event.mapId!!) }) {
-                                    Icon(Icons.Outlined.Map, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("على الخريطة")
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(event.title, style = MaterialTheme.typography.titleLarge)
-                        if (event.shortSummary.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(event.shortSummary, style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
+                items(filtered.size) { index ->
+                    val event = filtered[index]
+                    SeerahTimelineNodeRow(
+                        title = event.title,
+                        dateBadge = SeerahStage.fromCode(event.stageCode).arabicTitle,
+                        subtitle = event.shortSummary,
+                        isHighlighted = index == 0,
+                        onClick = { onOpenEvent(event.id) }
+                    )
                 }
             }
         }

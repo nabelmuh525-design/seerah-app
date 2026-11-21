@@ -250,3 +250,109 @@ fun EmptyVerifiedSourceState(
         }
     }
 }
+
+
+@Composable
+fun SeerahGoldButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(50))
+            .background(
+                Brush.horizontalGradient(
+                    colors = listOf(Color(0xFFC8A464), SeerahAntiqueGold, Color(0xFFE0C285))
+                )
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 28.dp, vertical = 14.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = SeerahDeepGreen
+        )
+    }
+}
+
+@Composable
+fun SeerahTimelineNodeRow(
+    title: String,
+    dateBadge: String,
+    subtitle: String,
+    isHighlighted: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // العمود الزمني الذهبي والعقدة الدائرية
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.width(34.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(2.5.dp)
+                    .height(22.dp)
+                    .background(SeerahAntiqueGold.copy(alpha = 0.65f))
+            )
+            Box(
+                modifier = Modifier
+                    .size(if (isHighlighted) 16.dp else 12.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(if (isHighlighted) SeerahEmerald else SeerahParchment)
+                    .padding(2.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .width(2.5.dp)
+                    .height(22.dp)
+                    .background(SeerahAntiqueGold.copy(alpha = 0.65f))
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Card(
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (isHighlighted) SeerahEmerald else MaterialTheme.colorScheme.surfaceVariant
+            ),
+            border = BorderStroke(1.dp, SeerahAntiqueGold.copy(alpha = 0.7f))
+        ) {
+            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isHighlighted) SeerahIvory else MaterialTheme.colorScheme.onSurface
+                )
+                if (dateBadge.isNotBlank()) {
+                    Text(
+                        text = dateBadge,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isHighlighted) SeerahParchment else SeerahHistoricalBrown
+                    )
+                }
+                if (subtitle.isNotBlank()) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (isHighlighted) SeerahParchment.copy(alpha = 0.9f) else MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        }
+    }
+}

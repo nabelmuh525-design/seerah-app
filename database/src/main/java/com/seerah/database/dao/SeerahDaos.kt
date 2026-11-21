@@ -55,7 +55,7 @@ interface SourceLibraryDao {
 
     @Query("""
         SELECT sp.* FROM source_pages sp
-        JOIN source_pages_fts fts ON sp.id = fts.docid
+        JOIN source_pages_fts ON sp.id = source_pages_fts.rowid
         WHERE source_pages_fts MATCH :ftsQuery
         LIMIT :limit
     """)
@@ -105,7 +105,7 @@ interface EventDao {
 
     @Query("""
         SELECT e.* FROM events e
-        JOIN events_fts fts ON e.id = fts.docid
+        JOIN events_fts ON e.id = events_fts.rowid
         WHERE events_fts MATCH :ftsQuery
         LIMIT :limit
     """)

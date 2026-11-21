@@ -113,6 +113,24 @@ fun BattleDetailsScreen(
             item {
                 SeerahEncyclopediaCard(parchmentTone = true) {
                     Text(b.title, style = MaterialTheme.typography.headlineMedium)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SeerahEncyclopediaCard(modifier = Modifier.weight(1f)) {
+                            Text("النوع", style = MaterialTheme.typography.labelSmall)
+                            Text("غزوة موثقة", style = MaterialTheme.typography.labelLarge)
+                        }
+                        SeerahEncyclopediaCard(modifier = Modifier.weight(1f)) {
+                            Text("الخريطة", style = MaterialTheme.typography.labelSmall)
+                            Text(b.mapId ?: "غير محددة", style = MaterialTheme.typography.labelLarge)
+                        }
+                        SeerahEncyclopediaCard(modifier = Modifier.weight(1f)) {
+                            Text("حالة التوثيق", style = MaterialTheme.typography.labelSmall)
+                            Text(b.verificationStatus, style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
                     if (b.causeText.isNotBlank()) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text("سبب الغزوة:", style = MaterialTheme.typography.labelLarge)
