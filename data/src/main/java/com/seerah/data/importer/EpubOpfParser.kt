@@ -125,9 +125,13 @@ object EpubOpfParser {
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false)
             factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false)
-            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "")
-            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "")
-            return factory.newDocumentBuilder()
+            runCatching { factory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalDTD", "") }
+            runCatching { factory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalSchema", "") }
+            val builder = factory.newDocumentBuilder()
+            builder.setEntityResolver { _, systemId ->
+                throw SecurityException("تم منع الوصول إلى كيان XML خارجي: $systemId")
+            }
+            return builder
         } catch (e: Exception) {
             throw SecurityException("تعذر تفعيل إعدادات حماية XML/XXE الإلزامية: ${e.message}", e)
         }
