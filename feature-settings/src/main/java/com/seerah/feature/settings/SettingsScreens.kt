@@ -20,6 +20,7 @@ import com.seerah.core.theme.SeerahRouteRed
 import com.seerah.data.repository.SeerahRepository
 import com.seerah.data.updater.AppReleaseInfo
 import com.seerah.data.updater.UpdateDownloadProgress
+import com.seerah.database.dao.QualityAuditSnapshot
 import com.seerah.domain.model.DatabaseHealthReport
 import com.seerah.domain.model.UserPreferencesState
 import kotlinx.coroutines.launch
@@ -324,6 +325,8 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
     var statusMessage by remember { mutableStateOf("") }
     var healthReport by remember { mutableStateOf<DatabaseHealthReport?>(null) }
+    var auditSnapshot by remember { mutableStateOf<QualityAuditSnapshot?>(null) }
+    LaunchedEffect(Unit) { auditSnapshot = repository.getQualityAuditSnapshot() }
     var isCheckingUpdate by remember { mutableStateOf(false) }
     var releaseInfo by remember { mutableStateOf<AppReleaseInfo?>(null) }
     var updateNotice by remember { mutableStateOf("") }
@@ -455,6 +458,25 @@ fun SettingsScreen(
                                 ) { Text("تحميل وتثبيت الإصدار ${info.latestVersion}") }
                             }
                         }
+                    }
+                }
+            }
+
+
+            item {
+                SeerahEncyclopediaCard(parchmentTone = true) {
+                    Text("لوحة مراجعة الجودة العلمية والتدقيق (v3.0)", style = MaterialTheme.typography.titleMedium)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    val snap = auditSnapshot
+                    if (snap != null) {
+                        Text("• إجمالي الأحداث: ${snap.totalEvents}", style = MaterialTheme.typography.bodyMedium)
+                        Text("• أحداث تحتاج ربطًا هيكليًا بجدول المصادر: ${snap.eventsWithoutFormalSourceLinks}", style = MaterialTheme.typography.bodyMedium)
+                        Text("• روايات تحتاج استكمال مرجع الحكم: ${snap.narrationsWithoutGradeRef}", style = MaterialTheme.typography.bodyMedium)
+                        Text("• أحاديث بلا حكم موثق: ${snap.hadithsWithoutGrades}", style = MaterialTheme.typography.bodyMedium)
+                        Text("• مواقع بلا إحداثيات: ${snap.placesWithoutCoordinates} | مختلف فيها: ${snap.disputedPlaces}", style = MaterialTheme.typography.bodyMedium)
+                        Text("• كتب مستوردة بـ OCR وتحتاج مراجعة: ${snap.booksNeedingOcrReview}", style = MaterialTheme.typography.bodyMedium)
+                    } else {
+                        Text("جارٍ فحص حالة التوثيق العلمي...", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }

@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -33,7 +34,13 @@ fun HistoricalAtlasScreen(
     var zoom by remember { mutableFloatStateOf(1f) }
     var panOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedFeature by remember { mutableStateOf<com.seerah.domain.model.GeoFeatureModel?>(null) }
-    val enabledLayers = remember { mutableStateListOf<String>().apply { addAll(MapLayerType.entries.map { it.key }) } }
+    val dbLayers by repository.observeLayers().collectAsState(initial = emptyList())
+    val enabledLayers = remember(dbLayers) {
+        if (dbLayers.isEmpty()) MapLayerType.entries.map { it.key }.toSet()
+        else dbLayers.filter { it.isEnabledByDefault }.map { it.layerKey }.toSet()
+    }
+    val allPlaces by repository.observeAllPlaces().collectAsState(initial = emptyList())
+    val allCoords by repository.observeAllCoordinates().collectAsState(initial = emptyList())
 
     val features by repository.observeBattleFeatures(selectedMap.mapId).collectAsState(initial = emptyList())
     val places by repository.observePlacesForMap(selectedMap.mapId).collectAsState(initial = emptyList())
@@ -81,8 +88,10 @@ fun HistoricalAtlasScreen(
                 Box(modifier = Modifier.fillMaxWidth().height(390.dp)) {
                     HistoricalMapCanvas(
                         mapDefinition = selectedMap,
-                        enabledLayers = enabledLayers.toSet(),
+                        enabledLayers = enabledLayers,
                         features = features,
+                        places = allPlaces,
+                        coordinates = allCoords,
                         zoom = zoom,
                         panOffset = panOffset,
                         onTransform = { zDelta, pDelta ->
@@ -296,7 +305,7 @@ fun MapLayersScreen(
     onBack: () -> Unit
 ) {
     val layers by repository.observeLayers().collectAsState(initial = emptyList())
-    val toggleStates = remember { mutableStateMapOf<String, Boolean>() }
+    val scope = rememberCoroutineScope()
 
     Scaffold(topBar = { SeerahTopBar(title = "طبقات الخريطة (10 طبقات)", onBack = onBack) }) { padding ->
         LazyColumn(
@@ -306,7 +315,7 @@ fun MapLayersScreen(
         ) {
             items(MapLayerType.entries) { layer ->
                 val dbLayer = layers.firstOrNull { it.layerKey == layer.key }
-                val checked = toggleStates[layer.key] ?: dbLayer?.isEnabledByDefault ?: true
+                val checked = dbLayer?.isEnabledByDefault ?: true
                 SeerahEncyclopediaCard {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -323,7 +332,7 @@ fun MapLayersScreen(
                         }
                         Switch(
                             checked = checked,
-                            onCheckedChange = { toggleStates[layer.key] = it }
+                            onCheckedChange = { enabled -> scope.launch { repository.setLayerEnabled(layer.key, enabled) } }
                         )
                     }
                 }

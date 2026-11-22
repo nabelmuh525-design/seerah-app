@@ -428,13 +428,27 @@ class BookImportEngine(
         val extractDir = File(context.filesDir, "imported_library/zip_${System.currentTimeMillis()}").apply { mkdirs() }
         var totalRecords = 0
         var totalPages = 0
+        var entryCount = 0
+        var totalBytes = 0L
         ZipInputStream(file.inputStream()).use { zis ->
             var entry = zis.nextEntry
             while (entry != null) {
+                entryCount++
+                ZipSecurityValidator.validateQuota(entryCount, totalBytes)
                 if (!entry.isDirectory) {
-                    val entryName = entry.name.substringAfterLast('/')
-                    val outFile = File(extractDir, entryName)
-                    FileOutputStream(outFile).use { fos -> zis.copyTo(fos) }
+                    val outFile = ZipSecurityValidator.resolveSafeEntryFile(extractDir, entry.name)
+                    outFile.parentFile?.mkdirs()
+                    FileOutputStream(outFile).use { fos ->
+                        val buf = ByteArray(8192)
+                        var read = zis.read(buf)
+                        while (read > 0) {
+                            totalBytes += read
+                            ZipSecurityValidator.validateQuota(entryCount, totalBytes)
+                            fos.write(buf, 0, read)
+                            read = zis.read(buf)
+                        }
+                    }
+                    val entryName = outFile.name
                     val fmt = ImportFormat.fromFileName(entryName)
                     if (fmt == ImportFormat.TXT) {
                         val rep = importPlainTextBook(outFile, entryName, sha256(outFile), isPrimary, authorName, editionName, investigator)

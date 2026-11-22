@@ -1,8 +1,5 @@
 package com.seerah.domain.model
 
-/**
- * مراحل الخط الزمني العشرون للسيرة النبوية
- */
 enum class SeerahStage(val code: String, val arabicTitle: String, val order: Int) {
     LINEAGE_AND_BIRTH("LINEAGE_AND_BIRTH", "النسب والمولد", 1),
     CHILDHOOD("CHILDHOOD", "الطفولة", 2),
@@ -32,42 +29,75 @@ enum class SeerahStage(val code: String, val arabicTitle: String, val order: Int
 }
 
 /**
- * تصنيفات الحكم الحديثي والتوثيقي (لا يُنشأ أي حكم آلياً دون مرجع علمي)
+ * حالات التوثيق العشر المنفصلة (القسم الرابع — v3.0).
+ * لا يُستنتج أي حكم حديثي تلقائيًا من اسم الكتاب أو المؤلف.
  */
 enum class HadithGradeStatus(val code: String, val arabicLabel: String) {
-    SAHIH("SAHIH", "صحيح"),
-    HASAN("HASAN", "حسن"),
-    DAIF("DAIF", "ضعيف"),
-    DAIF_JIDDAN("DAIF_JIDDAN", "ضعيف جدًا"),
-    MAWDU("MAWDU", "موضوع"),
+    PRIMARY_DOCUMENTED("PRIMARY_DOCUMENTED", "موثق من مصدر أصلي"),
+    SAHIH("SAHIH", "حديث صحيح"),
+    HASAN("HASAN", "حديث حسن"),
+    DAIF("DAIF", "حديث ضعيف"),
+    DAIF_JIDDAN("DAIF_JIDDAN", "حديث شديد الضعف"),
+    MAWDU("MAWDU", "رواية موضوعة"),
+    HISTORICAL_UNGRADED("HISTORICAL_UNGRADED", "خبر تاريخي بلا حكم حديثي"),
     DISPUTED("DISPUTED", "مختلف فيه"),
-    HISTORICAL_UNGRADED("HISTORICAL_UNGRADED", "خبر تاريخي غير محكوم عليه حديثيًا"),
-    UNVERIFIED("UNVERIFIED", "غير متحقق منه");
+    INCOMPLETE_CITATION("INCOMPLETE_CITATION", "غير مكتمل التوثيق"),
+    UNDER_REVIEW("UNDER_REVIEW", "قيد المراجعة");
 
     companion object {
         fun fromCode(code: String): HadithGradeStatus =
-            entries.firstOrNull { it.code == code } ?: UNVERIFIED
+            entries.firstOrNull { it.code == code } ?: UNDER_REVIEW
+
+        /**
+         * قاعدة التحقق العلمي: لا يُقبل تصنيف SAHIH أو HASAN إلا بوجود
+         * اسم العالم الحاكم ومرجع الحكم الصريح.
+         */
+        fun validateGrade(requestedCode: String, gradingScholar: String, gradingSource: String): HadithGradeStatus {
+            val status = fromCode(requestedCode)
+            if (status in setOf(SAHIH, HASAN, DAIF, DAIF_JIDDAN, MAWDU)) {
+                if (gradingScholar.isBlank() || gradingSource.isBlank()) {
+                    return INCOMPLETE_CITATION
+                }
+            }
+            return status
+        }
     }
 }
 
 /**
- * درجة اليقين الجغرافي للمواقع والمسارات
+ * حالات مراجعة المحتوى السبع (القسم السادس عشر — إدارة الجودة العلمية)
+ */
+enum class ContentReviewStatus(val code: String, val arabicLabel: String) {
+    DRAFT("DRAFT", "مسودة"),
+    RESEARCHING("RESEARCHING", "قيد البحث"),
+    UNDER_REVIEW("UNDER_REVIEW", "قيد المراجعة"),
+    NEEDS_COMPLETION("NEEDS_COMPLETION", "يحتاج إلى استكمال"),
+    VERIFIED("VERIFIED", "موثق"),
+    DISPUTED("DISPUTED", "مختلف فيه"),
+    REJECTED("REJECTED", "مرفوض");
+
+    companion object {
+        fun fromCode(code: String): ContentReviewStatus =
+            entries.firstOrNull { it.code == code } ?: NEEDS_COMPLETION
+    }
+}
+
+/**
+ * درجات الثقة الجغرافية الخمس (القسم الخامس — GIS)
  */
 enum class GeographicCertainty(val code: String, val arabicLabel: String) {
-    CONFIRMED("CONFIRMED", "موقع مؤكد جغرافيًا وتاريخيًا"),
-    PROBABLE("PROBABLE", "موقع راجح وفق المصادر"),
-    DISPUTED("DISPUTED", "موقع أو مسار مختلف فيه بين المصادر"),
-    UNVERIFIED("UNVERIFIED", "غير متحقق منه — بانتظار بيانات جغرافية موثقة");
+    CONFIRMED("CONFIRMED", "مؤكد جغرافيًا"),
+    PROBABLE("PROBABLE", "راجح"),
+    APPROXIMATE("APPROXIMATE", "تقريبي"),
+    DISPUTED("DISPUTED", "مختلف في تحديده"),
+    UNSPECIFIED("UNSPECIFIED", "غير محدد");
 
     companion object {
         fun fromCode(code: String): GeographicCertainty =
-            entries.firstOrNull { it.code == code } ?: UNVERIFIED
+            entries.firstOrNull { it.code == code } ?: UNSPECIFIED
     }
 }
 
-/**
- * تصنيفات الشخصيات التسعة في موسوعة الشخصيات
- */
 enum class PersonCategory(val code: String, val arabicTitle: String) {
     MOTHERS_OF_BELIEVERS("MOTHERS_OF_BELIEVERS", "أمهات المؤمنين"),
     AHL_AL_BAYT("AHL_AL_BAYT", "أهل البيت"),
@@ -77,7 +107,7 @@ enum class PersonCategory(val code: String, val arabicTitle: String) {
     FEMALE_COMPANIONS("FEMALE_COMPANIONS", "الصحابيات"),
     COMMANDERS("COMMANDERS", "قادة الغزوات والسرايا"),
     NARRATORS("NARRATORS", "الرواة"),
-    OTHER("OTHER", "الشخصيات التاريخية الأخرى");
+    OTHER("OTHER", "الشخصيات والملوك والوفود");
 
     companion object {
         fun fromCode(code: String): PersonCategory =
@@ -86,41 +116,43 @@ enum class PersonCategory(val code: String, val arabicTitle: String) {
 }
 
 /**
- * طبقات الأطلس العشر القابلة للتشغيل والإيقاف المستقل
+ * طبقات الأطلس الجغرافي الـ 12 (القسم الخامس — v3.0)
  */
 enum class MapLayerType(val key: String, val arabicTitle: String, val zIndex: Int) {
-    TERRAIN("terrain", "طبقة التضاريس", 1),
-    MOUNTAINS("mountains", "طبقة الجبال", 2),
-    VALLEYS("valleys", "طبقة الأودية", 3),
-    WELLS("wells", "طبقة الآبار", 4),
-    ROADS("roads", "طبقة الطرق", 5),
-    HISTORICAL_SITES("historical_sites", "طبقة المواقع التاريخية", 6),
-    EVENTS("events", "طبقة الأحداث", 7),
-    HIJRA_ROUTES("hijra_routes", "طبقة مسارات الهجرة", 8),
-    BATTLES("battles", "طبقة الغزوات", 9),
-    PEOPLE_LOCATIONS("people_locations", "طبقة المواقع المرتبطة بالشخصيات", 10)
+    CITIES_VILLAGES("cities_villages", "المدن والقرى", 1),
+    HISTORICAL_SITES("historical_sites", "المواقع التاريخية", 2),
+    MOUNTAINS_TERRAIN("mountains", "الجبال والتضاريس", 3),
+    VALLEYS("valleys", "الأودية والشعاب", 4),
+    WELLS("wells", "الآبار ومصادر المياه", 5),
+    CARAVAN_ROUTES("roads", "طرق القوافل", 6),
+    HIJRA_ROUTES("hijra_routes", "طرق الهجرة", 7),
+    BATTLE_ROUTES("battles", "مسارات الغزوات", 8),
+    CAMPS("camps", "مواقع المعسكرات", 9),
+    HISTORICAL_REGIONS("terrain", "المناطق التاريخية", 10),
+    MILITARY_ROADS("military_roads", "الطرق العسكرية", 11),
+    PEOPLE_LOCATIONS("people_locations", "مواقع الأحداث المرتبطة بالشخصيات", 12)
 }
 
-/**
- * خرائط الأطلس التاريخي الإحدى عشرة المطلوبة
- */
 enum class AtlasMapDefinition(
     val mapId: String,
     val arabicTitle: String,
     val isBattleMap: Boolean,
     val description: String
 ) {
-    ARABIA("arabia", "شبه الجزيرة العربية", false, "النطاق الجغرافي العام لأحداث السيرة النبوية والبعوث والوفود."),
+    ARABIA("arabia", "الجزيرة العربية", false, "النطاق الجغرافي العام لأحداث السيرة النبوية والوفود والبعوث."),
+    HIJAZ("hijaz", "الحجاز", false, "إقليم الحجاز بين مكة والمدينة والطائف والبحر الأحمر."),
     MAKKAH("makkah", "مكة المكرمة", false, "المعالم التاريخية للعهد المكي ومواضع الدعوة وغار حراء وثور."),
     MADINAH("madinah", "المدينة المنورة", false, "معالم المدينة النبوية وقباء والمسجد النبوي والمناطق المحيطة."),
-    BADR("badr", "غزوة بدر", true, "خريطة ميدان غزوة بدر الكبرى: التضاريس والأودية والآبار والمراحل."),
+    HIJRA("hijra", "الهجرة النبوية", false, "نقاط طريق الهجرة الثابتة والمختلف فيها مع المراجع العلمية."),
+    BADR("badr", "غزوة بدر", true, "خريطة ميدان غزوة بدر الكبرى وفق البيانات الجغرافية الموثقة."),
     UHUD("uhud", "غزوة أحد", true, "خريطة جبل أحد وميدان الغزوة والمواقع الثابتة في المصادر."),
     KHANDAQ("khandaq", "غزوة الخندق", true, "خريطة المدينة ومواضع الخندق وفق المصادر التاريخية والجغرافية."),
-    HIJRA("hijra", "مسار الهجرة النبوية", false, "مراحل طريق الهجرة من مكة إلى قباء والمدينة مع بيان درجة ثبوت كل نقطة."),
-    HUDAYBIYYAH("hudaybiyyah", "الحديبية", true, "موضع صلح الحديبية والطريق المؤدي إليه من المدينة إلى أطراف الحرم."),
-    KHAYBAR("khaybar", "غزوة خيبر", true, "واحة خيبر وحصونها وفق البيانات التاريخية والجغرافية المتاحة."),
+    HUDAYBIYYAH("hudaybiyyah", "الحديبية", true, "موضع صلح الحديبية على أطراف الحرم المكي."),
+    KHAYBAR("khaybar", "غزوة خيبر", true, "واحة خيبر وحصونها شمال المدينة المنورة."),
+    CONQUEST_MAKKAH("conquest_makkah", "فتح مكة", true, "محاور دخول مكة المكرمة وفق المصادر التاريخية."),
     HUNAYN_TAIF("hunayn_taif", "حنين والطائف", true, "وادي حنين والطريق إلى الطائف ومواقع الغزوة."),
-    TABUK("tabuk", "غزوة تبوك", true, "المسار الشمالي من المدينة إلى تبوك والمواقع المرتبطة به.");
+    TABUK("tabuk", "غزوة تبوك", true, "المسار الشمالي من المدينة إلى تبوك."),
+    MUTAH("mutah", "غزوة/سرية مؤتة", true, "موضع مؤتة بجنوب بلاد الشام.");
 
     companion object {
         fun fromId(mapId: String): AtlasMapDefinition =

@@ -12,20 +12,29 @@ android {
         applicationId = "com.seerah.encyclopedia"
         minSdk = 24
         targetSdk = 35
-        versionCode = 7
-        versionName = "2.1.2"
+        versionCode = 8
+        versionName = "3.0.0-alpha.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val envStoreFile = System.getenv("SEERAH_KEYSTORE_PATH")
+    val envStorePass = System.getenv("SEERAH_STORE_PASSWORD")
+    val envKeyAlias = System.getenv("SEERAH_KEY_ALIAS")
+    val envKeyPass = System.getenv("SEERAH_KEY_PASSWORD")
+    val hasReleaseSigning = !envStoreFile.isNullOrBlank() &&
+        !envStorePass.isNullOrBlank() &&
+        !envKeyAlias.isNullOrBlank() &&
+        !envKeyPass.isNullOrBlank() &&
+        file(envStoreFile).exists()
+
     signingConfigs {
-        create("release") {
-            val ksFile = file("seerah-release.jks")
-            if (ksFile.exists()) {
-                storeFile = ksFile
-                storePassword = System.getenv("SEERAH_STORE_PASSWORD") ?: "seerah2026release"
-                keyAlias = System.getenv("SEERAH_KEY_ALIAS") ?: "seerah_key"
-                keyPassword = System.getenv("SEERAH_KEY_PASSWORD") ?: "seerah2026release"
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(envStoreFile!!)
+                storePassword = envStorePass
+                keyAlias = envKeyAlias
+                keyPassword = envKeyPass
             }
         }
     }
@@ -33,7 +42,9 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

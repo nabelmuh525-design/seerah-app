@@ -136,7 +136,7 @@ class SeerahCatalogSeeder(
                         outcomeText = o.optString("outcome_text"),
                         mapId = o.optString("map_id"),
                         previousEventId = prevId,
-                        verificationStatus = "VERIFIED"
+                        verificationStatus = "NEEDS_COMPLETION"
                     )
                 )
                 database.eventDao().insertEventDate(
@@ -154,7 +154,7 @@ class SeerahCatalogSeeder(
                         sourceName = source,
                         narrationText = summary,
                         normalizedText = ArabicNormalizer.normalize(summary),
-                        gradeStatus = if (source.contains("صحيح")) "SAHIH" else "HISTORICAL_UNGRADED",
+                        gradeStatus = "HISTORICAL_UNGRADED",
                         gradeReference = source
                     )
                 )
