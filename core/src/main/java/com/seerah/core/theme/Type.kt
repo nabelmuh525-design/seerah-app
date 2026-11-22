@@ -2,32 +2,13 @@ package com.seerah.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.seerah.core.R
 
-val AmiriDisplayFamily: FontFamily = FontFamily(
-    Font(R.font.noto_naskh_arabic_regular, FontWeight.Normal),
-    Font(R.font.noto_naskh_arabic_bold, FontWeight.SemiBold),
-    Font(R.font.noto_naskh_arabic_bold, FontWeight.Bold)
-)
-
-val NotoNaskhFamily: FontFamily = FontFamily(
-    Font(R.font.noto_naskh_arabic_regular, FontWeight.Normal),
-    Font(R.font.noto_naskh_arabic_bold, FontWeight.Bold)
-)
-
-val NotoSansArabicFamily: FontFamily = FontFamily(
-    Font(R.font.noto_sans_arabic_regular, FontWeight.Normal),
-    Font(R.font.noto_sans_arabic_bold, FontWeight.SemiBold),
-    Font(R.font.noto_sans_arabic_bold, FontWeight.Bold)
-)
-
-val KufiOrnamentalFamily: FontFamily = FontFamily(
-    Font(R.font.noto_kufi_arabic_bold, FontWeight.Bold)
-)
+val AmiriDisplayFamily: FontFamily = FontFamily.Serif
+val NotoNaskhFamily: FontFamily = FontFamily.Serif
+val NotoSansArabicFamily: FontFamily = FontFamily.SansSerif
 
 fun buildSeerahTypography(scale: Float = 1.0f): Typography = Typography(
     displayLarge = TextStyle(
