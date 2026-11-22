@@ -50,4 +50,22 @@ interface QualityAuditDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertReadingProgress(progress: ReadingProgressEntity): Long
+
+    @Query("SELECT * FROM content_versions WHERE pack_key = :packKey LIMIT 1")
+    suspend fun getContentVersion(packKey: String): ContentVersionEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertContentVersion(version: ContentVersionEntity): Long
+
+    @Query("INSERT OR IGNORE INTO geographic_layers (layer_key, display_name, is_enabled_by_default, z_index, geojson_path, mbtiles_path) VALUES (:key, :name, :enabled, :zIndex, '', '')")
+    suspend fun insertLayerIfMissing(key: String, name: String, enabled: Boolean, zIndex: Int)
+
+    @Query("DELETE FROM geographic_layers WHERE layer_key = :layerKey")
+    suspend fun deleteLayerByKey(layerKey: String)
+
+    @Query("UPDATE geographic_layers SET display_name = :name WHERE layer_key = :layerKey")
+    suspend fun updateLayerDisplayName(layerKey: String, name: String)
+
+    @Query("SELECT * FROM battle_map_features")
+    fun observeAllBattleFeatures(): Flow<List<BattleMapFeatureEntity>>
 }

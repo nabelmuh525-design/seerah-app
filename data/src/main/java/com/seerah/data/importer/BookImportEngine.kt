@@ -8,6 +8,7 @@ import android.util.Xml
 import com.seerah.core.text.ArabicNormalizer
 import com.seerah.database.SeerahDatabase
 import com.seerah.database.entity.*
+import com.seerah.domain.model.HadithGradeStatus
 import com.seerah.domain.model.ImportFormat
 import com.seerah.domain.model.ImportReport
 import kotlinx.coroutines.Dispatchers
@@ -128,27 +129,8 @@ class BookImportEngine(
         editionName: String,
         investigator: String
     ): ImportReport {
-        val extractedPages = mutableListOf<Pair<String, String>>()
-        ZipInputStream(file.inputStream()).use { zis ->
-            var entry = zis.nextEntry
-            while (entry != null) {
-                val lower = entry.name.lowercase()
-                if (!entry.isDirectory && (lower.endsWith(".xhtml") || lower.endsWith(".html") || lower.endsWith(".htm"))) {
-                    val rawHtml = BufferedReader(InputStreamReader(zis, Charsets.UTF_8)).readText()
-                    val plain = rawHtml
-                        .replace(Regex("<script[\\s\\S]*?</script>", RegexOption.IGNORE_CASE), " ")
-                        .replace(Regex("<style[\\s\\S]*?</style>", RegexOption.IGNORE_CASE), " ")
-                        .replace(Regex("<[^>]+>"), " ")
-                        .replace(Regex("\\s+"), " ")
-                        .trim()
-                    if (plain.isNotBlank()) {
-                        extractedPages.add(entry.name.substringAfterLast('/') to plain)
-                    }
-                }
-                zis.closeEntry()
-                entry = zis.nextEntry
-            }
-        }
+        val chapters = file.inputStream().use { EpubOpfParser.parseChaptersFromZip(it) }
+        val extractedPages = chapters.map { ch -> ch.title to ch.plainText }
         return persistBookWithPages(
             title = fileName.substringBeforeLast('.'),
             authorName = authorName,
@@ -650,7 +632,7 @@ class BookImportEngine(
                     narrationText = text,
                     normalizedText = ArabicNormalizer.normalize(text),
                     scholarlyCommentary = o.optString("scholarly_commentary", ""),
-                    gradeStatus = o.optString("grade_status", "UNVERIFIED"),
+                    gradeStatus = HadithGradeStatus.validateGrade(o.optString("grade_status", "UNDER_REVIEW"), o.optString("grading_scholar", ""), o.optString("grade_reference", "")).code,
                     gradeReference = o.optString("grade_reference", "")
                 )
             )
@@ -679,18 +661,18 @@ class BookImportEngine(
                     editionInfo = o.optString("edition_info", "")
                 )
             )
-            val gradeCode = o.optString("grade_code")
-            val gradeScholar = o.optString("grading_scholar")
-            if (gradeCode.isNotBlank() && gradeScholar.isNotBlank()) {
-                database.quranHadithDao().insertHadithGrade(
-                    HadithGradeEntity(
-                        hadithId = hadithId,
-                        gradeCode = gradeCode,
-                        gradingScholar = gradeScholar,
-                        gradingSource = o.optString("grading_source", "")
-                    )
+            val rawGrade = o.optString("grade_code", "INCOMPLETE_CITATION")
+            val gradeScholar = o.optString("grading_scholar", "")
+            val gradeSource = o.optString("grading_source", "")
+            val validated = HadithGradeStatus.validateGrade(rawGrade, gradeScholar, gradeSource)
+            database.quranHadithDao().insertHadithGrade(
+                HadithGradeEntity(
+                    hadithId = hadithId,
+                    gradeCode = validated.code,
+                    gradingScholar = gradeScholar,
+                    gradingSource = gradeSource
                 )
-            }
+            )
             count++
         }
         return count

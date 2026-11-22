@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 } else {
                                     scope.launch {
-                                        repository.appUpdater.downloadUpdateApk(release.apkDownloadUrl).collect { st ->
+                                        repository.appUpdater.downloadUpdateApk(release.apkDownloadUrl, release.sha256DownloadUrl).collect { st ->
                                             autoUpdateProgress = st
                                             if (st is UpdateDownloadProgress.ReadyToInstall) {
                                                 repository.appUpdater.installApk(st.apkFile).onFailure {

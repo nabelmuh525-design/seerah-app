@@ -52,10 +52,28 @@ enum class HadithGradeStatus(val code: String, val arabicLabel: String) {
          * قاعدة التحقق العلمي: لا يُقبل تصنيف SAHIH أو HASAN إلا بوجود
          * اسم العالم الحاكم ومرجع الحكم الصريح.
          */
-        fun validateGrade(requestedCode: String, gradingScholar: String, gradingSource: String): HadithGradeStatus {
+        fun validateGrade(requestedCode: String, gradingScholar: String, gradingSource: String): HadithGradeStatus =
+            validateGradeStrict(requestedCode, gradingScholar, gradingSource, referenceLocator = "LEGACY", originalGradeText = "LEGACY")
+
+        /**
+         * قاعدة التحقق الصارم لدرجات الأحاديث (v3.0.0-alpha.3):
+         * لا يكفي اسم عالم ومرجع عام؛ يُشترط توفر:
+         * 1. اسم العالم الحاكم 2. اسم المرجع 3. رقم الحديث أو الجزء والصفحة 4. نص الحكم الأصلي.
+         */
+        fun validateGradeStrict(
+            requestedCode: String,
+            gradingScholar: String,
+            gradingSource: String,
+            referenceLocator: String,
+            originalGradeText: String
+        ): HadithGradeStatus {
             val status = fromCode(requestedCode)
             if (status in setOf(SAHIH, HASAN, DAIF, DAIF_JIDDAN, MAWDU)) {
-                if (gradingScholar.isBlank() || gradingSource.isBlank()) {
+                if (gradingScholar.isBlank() ||
+                    gradingSource.isBlank() ||
+                    referenceLocator.isBlank() ||
+                    originalGradeText.isBlank()
+                ) {
                     return INCOMPLETE_CITATION
                 }
             }
@@ -137,22 +155,29 @@ enum class AtlasMapDefinition(
     val mapId: String,
     val arabicTitle: String,
     val isBattleMap: Boolean,
-    val description: String
+    val description: String,
+    val minLat: Double,
+    val maxLat: Double,
+    val minLon: Double,
+    val maxLon: Double
 ) {
-    ARABIA("arabia", "الجزيرة العربية", false, "النطاق الجغرافي العام لأحداث السيرة النبوية والوفود والبعوث."),
-    HIJAZ("hijaz", "الحجاز", false, "إقليم الحجاز بين مكة والمدينة والطائف والبحر الأحمر."),
-    MAKKAH("makkah", "مكة المكرمة", false, "المعالم التاريخية للعهد المكي ومواضع الدعوة وغار حراء وثور."),
-    MADINAH("madinah", "المدينة المنورة", false, "معالم المدينة النبوية وقباء والمسجد النبوي والمناطق المحيطة."),
-    HIJRA("hijra", "الهجرة النبوية", false, "نقاط طريق الهجرة الثابتة والمختلف فيها مع المراجع العلمية."),
-    BADR("badr", "غزوة بدر", true, "خريطة ميدان غزوة بدر الكبرى وفق البيانات الجغرافية الموثقة."),
-    UHUD("uhud", "غزوة أحد", true, "خريطة جبل أحد وميدان الغزوة والمواقع الثابتة في المصادر."),
-    KHANDAQ("khandaq", "غزوة الخندق", true, "خريطة المدينة ومواضع الخندق وفق المصادر التاريخية والجغرافية."),
-    HUDAYBIYYAH("hudaybiyyah", "الحديبية", true, "موضع صلح الحديبية على أطراف الحرم المكي."),
-    KHAYBAR("khaybar", "غزوة خيبر", true, "واحة خيبر وحصونها شمال المدينة المنورة."),
-    CONQUEST_MAKKAH("conquest_makkah", "فتح مكة", true, "محاور دخول مكة المكرمة وفق المصادر التاريخية."),
-    HUNAYN_TAIF("hunayn_taif", "حنين والطائف", true, "وادي حنين والطريق إلى الطائف ومواقع الغزوة."),
-    TABUK("tabuk", "غزوة تبوك", true, "المسار الشمالي من المدينة إلى تبوك."),
-    MUTAH("mutah", "غزوة/سرية مؤتة", true, "موضع مؤتة بجنوب بلاد الشام.");
+    ARABIA("arabia", "الجزيرة العربية", false, "النطاق الجغرافي العام لأحداث السيرة النبوية والوفود والبعوث.", 15.0, 32.5, 34.0, 56.0),
+    HIJAZ("hijaz", "الحجاز", false, "إقليم الحجاز بين مكة والمدينة والطائف والبحر الأحمر.", 20.0, 26.5, 37.0, 41.5),
+    MAKKAH("makkah", "مكة المكرمة", false, "المعالم التاريخية للعهد المكي ومواضع الدعوة وغار حراء وثور.", 21.30, 21.52, 39.55, 40.05),
+    MADINAH("madinah", "المدينة المنورة", false, "معالم المدينة النبوية وقباء والمسجد النبوي والمناطق المحيطة.", 24.38, 24.55, 39.52, 39.70),
+    HIJRA("hijra", "الهجرة النبوية", false, "نقاط طريق الهجرة الثابتة والمختلف فيها مع المراجع العلمية.", 21.20, 24.60, 38.40, 40.10),
+    BADR("badr", "غزوة بدر", true, "خريطة ميدان غزوة بدر الكبرى وفق البيانات الجغرافية الموثقة.", 23.65, 23.90, 38.65, 38.95),
+    UHUD("uhud", "غزوة أحد", true, "خريطة جبل أحد وميدان الغزوة والمواقع الثابتة في المصادر.", 24.47, 24.54, 39.57, 39.66),
+    KHANDAQ("khandaq", "غزوة الخندق", true, "خريطة المدينة ومواضع الخندق وفق المصادر التاريخية والجغرافية.", 24.45, 24.51, 39.56, 39.64),
+    HUDAYBIYYAH("hudaybiyyah", "الحديبية", true, "موضع صلح الحديبية على أطراف الحرم المكي.", 21.38, 21.50, 39.52, 39.72),
+    KHAYBAR("khaybar", "غزوة خيبر", true, "واحة خيبر وحصونها شمال المدينة المنورة.", 25.60, 25.80, 39.20, 39.40),
+    CONQUEST_MAKKAH("conquest_makkah", "فتح مكة", true, "محاور دخول مكة المكرمة وفق المصادر التاريخية.", 21.35, 21.50, 39.72, 39.92),
+    HUNAYN_TAIF("hunayn_taif", "حنين والطائف", true, "وادي حنين والطريق إلى الطائف ومواقع الغزوة.", 21.15, 21.60, 39.90, 40.55),
+    TABUK("tabuk", "غزوة تبوك", true, "المسار الشمالي من المدينة إلى تبوك.", 24.30, 28.80, 36.00, 40.00),
+    MUTAH("mutah", "غزوة/سرية مؤتة", true, "موضع مؤتة بجنوب بلاد الشام.", 30.90, 31.30, 35.50, 35.90);
+
+    fun contains(lat: Double, lon: Double): Boolean =
+        lat in minLat..maxLat && lon in minLon..maxLon
 
     companion object {
         fun fromId(mapId: String): AtlasMapDefinition =

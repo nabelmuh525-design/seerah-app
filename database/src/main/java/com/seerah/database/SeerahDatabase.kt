@@ -206,6 +206,43 @@ abstract class SeerahDatabase : RoomDatabase() {
                         `created_at_epoch_ms` INTEGER NOT NULL
                     )
                 """.trimIndent())
+
+                // تصحيح بيانات الإصدارات السابقة (v2.1.2 وما قبلها) دون حذف بيانات المستخدم
+                db.execSQL("UPDATE events SET verification_status = 'NEEDS_COMPLETION' WHERE verification_status = 'VERIFIED'")
+                db.execSQL("""
+                    UPDATE narrations
+                    SET grade_status = 'HISTORICAL_UNGRADED'
+                    WHERE event_id IS NOT NULL
+                      AND EXISTS (
+                        SELECT 1 FROM events
+                        WHERE events.id = narrations.event_id
+                          AND events.short_summary = narrations.narration_text
+                      )
+                """.trimIndent())
+
+                // تحديث طبقات الخريطة للترقيات من v2 (INSERT OR IGNORE للمفاتيح الجديدة ومعالجة القديمة)
+                db.execSQL("DELETE FROM geographic_layers WHERE layer_key = 'events'")
+                db.execSQL("UPDATE geographic_layers SET display_name = 'المناطق التاريخية' WHERE layer_key = 'terrain'")
+                val v3Layers = listOf(
+                    Triple("cities_villages", "المدن والقرى", 1),
+                    Triple("historical_sites", "المواقع التاريخية", 2),
+                    Triple("mountains", "الجبال والتضاريس", 3),
+                    Triple("valleys", "الأودية والشعاب", 4),
+                    Triple("wells", "الآبار ومصادر المياه", 5),
+                    Triple("roads", "طرق القوافل", 6),
+                    Triple("hijra_routes", "طرق الهجرة", 7),
+                    Triple("battles", "مسارات الغزوات", 8),
+                    Triple("camps", "مواقع المعسكرات", 9),
+                    Triple("terrain", "المناطق التاريخية", 10),
+                    Triple("military_roads", "الطرق العسكرية", 11),
+                    Triple("people_locations", "مواقع الأحداث المرتبطة بالشخصيات", 12)
+                )
+                v3Layers.forEach { (key, name, z) ->
+                    db.execSQL(
+                        "INSERT OR IGNORE INTO geographic_layers (layer_key, display_name, is_enabled_by_default, z_index, geojson_path, mbtiles_path) VALUES (?, ?, 1, ?, '', '')",
+                        arrayOf(key, name, z)
+                    )
+                }
             }
         }
 

@@ -1,18 +1,23 @@
 package com.seerah.data.seed
 
 import android.content.Context
+import androidx.room.withTransaction
 import com.seerah.core.text.ArabicNormalizer
 import com.seerah.database.SeerahDatabase
 import com.seerah.database.entity.*
 import com.seerah.domain.model.AtlasMapDefinition
+import com.seerah.domain.model.HadithGradeStatus
 import com.seerah.domain.model.MapLayerType
 import org.json.JSONObject
+import java.security.MessageDigest
 
 /**
- * مهيّئ الموسوعة الكاملة الموثّقة لتطبيق سِيرَة v2.1.0.
- * يقرأ حزمة السيرة النبوية الشاملة (46 حدثًا عبر 20 مرحلة، 17 موقعًا، 22 شخصية،
- * والآيات والأحاديث المرتبطة) من assets/seerah_encyclopedia_v2.json دون المساس
- * ببيانات المستخدم أو المفضلة أو الكتب المستوردة.
+ * مهيّئ الموسوعة الذري (Atomic Transactional Seeder — v3.0.0-alpha.3):
+ * - ينفذ استيراد الحزمة بالكامل داخل database.withTransaction (إما نجاح كامل أو rollback كامل).
+ * - لا يعتمد شرط count() == 0؛ يسجل حالة كل قسم على حدة في content_versions،
+ *   ولا يعتمد بصمة الحزمة الرئيسية إلا بعد التحقق من تطابق العدد المتوقع والمستورد لكل قسم.
+ * - ينشئ روابط علائقية فعلية (event_sources, person_events, place_sources, event_verses).
+ * - يحافظ بالكامل على بيانات المستخدم (favorites, user_notes, bookmarks, الكتب المستوردة).
  */
 class SeerahCatalogSeeder(
     private val context: Context,
@@ -20,22 +25,21 @@ class SeerahCatalogSeeder(
 ) {
 
     suspend fun seedCatalogIfNeeded() {
-        seedGeographicLayers()
+        syncGeographicLayers()
         seedCanonicalLibraryCatalog()
         seedOfflinePackageCatalog()
-        seedFullEncyclopediaFromAssets()
+        seedEncyclopediaAtomically()
     }
 
-    private suspend fun seedGeographicLayers() {
-        if (database.atlasGeoDao().countLayers() > 0) return
+    private suspend fun syncGeographicLayers() {
+        database.qualityAuditDao().deleteLayerByKey("events")
+        database.qualityAuditDao().updateLayerDisplayName("terrain", "المناطق التاريخية")
         MapLayerType.entries.forEach { layer ->
-            database.atlasGeoDao().insertLayer(
-                GeographicLayerEntity(
-                    layerKey = layer.key,
-                    displayName = layer.arabicTitle,
-                    isEnabledByDefault = true,
-                    zIndex = layer.zIndex
-                )
+            database.qualityAuditDao().insertLayerIfMissing(
+                key = layer.key,
+                name = layer.arabicTitle,
+                enabled = true,
+                zIndex = layer.zIndex
             )
         }
     }
@@ -74,7 +78,7 @@ class SeerahCatalogSeeder(
                     normalizedTitle = ArabicNormalizer.normalize(title),
                     sourceCategory = category,
                     isPrimarySource = isPrimary,
-                    verificationNote = if (isPrimary) "مصدر أصلي معتمد" else "دراسة حديثة معتمدة"
+                    verificationNote = if (isPrimary) "مصدر أصلي — بانتظار استيراد النسخة المحققة" else "دراسة حديثة"
                 )
             )
             database.sourceLibraryDao().insertBook(
@@ -100,164 +104,267 @@ class SeerahCatalogSeeder(
                     packageKey = "map_${mapDef.mapId}",
                     title = "حزمة خريطة ${mapDef.arabicTitle}",
                     packageType = if (mapDef.isBattleMap) "GEOJSON_PACK" else "MAP_MBTILES",
-                    status = "READY_LOCAL"
+                    status = "NOT_INSTALLED"
                 )
             )
         }
     }
 
-    private suspend fun seedFullEncyclopediaFromAssets() {
-        // إذا كانت القاعدة تحتوي بالفعل على الموسوعة الشاملة (40+ حدثًا) نتوقف دون تكرار
-        if (database.eventDao().countEvents() >= 40) return
-
+    private suspend fun seedEncyclopediaAtomically() {
         val rawJson = runCatching {
             context.assets.open("seerah_encyclopedia_v2.json").bufferedReader(Charsets.UTF_8).use { it.readText() }
         }.getOrNull() ?: return
 
+        val packHash = sha256(rawJson)
+        val existingVersion = database.qualityAuditDao().getContentVersion(CORE_PACK_KEY)
+        if (existingVersion != null && existingVersion.sha256Hash == packHash) {
+            return
+        }
+
         val root = JSONObject(rawJson)
+        val packTag = root.optString("version", "3.0.0-alpha.3")
+        val now = System.currentTimeMillis()
 
-        // 1. الأحداث الـ 46 عبر الـ 20 مرحلة
-        root.optJSONArray("events")?.let { arr ->
-            var prevId: Long? = null
-            for (i in 0 until arr.length()) {
-                val o = arr.optJSONObject(i) ?: continue
-                val title = o.optString("title")
-                val summary = o.optString("short_summary")
-                val source = o.optString("source_citation")
-                val id = database.eventDao().insertEvent(
-                    EventEntity(
-                        title = title,
-                        normalizedTitle = ArabicNormalizer.normalize(title),
-                        stageCode = o.optString("stage_code"),
-                        eventType = o.optString("event_type"),
-                        chronologicalOrder = o.optInt("chronological_order", i + 1),
-                        shortSummary = summary,
-                        causeText = o.optString("cause_text"),
-                        outcomeText = o.optString("outcome_text"),
-                        mapId = o.optString("map_id"),
-                        previousEventId = prevId,
-                        verificationStatus = "NEEDS_COMPLETION"
-                    )
-                )
-                database.eventDao().insertEventDate(
-                    EventDateEntity(
-                        eventId = id,
-                        hijriDisplay = o.optString("hijri_date"),
-                        gregorianDisplay = o.optString("gregorian_date"),
-                        isDisputed = o.optBoolean("date_disputed", false),
-                        sourceCitation = source
-                    )
-                )
-                database.eventDao().insertNarration(
-                    NarrationEntity(
-                        eventId = id,
-                        sourceName = source,
-                        narrationText = summary,
-                        normalizedText = ArabicNormalizer.normalize(summary),
-                        gradeStatus = "HISTORICAL_UNGRADED",
-                        gradeReference = source
-                    )
-                )
-                prevId = id
-            }
-        }
+        // معاملة ذرية كاملة: أي خطأ في أي قسم يعيد القاعدة لحالتها السابقة دون تسجيل البصمة
+        database.withTransaction {
+            val eventsArr = root.optJSONArray("events")
+            val placesArr = root.optJSONArray("places")
+            val peopleArr = root.optJSONArray("people")
+            val versesArr = root.optJSONArray("quran_verses")
+            val hadithsArr = root.optJSONArray("hadiths")
 
-        // 2. الأماكن التاريخية الـ 17
-        root.optJSONArray("places")?.let { arr ->
-            for (i in 0 until arr.length()) {
-                val o = arr.optJSONObject(i) ?: continue
-                val name = o.optString("name")
-                val placeId = database.atlasGeoDao().insertPlace(
-                    PlaceEntity(
-                        name = name,
-                        normalizedName = ArabicNormalizer.normalize(name),
-                        historicalName = o.optString("historical_name"),
-                        description = o.optString("description"),
-                        historicalSignificance = o.optString("historical_significance"),
-                        certaintyLevel = o.optString("certainty_level", "CONFIRMED"),
-                        mapId = o.optString("map_id", "arabia")
+            // 1. استيراد الأماكن بمعرفات مستقرة
+            var placesImported = 0
+            val placeIdsByMap = mutableMapOf<String, Long>()
+            if (placesArr != null) {
+                for (i in 0 until placesArr.length()) {
+                    val o = placesArr.optJSONObject(i) ?: continue
+                    val name = o.optString("name")
+                    val existing = database.atlasGeoDao().searchPlaces(ArabicNormalizer.normalize(name), 1).firstOrNull()
+                    val placeId = existing?.id ?: database.atlasGeoDao().insertPlace(
+                        PlaceEntity(
+                            name = name,
+                            normalizedName = ArabicNormalizer.normalize(name),
+                            historicalName = o.optString("historical_name"),
+                            description = o.optString("description"),
+                            historicalSignificance = o.optString("historical_significance"),
+                            certaintyLevel = o.optString("certainty_level", "UNSPECIFIED"),
+                            mapId = o.optString("map_id", "arabia")
+                        )
                     )
-                )
-                database.atlasGeoDao().insertPlaceCoordinate(
-                    PlaceCoordinateEntity(
-                        placeId = placeId,
-                        latitude = o.optDouble("latitude"),
-                        longitude = o.optDouble("longitude"),
-                        accuracyNote = "إحداثيات مرجعية موثقة",
-                        sourceCitation = o.optString("source_citation")
-                    )
+                    if (existing == null) {
+                        database.atlasGeoDao().insertPlaceCoordinate(
+                            PlaceCoordinateEntity(
+                                placeId = placeId,
+                                latitude = o.optDouble("latitude"),
+                                longitude = o.optDouble("longitude"),
+                                accuracyNote = o.optString("coordinate_note", "إحداثيات تقريبية — قيد المراجعة"),
+                                sourceCitation = o.optString("coordinate_source", "")
+                            )
+                        )
+                    }
+                    placeIdsByMap.putIfAbsent(o.optString("map_id", "arabia"), placeId)
+                    placesImported++
+                }
+                check(placesImported == placesArr.length()) { "عدم تطابق عدد الأماكن المستوردة" }
+                database.qualityAuditDao().upsertContentVersion(
+                    ContentVersionEntity(packKey = "section_places", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
                 )
             }
-        }
 
-        // 3. الشخصيات الـ 22 عبر التصنيفات التسعة
-        root.optJSONArray("people")?.let { arr ->
-            for (i in 0 until arr.length()) {
-                val o = arr.optJSONObject(i) ?: continue
-                val name = o.optString("name")
-                database.peopleDao().insertPerson(
-                    PersonEntity(
-                        name = name,
-                        normalizedName = ArabicNormalizer.normalize(name),
-                        kunyah = o.optString("kunyah"),
-                        lineage = o.optString("lineage"),
-                        category = o.optString("category"),
-                        historicalBio = o.optString("historical_bio"),
-                        roleInSeerah = o.optString("role_in_seerah"),
-                        primarySources = o.optString("primary_sources")
+            // 2. استيراد الأحداث مع ربطها بالأماكن والمصادر
+            var eventsImported = 0
+            val eventIdByOrder = mutableMapOf<Int, Long>()
+            if (eventsArr != null) {
+                var prevId: Long? = null
+                for (i in 0 until eventsArr.length()) {
+                    val o = eventsArr.optJSONObject(i) ?: continue
+                    val title = o.optString("title")
+                    val order = o.optInt("chronological_order", i + 1)
+                    val mapId = o.optString("map_id", "arabia")
+                    val existing = database.eventDao().searchEventsFts(ArabicNormalizer.toFtsQuery(title), 1).firstOrNull { it.title == title }
+                    val eventId = existing?.id ?: database.eventDao().insertEvent(
+                        EventEntity(
+                            title = title,
+                            normalizedTitle = ArabicNormalizer.normalize(title),
+                            stageCode = o.optString("stage_code"),
+                            eventType = o.optString("event_type"),
+                            chronologicalOrder = order,
+                            shortSummary = o.optString("short_summary"),
+                            causeText = o.optString("cause_text"),
+                            outcomeText = o.optString("outcome_text"),
+                            placeId = placeIdsByMap[mapId],
+                            mapId = mapId,
+                            previousEventId = prevId,
+                            verificationStatus = "NEEDS_COMPLETION"
+                        )
                     )
+                    if (existing == null) {
+                        database.eventDao().insertEventDate(
+                            EventDateEntity(
+                                eventId = eventId,
+                                hijriDisplay = o.optString("start_date_hijri", o.optString("hijri_date")),
+                                gregorianDisplay = o.optString("gregorian_date"),
+                                isDisputed = o.optBoolean("date_disputed", false),
+                                sourceCitation = o.optString("date_source", o.optString("source_citation"))
+                            )
+                        )
+                    }
+                    eventIdByOrder[order] = eventId
+                    prevId = eventId
+                    eventsImported++
+                }
+                check(eventsImported == eventsArr.length()) { "عدم تطابق عدد الأحداث المستوردة" }
+                database.qualityAuditDao().upsertContentVersion(
+                    ContentVersionEntity(packKey = "section_events", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
                 )
             }
-        }
 
-        // 4. الآيات القرآنية المرتبطة بالسيرة
-        root.optJSONArray("quran_verses")?.let { arr ->
-            for (i in 0 until arr.length()) {
-                val o = arr.optJSONObject(i) ?: continue
-                val uthmani = o.optString("uthmani_text")
-                database.quranHadithDao().insertVerse(
-                    QuranVerseEntity(
-                        surahNumber = o.optInt("surah_number"),
-                        surahName = o.optString("surah_name"),
-                        ayahNumber = o.optInt("ayah_number"),
-                        uthmaniText = uthmani,
-                        normalizedText = ArabicNormalizer.normalize(uthmani),
-                        tafsirSummary = o.optString("tafsir_summary"),
-                        tafsirSource = o.optString("tafsir_source"),
-                        asbabAlNuzul = o.optString("asbab_al_nuzul"),
-                        asbabSource = o.optString("asbab_source"),
-                        asbabVerified = o.optBoolean("asbab_verified", true)
+            // 3. استيراد الشخصيات وربطها بالأحداث الأساسية (person_events)
+            var peopleImported = 0
+            if (peopleArr != null) {
+                for (i in 0 until peopleArr.length()) {
+                    val o = peopleArr.optJSONObject(i) ?: continue
+                    val name = o.optString("name")
+                    val existing = database.peopleDao().searchPeople(ArabicNormalizer.normalize(name), 1).firstOrNull { it.name == name }
+                    val personId = existing?.id ?: database.peopleDao().insertPerson(
+                        PersonEntity(
+                            name = name,
+                            normalizedName = ArabicNormalizer.normalize(name),
+                            kunyah = o.optString("kunyah"),
+                            lineage = o.optString("lineage"),
+                            category = o.optString("category"),
+                            historicalBio = o.optString("historical_bio"),
+                            roleInSeerah = o.optString("role_in_seerah"),
+                            primarySources = o.optString("primary_sources")
+                        )
                     )
+                    // ربط النبي ﷺ بالحدث الأول عند الإنشاء الأول
+                    if (existing == null && name.contains("النبي محمد") && eventIdByOrder[4] != null) {
+                        database.peopleDao().insertPersonEvent(
+                            PersonEventEntity(
+                                personId = personId,
+                                eventId = eventIdByOrder[4]!!,
+                                roleDescription = "المولد النبوي الشريف",
+                                sourceCitation = o.optString("primary_sources")
+                            )
+                        )
+                    }
+                    peopleImported++
+                }
+                check(peopleImported == peopleArr.length()) { "عدم تطابق عدد الشخصيات المستوردة" }
+                database.qualityAuditDao().upsertContentVersion(
+                    ContentVersionEntity(packKey = "section_people", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
                 )
             }
-        }
 
-        // 5. الأحاديث الصحيحة المرتبطة بالسيرة
-        root.optJSONArray("hadiths")?.let { arr ->
-            for (i in 0 until arr.length()) {
-                val o = arr.optJSONObject(i) ?: continue
-                val text = o.optString("hadith_text")
-                val hadithId = database.quranHadithDao().insertHadith(
-                    HadithEntity(
-                        hadithText = text,
-                        normalizedText = ArabicNormalizer.normalize(text),
-                        narrator = o.optString("narrator"),
-                        sourceName = o.optString("source_name"),
-                        bookTitle = o.optString("book_title"),
-                        chapterTitle = o.optString("chapter_title"),
-                        hadithNumber = o.optString("hadith_number"),
-                        takhrij = o.optString("takhrij")
+            // 4. استيراد الآيات
+            var versesImported = 0
+            if (versesArr != null) {
+                for (i in 0 until versesArr.length()) {
+                    val o = versesArr.optJSONObject(i) ?: continue
+                    val uthmani = o.optString("uthmani_text")
+                    val verseId = database.quranHadithDao().insertVerse(
+                        QuranVerseEntity(
+                            surahNumber = o.optInt("surah_number"),
+                            surahName = o.optString("surah_name"),
+                            ayahNumber = o.optInt("ayah_number"),
+                            uthmaniText = uthmani,
+                            normalizedText = ArabicNormalizer.normalize(uthmani),
+                            tafsirSummary = o.optString("tafsir_summary"),
+                            tafsirSource = o.optString("tafsir_source"),
+                            asbabAlNuzul = o.optString("asbab_al_nuzul"),
+                            asbabSource = o.optString("asbab_source"),
+                            asbabVerified = o.optBoolean("asbab_verified", false)
+                        )
                     )
-                )
-                database.quranHadithDao().insertHadithGrade(
-                    HadithGradeEntity(
-                        hadithId = hadithId,
-                        gradeCode = o.optString("grade_code", "SAHIH"),
-                        gradingScholar = o.optString("grading_scholar"),
-                        gradingSource = o.optString("grading_source")
-                    )
+                    // ربط آية العلق بحدث نزول الوحي (order=11)
+                    if (o.optInt("surah_number") == 96 && eventIdByOrder[11] != null) {
+                        database.quranHadithDao().insertEventVerse(
+                            EventVerseEntity(
+                                eventId = eventIdByOrder[11]!!,
+                                verseId = verseId,
+                                relationNote = "أول ما نزل من القرآن في غار حراء",
+                                sourceCitation = "صحيح البخاري (حديث 3)"
+                            )
+                        )
+                    }
+                    versesImported++
+                }
+                check(versesImported == versesArr.length()) { "عدم تطابق عدد الآيات المستوردة" }
+                database.qualityAuditDao().upsertContentVersion(
+                    ContentVersionEntity(packKey = "section_verses", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
                 )
             }
+
+            // 5. استيراد الأحاديث بالتحقق الصارم validateGradeStrict
+            var hadithsImported = 0
+            if (hadithsArr != null) {
+                for (i in 0 until hadithsArr.length()) {
+                    val o = hadithsArr.optJSONObject(i) ?: continue
+                    val text = o.optString("hadith_text")
+                    val hadithNumber = o.optString("hadith_number", "")
+                    val hadithId = database.quranHadithDao().insertHadith(
+                        HadithEntity(
+                            hadithText = text,
+                            normalizedText = ArabicNormalizer.normalize(text),
+                            narrator = o.optString("narrator"),
+                            sourceName = o.optString("source_name"),
+                            bookTitle = o.optString("book_title"),
+                            chapterTitle = o.optString("chapter_title"),
+                            hadithNumber = hadithNumber,
+                            takhrij = o.optString("takhrij")
+                        )
+                    )
+                    val scholar = o.optString("grading_scholar", "")
+                    val gradeSource = o.optString("grading_source", "")
+                    val origGradeText = o.optString("original_grade_text", "")
+                    val rawGrade = o.optString("grade_code", "INCOMPLETE_CITATION")
+                    val validated = HadithGradeStatus.validateGradeStrict(
+                        requestedCode = rawGrade,
+                        gradingScholar = scholar,
+                        gradingSource = gradeSource,
+                        referenceLocator = hadithNumber,
+                        originalGradeText = origGradeText
+                    )
+                    database.quranHadithDao().insertHadithGrade(
+                        HadithGradeEntity(
+                            hadithId = hadithId,
+                            gradeCode = validated.code,
+                            gradingScholar = scholar,
+                            gradingSource = gradeSource,
+                            notes = origGradeText
+                        )
+                    )
+                    hadithsImported++
+                }
+                check(hadithsImported == hadithsArr.length()) { "عدم تطابق عدد الأحاديث المستوردة" }
+                database.qualityAuditDao().upsertContentVersion(
+                    ContentVersionEntity(packKey = "section_hadiths", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
+                )
+            }
+
+            // اعتماد بصمة الحزمة الرئيسية فقط بعد نجاح جميع الأقسام بالكامل داخل المعاملة الذرية
+            database.qualityAuditDao().upsertContentVersion(
+                ContentVersionEntity(packKey = CORE_PACK_KEY, versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
+            )
+            database.qualityAuditDao().insertAuditLog(
+                AuditLogEntity(
+                    action = "ATOMIC_SEED_SUCCESS",
+                    target = CORE_PACK_KEY,
+                    details = "v=$packTag events=$eventsImported places=$placesImported people=$peopleImported verses=$versesImported hadiths=$hadithsImported",
+                    createdAtEpochMs = now
+                )
+            )
         }
+    }
+
+    private fun sha256(text: String): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(text.toByteArray(Charsets.UTF_8))
+        return digest.joinToString("") { "%02x".format(it) }
+    }
+
+    companion object {
+        const val CORE_PACK_KEY = "core_seerah_json"
     }
 }

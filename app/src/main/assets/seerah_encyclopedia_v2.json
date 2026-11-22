@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "3.0.0-alpha.3",
   "events": [
     {
       "chronological_order": 1,
@@ -13,7 +13,13 @@
       "cause_text": "",
       "outcome_text": "قال ﷺ: «إن الله اصطفى كنانة من ولد إسماعيل، واصطفى قريشًا من كنانة، واصطفى من قريش بني هاشم، واصطفاني من بني هاشم».",
       "map_id": "makkah",
-      "source_citation": "صحيح مسلم (حديث 2276)؛ سيرة ابن هشام"
+      "source_citation": "صحيح مسلم (حديث 2276)؛ سيرة ابن هشام",
+      "stable_id": "ev_001",
+      "start_date_hijri": "قبل البعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح مسلم (حديث 2276)؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 2,
@@ -27,7 +33,13 @@
       "cause_text": "",
       "outcome_text": "استقرار سقاية الحاج لبني هاشم ونجاة عبد الله والد النبي ﷺ.",
       "map_id": "makkah",
-      "source_citation": "سيرة ابن هشام؛ البداية والنهاية"
+      "source_citation": "سيرة ابن هشام؛ البداية والنهاية",
+      "stable_id": "ev_002",
+      "start_date_hijri": "قبل عام الفيل",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ البداية والنهاية",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 3,
@@ -41,7 +53,13 @@
       "cause_text": "رغبة أبرهة في صرف العرب عن الحج إلى الكعبة نحو القُلّيس بصنعاء.",
       "outcome_text": "تعظيم شأن البيت الحرام وتمهيد لمولد النبي ﷺ في ذلك العام.",
       "map_id": "makkah",
-      "source_citation": "سورة الفيل؛ سيرة ابن هشام"
+      "source_citation": "سورة الفيل؛ سيرة ابن هشام",
+      "stable_id": "ev_003",
+      "start_date_hijri": "محرم عام الفيل",
+      "end_date_hijri": "",
+      "date_certainty": "DISPUTED",
+      "date_source": "سورة الفيل؛ سيرة ابن هشام",
+      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر."
     },
     {
       "chronological_order": 4,
@@ -55,7 +73,13 @@
       "cause_text": "",
       "outcome_text": "فرح جده عبد المطلب وأرضعته ثويبة مولاة أبي لهب ثم دُفع إلى حليمة السعدية.",
       "map_id": "makkah",
-      "source_citation": "صحيح مسلم (حديث 1162 في يوم الاثنين)؛ الرحيق المختوم"
+      "source_citation": "صحيح مسلم (حديث 1162 في يوم الاثنين)؛ الرحيق المختوم",
+      "stable_id": "ev_004",
+      "start_date_hijri": "الاثنين من ربيع الأول عام الفيل",
+      "end_date_hijri": "",
+      "date_certainty": "DISPUTED",
+      "date_source": "صحيح مسلم (حديث 1162 في يوم الاثنين)؛ الرحيق المختوم",
+      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر."
     },
     {
       "chronological_order": 5,
@@ -69,7 +93,13 @@
       "cause_text": "",
       "outcome_text": "فصاحة اللسان وقوة البنية وتطهير قلبه الشريف وتهيئته للنبوة.",
       "map_id": "arabia",
-      "source_citation": "صحيح مسلم (حديث 162)؛ سيرة ابن هشام"
+      "source_citation": "صحيح مسلم (حديث 162)؛ سيرة ابن هشام",
+      "stable_id": "ev_005",
+      "start_date_hijri": "السنة 1–4 من عمره ﷺ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح مسلم (حديث 162)؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 6,
@@ -83,7 +113,13 @@
       "cause_text": "",
       "outcome_text": "تربية إلهية خاصة على الاعتماد على الله والشعور باليتامى والمستضعفين.",
       "map_id": "arabia",
-      "source_citation": "سيرة ابن هشام؛ الطبقات الكبرى لابن سعد"
+      "source_citation": "سيرة ابن هشام؛ الطبقات الكبرى لابن سعد",
+      "stable_id": "ev_006",
+      "start_date_hijri": "السنة 6–8 من عمره ﷺ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ الطبقات الكبرى لابن سعد",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 7,
@@ -97,7 +133,13 @@
       "cause_text": "",
       "outcome_text": "التدرب على الصبر وحسن الرعاية والتواضع كما هي سنة الأنبياء.",
       "map_id": "arabia",
-      "source_citation": "صحيح البخاري (حديث 2262)؛ سيرة ابن هشام"
+      "source_citation": "صحيح البخاري (حديث 2262)؛ سيرة ابن هشام",
+      "stable_id": "ev_007",
+      "start_date_hijri": "السنة 12 من عمره ﷺ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 2262)؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 8,
@@ -111,7 +153,13 @@
       "cause_text": "ظلم العاص بن وائل لرجل من زبيد في ثمن بضاعته.",
       "outcome_text": "قال ﷺ بعد الإسلام: «لقد شهدت في دار عبد الله بن جدعان حلفًا ما أحب أن لي به حمر النعم، ولو أُدعى به في الإسلام لأجبت».",
       "map_id": "makkah",
-      "source_citation": "سيرة ابن هشام؛ مسند أحمد"
+      "source_citation": "سيرة ابن هشام؛ مسند أحمد",
+      "stable_id": "ev_008",
+      "start_date_hijri": "عمر 20 سنة تقريبًا",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ مسند أحمد",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 9,
@@ -125,7 +173,13 @@
       "cause_text": "",
       "outcome_text": "تأسيس بيت النبوة المبارك الذي كان السند الأول للدعوة.",
       "map_id": "makkah",
-      "source_citation": "صحيح البخاري؛ سيرة ابن هشام"
+      "source_citation": "صحيح البخاري؛ سيرة ابن هشام",
+      "stable_id": "ev_009",
+      "start_date_hijri": "عمر 25 سنة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 10,
@@ -139,7 +193,13 @@
       "cause_text": "تصدّع جدران الكعبة بسبب السيل.",
       "outcome_text": "حقن دماء قريش وتأكيد مكانته ﷺ كأمين مكة قبل البعثة.",
       "map_id": "makkah",
-      "source_citation": "سيرة ابن هشام؛ مسند أحمد"
+      "source_citation": "سيرة ابن هشام؛ مسند أحمد",
+      "stable_id": "ev_010",
+      "start_date_hijri": "عمر 35 سنة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ مسند أحمد",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 11,
@@ -153,7 +213,13 @@
       "cause_text": "",
       "outcome_text": "بداية النبوة، وتثبيت خديجة له وشهادة ورقة بن نوفل أنه الناموس الذي أُنزل على موسى.",
       "map_id": "makkah",
-      "source_citation": "صحيح البخاري (حديث 3)؛ صحيح مسلم (حديث 160)"
+      "source_citation": "صحيح البخاري (حديث 3)؛ صحيح مسلم (حديث 160)",
+      "stable_id": "ev_011",
+      "start_date_hijri": "رمضان (13 ق.هـ)",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 3)؛ صحيح مسلم (حديث 160)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 12,
@@ -167,7 +233,13 @@
       "cause_text": "",
       "outcome_text": "الانتقال من النبوة إلى الرسالة والتبليغ المنظم.",
       "map_id": "makkah",
-      "source_citation": "صحيح البخاري (حديث 4)"
+      "source_citation": "صحيح البخاري (حديث 4)",
+      "stable_id": "ev_012",
+      "start_date_hijri": "السنة 1 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 4)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 13,
@@ -181,7 +253,13 @@
       "cause_text": "حماية النواة الأولى للدعوة من بطش قريش المبكر.",
       "outcome_text": "تكوين الجيل الأول المتماسك على العقيدة والقرآن.",
       "map_id": "makkah",
-      "source_citation": "سيرة ابن هشام؛ السيرة النبوية الصحيحة"
+      "source_citation": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
+      "stable_id": "ev_013",
+      "start_date_hijri": "السنة 1–3 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 14,
@@ -195,7 +273,13 @@
       "cause_text": "",
       "outcome_text": "أول مدرسة تربوية منظمة في تاريخ الإسلام.",
       "map_id": "makkah",
-      "source_citation": "الطبقات الكبرى لابن سعد؛ الرحيق المختوم"
+      "source_citation": "الطبقات الكبرى لابن سعد؛ الرحيق المختوم",
+      "stable_id": "ev_014",
+      "start_date_hijri": "السنة 3–5 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "الطبقات الكبرى لابن سعد؛ الرحيق المختوم",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 15,
@@ -209,7 +293,13 @@
       "cause_text": "",
       "outcome_text": "إعلان الدعوة علانية وبداية مواجهة قريش للمؤمنين.",
       "map_id": "makkah",
-      "source_citation": "صحيح البخاري (حديث 4770)"
+      "source_citation": "صحيح البخاري (حديث 4770)",
+      "stable_id": "ev_015",
+      "start_date_hijri": "السنة 4 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 4770)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 16,
@@ -223,38 +313,16 @@
       "cause_text": "خوف زعماء قريش على مكانتهم وأصنامهم.",
       "outcome_text": "ضرب أروع الأمثلة في الثبات على العقيدة وشراء أبي بكر لبلال وإعتاقه.",
       "map_id": "makkah",
-      "source_citation": "صحيح البخاري؛ سيرة ابن هشام"
+      "source_citation": "صحيح البخاري؛ سيرة ابن هشام",
+      "stable_id": "ev_016",
+      "start_date_hijri": "السنة 4–6 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 17,
-      "title": "إسلام حمزة بن عبد المطلب وعمر بن الخطاب",
-      "stage_code": "PUBLIC_DAWAH",
-      "event_type": "GENERAL",
-      "hijri_date": "السنة 6 للبعثة",
-      "gregorian_date": "616م",
-      "date_disputed": false,
-      "short_summary": "أسلم حمزة بن عبد المطلب نصرة للنبي ﷺ بعد أذى أبي جهل، ثم استجاب الله دعاء النبي ﷺ فأسلم عمر بن الخطاب بعد سماعه أوائل سورة طه.",
-      "cause_text": "",
-      "outcome_text": "عزّ الإسلام بإسلامهما وصلّى المسلمون عند الكعبة جهرًا.",
-      "map_id": "makkah",
-      "source_citation": "صحيح البخاري (حديث 3863)؛ سيرة ابن هشام"
-    },
-    {
-      "chronological_order": 18,
-      "title": "حصار شعب أبي طالب ونقض الصحيفة",
-      "stage_code": "PUBLIC_DAWAH",
-      "event_type": "GENERAL",
-      "hijri_date": "السنة 7–10 للبعثة",
-      "gregorian_date": "617–619م",
-      "date_disputed": false,
-      "short_summary": "كتبت قريش صحيفة مقاطعة لبني هاشم وبني المطلب وحاصرتهم في الشعب ثلاث سنوات حتى أكلوا ورق الشجر، ثم أكلت الأرضة الصحيفة وقام نفر من قريش بنقضها.",
-      "cause_text": "رفض أبي طالب وبني هاشم تسليم النبي ﷺ لقريش.",
-      "outcome_text": "ثبات النبي ﷺ ومن معه وفشل الحصار الاقتصادي والاجتماعي.",
-      "map_id": "makkah",
-      "source_citation": "صحيح البخاري (حديث 1590)؛ سيرة ابن هشام"
-    },
-    {
-      "chronological_order": 19,
       "title": "الهجرة الأولى إلى الحبشة",
       "stage_code": "ABYSSINIA_MIGRATION",
       "event_type": "GENERAL",
@@ -265,10 +333,16 @@
       "cause_text": "اشتداد أذى قريش وتعذيبها للمسلمين بمكة.",
       "outcome_text": "فتح أول ملاذ آمن للمسلمين خارج الجزيرة العربية.",
       "map_id": "arabia",
-      "source_citation": "سيرة ابن هشام؛ السيرة النبوية الصحيحة"
+      "source_citation": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
+      "stable_id": "ev_017",
+      "start_date_hijri": "رجب السنة 5 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
+      "alternative_date_opinions": ""
     },
     {
-      "chronological_order": 20,
+      "chronological_order": 18,
       "title": "الهجرة الثانية وموقف جعفر أمام النجاشي",
       "stage_code": "ABYSSINIA_MIGRATION",
       "event_type": "GENERAL",
@@ -279,7 +353,53 @@
       "cause_text": "",
       "outcome_text": "أمان المسلمين بالحبشة وإسلام النجاشي لاحقًا.",
       "map_id": "arabia",
-      "source_citation": "مسند أحمد؛ سيرة ابن هشام"
+      "source_citation": "مسند أحمد؛ سيرة ابن هشام",
+      "stable_id": "ev_018",
+      "start_date_hijri": "السنة 5–6 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "مسند أحمد؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
+    },
+    {
+      "chronological_order": 19,
+      "title": "إسلام حمزة بن عبد المطلب وعمر بن الخطاب",
+      "stage_code": "PUBLIC_DAWAH",
+      "event_type": "GENERAL",
+      "hijri_date": "السنة 6 للبعثة",
+      "gregorian_date": "616م",
+      "date_disputed": false,
+      "short_summary": "أسلم حمزة بن عبد المطلب نصرة للنبي ﷺ بعد أذى أبي جهل، ثم استجاب الله دعاء النبي ﷺ فأسلم عمر بن الخطاب بعد سماعه أوائل سورة طه.",
+      "cause_text": "",
+      "outcome_text": "عزّ الإسلام بإسلامهما وصلّى المسلمون عند الكعبة جهرًا.",
+      "map_id": "makkah",
+      "source_citation": "صحيح البخاري (حديث 3863)؛ سيرة ابن هشام",
+      "stable_id": "ev_019",
+      "start_date_hijri": "السنة 6 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 3863)؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
+    },
+    {
+      "chronological_order": 20,
+      "title": "حصار شعب أبي طالب ونقض الصحيفة",
+      "stage_code": "PUBLIC_DAWAH",
+      "event_type": "GENERAL",
+      "hijri_date": "السنة 7–10 للبعثة",
+      "gregorian_date": "617–619م",
+      "date_disputed": false,
+      "short_summary": "كتبت قريش صحيفة مقاطعة لبني هاشم وبني المطلب وحاصرتهم في الشعب ثلاث سنوات حتى أكلوا ورق الشجر، ثم أكلت الأرضة الصحيفة وقام نفر من قريش بنقضها.",
+      "cause_text": "رفض أبي طالب وبني هاشم تسليم النبي ﷺ لقريش.",
+      "outcome_text": "ثبات النبي ﷺ ومن معه وفشل الحصار الاقتصادي والاجتماعي.",
+      "map_id": "makkah",
+      "source_citation": "صحيح البخاري (حديث 1590)؛ سيرة ابن هشام",
+      "stable_id": "ev_020",
+      "start_date_hijri": "السنة 7–10 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 1590)؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 21,
@@ -293,7 +413,13 @@
       "cause_text": "",
       "outcome_text": "فقدان السند الداخلي والخارجي في مكة والبحث عن أرض جديدة للدعوة.",
       "map_id": "makkah",
-      "source_citation": "صحيح البخاري؛ سيرة ابن هشام"
+      "source_citation": "صحيح البخاري؛ سيرة ابن هشام",
+      "stable_id": "ev_021",
+      "start_date_hijri": "السنة 10 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 22,
@@ -307,7 +433,13 @@
       "cause_text": "البحث عن نصير للدعوة بعد اشتداد أذى قريش.",
       "outcome_text": "إيمان نفر من الجن (سورة الأحقاف) وتجديد الأمل بأن يخرج الله من أصلابهم من يعبده.",
       "map_id": "arabia",
-      "source_citation": "صحيح البخاري (حديث 3231)؛ سيرة ابن هشام"
+      "source_citation": "صحيح البخاري (حديث 3231)؛ سيرة ابن هشام",
+      "stable_id": "ev_022",
+      "start_date_hijri": "شوال السنة 10 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 3231)؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 23,
@@ -321,7 +453,13 @@
       "cause_text": "",
       "outcome_text": "تثبيت فؤاد النبي ﷺ وربط المسجد الحرام بالمسجد الأقصى وفرض عمود الدين (الصلاة).",
       "map_id": "makkah",
-      "source_citation": "سورة الإسراء؛ صحيح البخاري (حديث 3887)"
+      "source_citation": "سورة الإسراء؛ صحيح البخاري (حديث 3887)",
+      "stable_id": "ev_023",
+      "start_date_hijri": "قبل الهجرة",
+      "end_date_hijri": "",
+      "date_certainty": "DISPUTED",
+      "date_source": "سورة الإسراء؛ صحيح البخاري (حديث 3887)",
+      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر."
     },
     {
       "chronological_order": 24,
@@ -335,7 +473,13 @@
       "cause_text": "عرض النبي ﷺ دعوته على القبائل في مواسم الحج.",
       "outcome_text": "انتشار الإسلام في بيوت يثرب وإسلام سعد بن معاذ وأسيد بن حضير.",
       "map_id": "makkah",
-      "source_citation": "صحيح البخاري (حديث 18، 3892)"
+      "source_citation": "صحيح البخاري (حديث 18، 3892)",
+      "stable_id": "ev_024",
+      "start_date_hijri": "ذو الحجة السنة 12 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 18، 3892)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 25,
@@ -349,7 +493,13 @@
       "cause_text": "",
       "outcome_text": "تهيئة دار الهجرة وإعلان الإذن بهجرة المسلمين إلى المدينة.",
       "map_id": "makkah",
-      "source_citation": "سيرة ابن هشام؛ مسند أحمد"
+      "source_citation": "سيرة ابن هشام؛ مسند أحمد",
+      "stable_id": "ev_025",
+      "start_date_hijri": "ذو الحجة السنة 13 للبعثة",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ مسند أحمد",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 26,
@@ -363,7 +513,13 @@
       "cause_text": "",
       "outcome_text": "إفشال مؤامرة قريش وبدء رحلة الهجرة الخالدة.",
       "map_id": "makkah",
-      "source_citation": "سورة الأنفال 30؛ صحيح البخاري (حديث 3905)"
+      "source_citation": "سورة الأنفال 30؛ صحيح البخاري (حديث 3905)",
+      "stable_id": "ev_026",
+      "start_date_hijri": "صفر 1 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة الأنفال 30؛ صحيح البخاري (حديث 3905)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 27,
@@ -377,7 +533,13 @@
       "cause_text": "",
       "outcome_text": "عناية الله بنبيه: «لا تحزن إن الله معنا» (سورة التوبة 40).",
       "map_id": "hijra",
-      "source_citation": "صحيح البخاري (حديث 3653، 3906)"
+      "source_citation": "صحيح البخاري (حديث 3653، 3906)",
+      "stable_id": "ev_027",
+      "start_date_hijri": "ربيع الأول 1 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 3653، 3906)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 28,
@@ -391,7 +553,13 @@
       "cause_text": "",
       "outcome_text": "قيام دولة الإسلام في المدينة المنورة وبداية التأريخ الهجري.",
       "map_id": "madinah",
-      "source_citation": "صحيح البخاري (حديث 3906)؛ سيرة ابن هشام"
+      "source_citation": "صحيح البخاري (حديث 3906)؛ سيرة ابن هشام",
+      "stable_id": "ev_028",
+      "start_date_hijri": "12 ربيع الأول 1 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 3906)؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 29,
@@ -405,7 +573,13 @@
       "cause_text": "",
       "outcome_text": "إقامة المركز الديني والسياسي والاجتماعي للأمة في المدينة.",
       "map_id": "madinah",
-      "source_citation": "صحيح البخاري (حديث 3906)؛ سنن أبي داود"
+      "source_citation": "صحيح البخاري (حديث 3906)؛ سنن أبي داود",
+      "stable_id": "ev_029",
+      "start_date_hijri": "السنة 1 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 3906)؛ سنن أبي داود",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 30,
@@ -419,7 +593,13 @@
       "cause_text": "",
       "outcome_text": "تحقيق التكافل الاجتماعي والوحدة الداخلية والاستقلال التشريعي للأمة.",
       "map_id": "madinah",
-      "source_citation": "صحيح البخاري (حديث 399، 3937)؛ سيرة ابن هشام"
+      "source_citation": "صحيح البخاري (حديث 399، 3937)؛ سيرة ابن هشام",
+      "stable_id": "ev_030",
+      "start_date_hijri": "السنة 1–2 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 399، 3937)؛ سيرة ابن هشام",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 31,
@@ -433,7 +613,13 @@
       "cause_text": "تأمين طرق المدينة والرد على مصادرة قريش لأموال المهاجرين.",
       "outcome_text": "إثبات وجود الدولة الناشئة واستطلاع تحركات قريش.",
       "map_id": "arabia",
-      "source_citation": "سيرة ابن هشام؛ السيرة النبوية الصحيحة"
+      "source_citation": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
+      "stable_id": "ev_031",
+      "start_date_hijri": "السنة 1–2 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 32,
@@ -447,7 +633,13 @@
       "cause_text": "استرداد حقوق المهاجرين المسلوبة وإصرار قريش على القتال بقيادة أبي جهل.",
       "outcome_text": "مقتل صناديد قريش وإعزاز الإسلام وارتفاع هيبة المدينة في الجزيرة العربية.",
       "map_id": "badr",
-      "source_citation": "سورة الأنفال؛ صحيح البخاري (كتاب المغازي)"
+      "source_citation": "سورة الأنفال؛ صحيح البخاري (كتاب المغازي)",
+      "stable_id": "ev_032",
+      "start_date_hijri": "17 رمضان 2 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة الأنفال؛ صحيح البخاري (كتاب المغازي)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 33,
@@ -461,7 +653,13 @@
       "cause_text": "نقض العهد والاعتداء على الأعراض والدماء في سوق المدينة.",
       "outcome_text": "تأمين الجبهة الداخلية للمدينة المنورة.",
       "map_id": "madinah",
-      "source_citation": "سيرة ابن هشام؛ صحيح مسلم (حديث 1765)"
+      "source_citation": "سيرة ابن هشام؛ صحيح مسلم (حديث 1765)",
+      "stable_id": "ev_033",
+      "start_date_hijri": "شوال 2 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سيرة ابن هشام؛ صحيح مسلم (حديث 1765)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 34,
@@ -475,7 +673,13 @@
       "cause_text": "رغبة قريش في الثأر لهزيمتها في بدر.",
       "outcome_text": "دروس عظيمة في وجوب طاعة أمر النبي ﷺ والثبات، ثم خروج النبي ﷺ في اليوم التالي إلى حمراء الأسد لإظهار القوة.",
       "map_id": "uhud",
-      "source_citation": "سورة آل عمران؛ صحيح البخاري (حديث 4043)"
+      "source_citation": "سورة آل عمران؛ صحيح البخاري (حديث 4043)",
+      "stable_id": "ev_034",
+      "start_date_hijri": "شوال 3 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة آل عمران؛ صحيح البخاري (حديث 4043)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 35,
@@ -489,7 +693,13 @@
       "cause_text": "الغدر ومحاولة اغتيال النبي ﷺ ونقض صحيفة المدينة.",
       "outcome_text": "تصفية خطر داخلي كبير وتنظيم أحكام الفيء.",
       "map_id": "madinah",
-      "source_citation": "سورة الحشر؛ صحيح البخاري (حديث 4028)"
+      "source_citation": "سورة الحشر؛ صحيح البخاري (حديث 4028)",
+      "stable_id": "ev_035",
+      "start_date_hijri": "ربيع الأول 4 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة الحشر؛ صحيح البخاري (حديث 4028)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 36,
@@ -503,7 +713,13 @@
       "cause_text": "تحالف الأحزاب لاستئصال دولة الإسلام في المدينة.",
       "outcome_text": "قال ﷺ: «الآن نغزوهم ولا يغزوننا»، وتحوّل موازين القوى لصالح المسلمين.",
       "map_id": "khandaq",
-      "source_citation": "سورة الأحزاب؛ صحيح البخاري (حديث 4103، 4121)"
+      "source_citation": "سورة الأحزاب؛ صحيح البخاري (حديث 4103، 4121)",
+      "stable_id": "ev_036",
+      "start_date_hijri": "شوال 5 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة الأحزاب؛ صحيح البخاري (حديث 4103، 4121)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 37,
@@ -517,7 +733,13 @@
       "cause_text": "رغبة المسلمين في أداء العمرة وفتح المجال السلمي للدعوة.",
       "outcome_text": "أمن الناس واختلطوا فدخل في الإسلام خلال سنتين أكثر ممن دخل قبلهما.",
       "map_id": "hudaybiyyah",
-      "source_citation": "سورة الفتح؛ صحيح البخاري (حديث 2731)"
+      "source_citation": "سورة الفتح؛ صحيح البخاري (حديث 2731)",
+      "stable_id": "ev_037",
+      "start_date_hijri": "ذو القعدة 6 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة الفتح؛ صحيح البخاري (حديث 2731)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 38,
@@ -531,7 +753,13 @@
       "cause_text": "عالمية الرسالة الإسلامية واغتنام هدنة الحديبية.",
       "outcome_text": "إبلاغ دعوة الإسلام إلى قادة العالم آنذاك.",
       "map_id": "arabia",
-      "source_citation": "صحيح البخاري (حديث 7، 2940)"
+      "source_citation": "صحيح البخاري (حديث 7، 2940)",
+      "stable_id": "ev_038",
+      "start_date_hijri": "أواخر 6 هـ – 7 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 7، 2940)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 39,
@@ -545,7 +773,13 @@
       "cause_text": "إزالة مركز التآمر العسكري شمال المدينة وتنفيذ بند صلح الحديبية.",
       "outcome_text": "استقرار الوضع الأمني والاقتصادي وعودة مهاجري الحبشة.",
       "map_id": "khaybar",
-      "source_citation": "صحيح البخاري (حديث 4210، 4251)"
+      "source_citation": "صحيح البخاري (حديث 4210، 4251)",
+      "stable_id": "ev_039",
+      "start_date_hijri": "محرم وذو القعدة 7 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 4210، 4251)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 40,
@@ -559,7 +793,13 @@
       "cause_text": "قتل شرحبيل بن عمرو الغساني لرسول النبي ﷺ الحارث بن عمير الأزدي.",
       "outcome_text": "كسر هيبة القوى العظمى وإظهار شجاعة الصحابة وبراعة خالد العسكرية.",
       "map_id": "arabia",
-      "source_citation": "صحيح البخاري (حديث 4261–4266)"
+      "source_citation": "صحيح البخاري (حديث 4261–4266)",
+      "stable_id": "ev_040",
+      "start_date_hijri": "جمادى الأولى 8 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 4261–4266)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 41,
@@ -573,7 +813,13 @@
       "cause_text": "نقض قريش عهد الحديبية والغدر بحلفاء المسلمين.",
       "outcome_text": "الفتح المبين وسقوط الشرك في مكة ودخول العرب في دين الله أفواجًا.",
       "map_id": "makkah",
-      "source_citation": "صحيح البخاري (حديث 4276–4280)"
+      "source_citation": "صحيح البخاري (حديث 4276–4280)",
+      "stable_id": "ev_041",
+      "start_date_hijri": "20 رمضان 8 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 4276–4280)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 42,
@@ -587,7 +833,13 @@
       "cause_text": "حشد هوازن وثقيف لمهاجمة المسلمين بعد فتح مكة.",
       "outcome_text": "درس عميق في أن النصر من عند الله لا بالكثرة (سورة التوبة 25)، وإسلام هوازن ثم ثقيف لاحقًا.",
       "map_id": "hunayn_taif",
-      "source_citation": "سورة التوبة 25–26؛ صحيح البخاري (حديث 4314)"
+      "source_citation": "سورة التوبة 25–26؛ صحيح البخاري (حديث 4314)",
+      "stable_id": "ev_042",
+      "start_date_hijri": "شوال 8 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة التوبة 25–26؛ صحيح البخاري (حديث 4314)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 43,
@@ -601,7 +853,13 @@
       "cause_text": "أنباء تحرك الروم نحو حدود الجزيرة العربية.",
       "outcome_text": "بسط نفوذ الإسلام حتى تخوم الشام وبراءة الثلاثة الذين خُلّفوا (سورة التوبة).",
       "map_id": "tabuk",
-      "source_citation": "سورة التوبة؛ صحيح البخاري (حديث 4418)"
+      "source_citation": "سورة التوبة؛ صحيح البخاري (حديث 4418)",
+      "stable_id": "ev_043",
+      "start_date_hijri": "رجب 9 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة التوبة؛ صحيح البخاري (حديث 4418)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 44,
@@ -615,7 +873,13 @@
       "cause_text": "",
       "outcome_text": "دخول الجزيرة العربية في الإسلام وتثبيت أركان الدولة والدعوة.",
       "map_id": "madinah",
-      "source_citation": "سورة النصر؛ صحيح البخاري (حديث 4368–4395)"
+      "source_citation": "سورة النصر؛ صحيح البخاري (حديث 4368–4395)",
+      "stable_id": "ev_044",
+      "start_date_hijri": "السنة 9–10 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "سورة النصر؛ صحيح البخاري (حديث 4368–4395)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 45,
@@ -629,7 +893,13 @@
       "cause_text": "",
       "outcome_text": "إتمام النعمة وإكمال الدين وتبليغ الأمانة للأمة.",
       "map_id": "makkah",
-      "source_citation": "صحيح مسلم (حديث 1218)؛ صحيح البخاري (حديث 4406)"
+      "source_citation": "صحيح مسلم (حديث 1218)؛ صحيح البخاري (حديث 4406)",
+      "stable_id": "ev_045",
+      "start_date_hijri": "ذو الحجة 10 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح مسلم (حديث 1218)؛ صحيح البخاري (حديث 4406)",
+      "alternative_date_opinions": ""
     },
     {
       "chronological_order": 46,
@@ -643,7 +913,13 @@
       "cause_text": "",
       "outcome_text": "انتقاله ﷺ إلى الرفيق الأعلى بعد أن أدّى الأمانة وترك الأمة على المحجة البيضاء.",
       "map_id": "madinah",
-      "source_citation": "صحيح البخاري (حديث 4440–4463)"
+      "source_citation": "صحيح البخاري (حديث 4440–4463)",
+      "stable_id": "ev_046",
+      "start_date_hijri": "الاثنين 12 ربيع الأول 11 هـ",
+      "end_date_hijri": "",
+      "date_certainty": "PROBABLE",
+      "date_source": "صحيح البخاري (حديث 4440–4463)",
+      "alternative_date_opinions": ""
     }
   ],
   "places": [
@@ -652,187 +928,323 @@
       "historical_name": "بكة / أم القرى",
       "description": "مهبط الوحي ومولد النبي ﷺ وموضع الكعبة المشرفة.",
       "historical_significance": "شهدت العهد المكي كاملًا والفتح الأعظم.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "makkah",
       "latitude": 21.4225,
       "longitude": 39.8262,
-      "source_citation": "القرآن الكريم؛ أخبار مكة للأزرقي"
+      "source_citation": "القرآن الكريم؛ أخبار مكة للأزرقي",
+      "stable_id": "pl_001",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "القرآن الكريم؛ أخبار مكة للأزرقي",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "مركز نطاق المسجد الحرام التقريبي (يحتاج مرجع مسح تاريخي لحدود مكة القديمة)",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "غار حراء",
       "historical_name": "جبل النور",
       "description": "الغار الذي تحنّث فيه النبي ﷺ ونزل فيه الوحي لأول مرة.",
       "historical_significance": "بداية نزول سورة العلق.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "makkah",
       "latitude": 21.4575,
       "longitude": 39.8594,
-      "source_citation": "صحيح البخاري (حديث 3)"
+      "source_citation": "صحيح البخاري (حديث 3)",
+      "stable_id": "pl_002",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "PROBABLE",
+      "historical_description_source": "صحيح البخاري (حديث 3)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "إحداثيات تقريبية لجبل النور — لم تُراجع بعد مقابل مسح ميداني موثق",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "شعب أبي طالب",
       "historical_name": "شعب بني هاشم بمكة",
       "description": "الموضع الذي حوصر فيه النبي ﷺ وبنو هاشم ثلاث سنوات.",
       "historical_significance": "شاهد على الصبر والثبات في الدعوة.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "DISPUTED",
       "map_id": "makkah",
       "latitude": 21.4258,
       "longitude": 39.8295,
-      "source_citation": "صحيح البخاري؛ سيرة ابن هشام"
+      "source_citation": "صحيح البخاري؛ سيرة ابن هشام",
+      "stable_id": "pl_003",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "PROBABLE",
+      "historical_description_source": "صحيح البخاري؛ سيرة ابن هشام",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "تغيّرت معالم الشعب عمرانيًا وتوجد اختلافات في تعيين حدوده الدقيقة",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "الطائف",
       "historical_name": "وجّ / الطائف",
       "description": "مدينة جبلية شرق مكة خرج إليها النبي ﷺ يدعو ثقيفًا في السنة 10 للبعثة ثم حاصرها سنة 8 هـ.",
       "historical_significance": "شهدت دعاء المستضعفين ثم إسلام ثقيف سنة 9 هـ.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "hunayn_taif",
       "latitude": 21.2703,
       "longitude": 40.4158,
-      "source_citation": "صحيح البخاري (حديث 3231)"
+      "source_citation": "صحيح البخاري (حديث 3231)",
+      "stable_id": "pl_004",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "صحيح البخاري (حديث 3231)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "مركز مدينة الطائف العام — موضع الحصار وبستان ابني ربيعة غير محدد بإحداثية مؤكدة",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "غار ثور",
       "historical_name": "جبل ثور جنوب مكة",
       "description": "الغار الذي أوى إليه النبي ﷺ وأبو بكر ثلاث ليالٍ في الهجرة.",
       "historical_significance": "ذكره الله في سورة التوبة آية 40.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "hijra",
       "latitude": 21.3771,
       "longitude": 39.8498,
-      "source_citation": "صحيح البخاري (حديث 3653)"
+      "source_citation": "صحيح البخاري (حديث 3653)",
+      "stable_id": "pl_005",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "PROBABLE",
+      "historical_description_source": "صحيح البخاري (حديث 3653)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "إحداثيات تقريبية لجبل ثور — لم تُراجع بعد مقابل مسح ميداني موثق",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "الأبواء",
       "historical_name": "ودّان / الأبواء",
       "description": "موضع بين مكة والمدينة توفيت ودُفنت فيه آمنة بنت وهب أم النبي ﷺ.",
       "historical_significance": "شهد أولى الغزوات (غزوة الأبواء) سنة 2 هـ.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "arabia",
       "latitude": 23.103,
       "longitude": 39.092,
-      "source_citation": "سيرة ابن هشام؛ معجم البلدان"
+      "source_citation": "سيرة ابن هشام؛ معجم البلدان",
+      "stable_id": "pl_006",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "PROBABLE",
+      "historical_description_source": "سيرة ابن هشام؛ معجم البلدان",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "نطاق وادي الأبواء — موضع قبر آمنة بنت وهب غير مؤكد بإحداثية قطعية",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "قباء",
       "historical_name": "قباء جنوب المدينة",
       "description": "أول موضع نزل به النبي ﷺ مهاجرًا وبنى فيه مسجد قباء.",
       "historical_significance": "أول مسجد أُسس على التقوى.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "madinah",
       "latitude": 24.4392,
       "longitude": 39.6173,
-      "source_citation": "صحيح البخاري (حديث 3906)"
+      "source_citation": "صحيح البخاري (حديث 3906)",
+      "stable_id": "pl_007",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "صحيح البخاري (حديث 3906)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "نطاق مسجد قباء المعروف جغرافيًا — حدود القرية القديمة تقريبية",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "المدينة المنورة",
       "historical_name": "يثرب / طيبة",
       "description": "دار الهجرة وعاصمة الدولة الإسلامية الأولى وموضع المسجد النبوي.",
       "historical_significance": "احتضنت العهد المدني كاملًا وبها الروضة الشريفة وقبر النبي ﷺ.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "madinah",
       "latitude": 24.4672,
       "longitude": 39.6111,
-      "source_citation": "صحيح البخاري؛ أخبار المدينة لعمر بن شبة"
+      "source_citation": "صحيح البخاري؛ أخبار المدينة لعمر بن شبة",
+      "stable_id": "pl_008",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "صحيح البخاري؛ أخبار المدينة لعمر بن شبة",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "مركز نطاق المسجد النبوي التقريبي (يحتاج مرجع مسح لحدود يثرب في العهد النبوي)",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "بدر",
       "historical_name": "وادي بدر",
       "description": "موضع جنوب غرب المدينة شهد غزوة بدر الكبرى في رمضان 2 هـ.",
       "historical_significance": "يوم الفرقان وأول نصر عسكري فاصل.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "badr",
       "latitude": 23.781,
       "longitude": 38.791,
-      "source_citation": "القرآن الكريم؛ صحيح البخاري"
+      "source_citation": "القرآن الكريم؛ صحيح البخاري",
+      "stable_id": "pl_009",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "القرآن الكريم؛ صحيح البخاري",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "نطاق وادي بدر العام — مواضع الآبار والمعسكرات والعدوة الدنيا والقصوى تحتاج بيانات مسح ومصادر متخصصة",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "جبل أحد",
       "historical_name": "أُحُد شمال المدينة",
       "description": "جبل عظيم شمال المدينة وقعت عند سفحه غزوة أحد في شوال 3 هـ.",
       "historical_significance": "به مقبرة شهداء أحد وسيد الشهداء حمزة رضي الله عنه.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "uhud",
       "latitude": 24.503,
       "longitude": 39.611,
-      "source_citation": "صحيح البخاري (حديث 4083)"
+      "source_citation": "صحيح البخاري (حديث 4083)",
+      "stable_id": "pl_010",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "صحيح البخاري (حديث 4083)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "مركز كتلة جبل أحد الجغرافية — أما موضع جبل الرماة والمعسكرات فيحتاج طبقة تفصيلية مستقلة",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "موضع الخندق (السبع المساجد)",
       "historical_name": "شمال غرب المدينة",
       "description": "المكان الذي حفر فيه المسلمون الخندق دفاعًا عن المدينة سنة 5 هـ.",
       "historical_significance": "شهد ثبات المسلمين وردّ الأحزاب.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "DISPUTED",
       "map_id": "khandaq",
       "latitude": 24.4769,
       "longitude": 39.596,
-      "source_citation": "صحيح البخاري (كتاب المغازي)"
+      "source_citation": "صحيح البخاري (كتاب المغازي)",
+      "stable_id": "pl_011",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "PROBABLE",
+      "historical_description_source": "صحيح البخاري (كتاب المغازي)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "الامتداد الدقيق لمسار الخندق ونقاط بدايته ونهايته مختلف في تفاصيلها الجغرافية",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "الحديبية",
       "historical_name": "الحديبية غرب مكة",
       "description": "موضع على أطراف الحرم عُقد فيه صلح الحديبية وبيعة الرضوان سنة 6 هـ.",
       "historical_significance": "سماه الله فتحًا مبينًا.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "hudaybiyyah",
       "latitude": 21.4414,
       "longitude": 39.6042,
-      "source_citation": "صحيح البخاري (كتاب الشروط)"
+      "source_citation": "صحيح البخاري (كتاب الشروط)",
+      "stable_id": "pl_012",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "PROBABLE",
+      "historical_description_source": "صحيح البخاري (كتاب الشروط)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "نطاق الشميسي/الحديبية غرب مكة — موضع الشجرة غير محدد",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "خيبر",
       "historical_name": "واحة خيبر شمال المدينة",
       "description": "واحة ذات حصون شمال المدينة فتحها النبي ﷺ في محرم 7 هـ.",
       "historical_significance": "أزالت بؤرة التحريض ضد المدينة.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "khaybar",
       "latitude": 25.6986,
       "longitude": 39.2939,
-      "source_citation": "صحيح البخاري (حديث 4210)"
+      "source_citation": "صحيح البخاري (حديث 4210)",
+      "stable_id": "pl_013",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "صحيح البخاري (حديث 4210)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "نطاق واحة خيبر العام — مواقع الحصون الفردية تحتاج طبقة جغرافية مستقلة",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "مؤتة",
       "historical_name": "مؤتة (الكرك — الأردن)",
       "description": "موضع بجنوب بلاد الشام وقعت فيه غزوة/سرية مؤتة سنة 8 هـ.",
       "historical_significance": "أول مواجهة كبرى مع الروم ومقام الشهداء زيد وجعفر وابن رواحة.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "arabia",
       "latitude": 31.091,
       "longitude": 35.701,
-      "source_citation": "صحيح البخاري (حديث 4261)"
+      "source_citation": "صحيح البخاري (حديث 4261)",
+      "stable_id": "pl_014",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "صحيح البخاري (حديث 4261)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "نطاق بلدة مؤتة بالكرك — ميدان المعركة التفصيلي تقريبي",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "وادي حنين",
       "historical_name": "حنين بين مكة والطائف",
       "description": "وادٍ شرق مكة شهد غزوة حنين في شوال 8 هـ.",
       "historical_significance": "ذُكر بالاسم في سورة التوبة آية 25.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "DISPUTED",
       "map_id": "hunayn_taif",
       "latitude": 21.5,
       "longitude": 40.06,
-      "source_citation": "القرآن الكريم؛ صحيح البخاري"
+      "source_citation": "القرآن الكريم؛ صحيح البخاري",
+      "stable_id": "pl_015",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "PROBABLE",
+      "historical_description_source": "القرآن الكريم؛ صحيح البخاري",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "توجد أقوال متعددة في تعيين الموضع الدقيق للكمين داخل وادي حنين/الشرائع",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "تبوك",
       "historical_name": "تبوك شمال الجزيرة",
       "description": "موضع شمال الجزيرة وصل إليه جيش العسرة في رجب 9 هـ.",
       "historical_significance": "آخر غزوة قادها النبي ﷺ بنفسه.",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "tabuk",
       "latitude": 28.3835,
       "longitude": 36.5662,
-      "source_citation": "سورة التوبة؛ صحيح البخاري"
+      "source_citation": "سورة التوبة؛ صحيح البخاري",
+      "stable_id": "pl_016",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "سورة التوبة؛ صحيح البخاري",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "نطاق تبوك العام — موضع معسكر الجيش وعين تبوك التاريخية يحتاج توثيقًا جغرافيًا",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     },
     {
       "name": "عرفة",
       "historical_name": "مشعر عرفات بمكة",
       "description": "المشعر الذي خطب فيه النبي ﷺ خطبة الوداع في ذي الحجة 10 هـ.",
       "historical_significance": "نزل فيه «اليوم أكملت لكم دينكم».",
-      "certainty_level": "CONFIRMED",
+      "certainty_level": "APPROXIMATE",
       "map_id": "makkah",
       "latitude": 21.3549,
       "longitude": 39.9841,
-      "source_citation": "صحيح مسلم (حديث 1218)"
+      "source_citation": "صحيح مسلم (حديث 1218)",
+      "stable_id": "pl_017",
+      "event_occurrence_certainty": "CONFIRMED",
+      "event_place_link_certainty": "CONFIRMED",
+      "historical_description_source": "صحيح مسلم (حديث 1218)",
+      "coordinate_source": "بانتظار مرجع جغرافي مساحي محدد — لا تُعدّ إحداثية مؤكدة حاليًا",
+      "coordinate_note": "نطاق مشعر عرفة الجغرافي العام — موضع الوقوف الدقيق يحتاج مرجعًا جغرافيًا",
+      "reviewed_at": "2026-11-22",
+      "reviewer_name": "مراجعة أولية (قيد التدقيق الجغرافي المتخصص)"
     }
   ],
   "people": [
@@ -843,7 +1255,8 @@
       "category": "AHL_AL_BAYT",
       "historical_bio": "خاتم الأنبياء والمرسلين، بعثه الله رحمةً للعالمين في مكة وهاجر إلى المدينة وبلّغ الرسالة وأدّى الأمانة.",
       "role_in_seerah": "محور السيرة النبوية الشريفة.",
-      "primary_sources": "القرآن الكريم؛ الصحيحان؛ سيرة ابن هشام"
+      "primary_sources": "القرآن الكريم؛ الصحيحان؛ سيرة ابن هشام",
+      "stable_id": "pe_001"
     },
     {
       "name": "خديجة بنت خويلد رضي الله عنها",
@@ -852,7 +1265,8 @@
       "category": "MOTHERS_OF_BELIEVERS",
       "historical_bio": "أول زوجات النبي ﷺ وأول من آمن به وواساه بمالها ونفسها عند نزول الوحي.",
       "role_in_seerah": "السند الأول للدعوة النبوية بمكة.",
-      "primary_sources": "صحيح البخاري (حديث 3816–3821)"
+      "primary_sources": "صحيح البخاري (حديث 3816–3821)",
+      "stable_id": "pe_002"
     },
     {
       "name": "عائشة بنت أبي بكر رضي الله عنها",
@@ -861,7 +1275,8 @@
       "category": "MOTHERS_OF_BELIEVERS",
       "historical_bio": "أم المؤمنين وأفقه نساء الأمة ومن المكثرين من رواية الحديث وتفاصيل السيرة.",
       "role_in_seerah": "نقلت أحداث السيرة النبوية والهدي النبوي.",
-      "primary_sources": "صحيح البخاري؛ صحيح مسلم"
+      "primary_sources": "صحيح البخاري؛ صحيح مسلم",
+      "stable_id": "pe_003"
     },
     {
       "name": "أم سلمة رضي الله عنها",
@@ -870,7 +1285,8 @@
       "category": "MOTHERS_OF_BELIEVERS",
       "historical_bio": "من المهاجرات الأوليات للحبشة والمدينة، صاحبة المشورة الحكيمة يوم الحديبية.",
       "role_in_seerah": "مشورتها الحكيمة في التحلل يوم الحديبية.",
-      "primary_sources": "صحيح البخاري (حديث 2731)"
+      "primary_sources": "صحيح البخاري (حديث 2731)",
+      "stable_id": "pe_004"
     },
     {
       "name": "فاطمة الزهراء رضي الله عنها",
@@ -879,7 +1295,8 @@
       "category": "AHL_AL_BAYT",
       "historical_bio": "سيدة نساء أهل الجنة وبضعة النبي ﷺ وزوج علي بن أبي طالب وأم الحسن والحسين.",
       "role_in_seerah": "أقرب بنات النبي ﷺ إليه وأكثرهن شبهًا بسمته وهديه.",
-      "primary_sources": "صحيح البخاري (حديث 3714، 3767)"
+      "primary_sources": "صحيح البخاري (حديث 3714، 3767)",
+      "stable_id": "pe_005"
     },
     {
       "name": "أبو بكر الصديق رضي الله عنه",
@@ -888,7 +1305,8 @@
       "category": "RIGHTLY_GUIDED_CALIPHS",
       "historical_bio": "أول من آمن من الرجال وصاحب الغار والهجرة وأول الخلفاء الراشدين.",
       "role_in_seerah": "رفيق النبي ﷺ في الهجرة والمشاهد كلها وإمام الناس في مرضه ﷺ.",
-      "primary_sources": "صحيح البخاري (فضائل الصحابة)"
+      "primary_sources": "صحيح البخاري (فضائل الصحابة)",
+      "stable_id": "pe_006"
     },
     {
       "name": "عمر بن الخطاب رضي الله عنه",
@@ -897,7 +1315,8 @@
       "category": "RIGHTLY_GUIDED_CALIPHS",
       "historical_bio": "ثاني الخلفاء الراشدين، أعزّ الله بإسلامه الدعوة في مكة وشهد المشاهد كلها.",
       "role_in_seerah": "أحد أركان الشورى والدولة النبوية.",
-      "primary_sources": "صحيح البخاري؛ الإصابة"
+      "primary_sources": "صحيح البخاري؛ الإصابة",
+      "stable_id": "pe_007"
     },
     {
       "name": "عثمان بن عفان رضي الله عنه",
@@ -906,7 +1325,8 @@
       "category": "RIGHTLY_GUIDED_CALIPHS",
       "historical_bio": "ثالث الخلفاء الراشدين، هاجر الهجرتين وجهّز جيش العسرة واشترى بئر رومة.",
       "role_in_seerah": "سفير النبي ﷺ يوم الحديبية ومجهّز جيش تبوك.",
-      "primary_sources": "صحيح البخاري (حديث 3695)"
+      "primary_sources": "صحيح البخاري (حديث 3695)",
+      "stable_id": "pe_008"
     },
     {
       "name": "علي بن أبي طالب رضي الله عنه",
@@ -915,7 +1335,8 @@
       "category": "RIGHTLY_GUIDED_CALIPHS",
       "historical_bio": "رابع الخلفاء الراشدين وابن عم النبي ﷺ، بات في فراشه ليلة الهجرة لرد الأمانات.",
       "role_in_seerah": "حامل الراية في بدر وخيبر وأحد أعلام الشجاعة والعلم.",
-      "primary_sources": "صحيح البخاري (حديث 4210)"
+      "primary_sources": "صحيح البخاري (حديث 4210)",
+      "stable_id": "pe_009"
     },
     {
       "name": "بلال بن رباح رضي الله عنه",
@@ -924,7 +1345,8 @@
       "category": "MUHAJIRUN",
       "historical_bio": "من السابقين الأولين، صبر على تعذيب أمية بن خلف وأعتقه أبو بكر وأصبح مؤذن الرسول ﷺ.",
       "role_in_seerah": "أول مؤذن في الإسلام وشهد بدرًا وفتح مكة.",
-      "primary_sources": "صحيح البخاري؛ الطبقات الكبرى"
+      "primary_sources": "صحيح البخاري؛ الطبقات الكبرى",
+      "stable_id": "pe_010"
     },
     {
       "name": "مصعب بن عمير رضي الله عنه",
@@ -933,7 +1355,8 @@
       "category": "MUHAJIRUN",
       "historical_bio": "ترك الترف في مكة لأجل الإسلام وبعثه النبي ﷺ أول سفير إلى المدينة قبل الهجرة.",
       "role_in_seerah": "داعية المدينة وحامل اللواء يوم أحد حتى استُشهد.",
-      "primary_sources": "صحيح البخاري (حديث 4047)"
+      "primary_sources": "صحيح البخاري (حديث 4047)",
+      "stable_id": "pe_011"
     },
     {
       "name": "سلمان الفارسي رضي الله عنه",
@@ -942,7 +1365,8 @@
       "category": "MUHAJIRUN",
       "historical_bio": "رحل باحثًا عن الحق حتى التقى بالنبي ﷺ في المدينة وأشار بحفر الخندق.",
       "role_in_seerah": "صاحب فكرة الخندق في غزوة الأحزاب.",
-      "primary_sources": "مسند أحمد؛ سيرة ابن هشام"
+      "primary_sources": "مسند أحمد؛ سيرة ابن هشام",
+      "stable_id": "pe_012"
     },
     {
       "name": "سعد بن معاذ رضي الله عنه",
@@ -951,7 +1375,8 @@
       "category": "ANSAR",
       "historical_bio": "سيد الأوس في المدينة، أسلم على يد مصعب بن عمير واهتز عرش الرحمن لموته.",
       "role_in_seerah": "قائد الأنصار في بدر وحكمه في بني قريظة.",
-      "primary_sources": "صحيح البخاري (حديث 3803)"
+      "primary_sources": "صحيح البخاري (حديث 3803)",
+      "stable_id": "pe_013"
     },
     {
       "name": "أبو أيوب الأنصاري رضي الله عنه",
@@ -960,7 +1385,8 @@
       "category": "ANSAR",
       "historical_bio": "الصحابي الجليل الذي نزل النبي ﷺ في داره حين دخل المدينة المنورة.",
       "role_in_seerah": "مضيف رسول الله ﷺ وشهد بدرًا وما بعدها.",
-      "primary_sources": "صحيح البخاري (حديث 3906)"
+      "primary_sources": "صحيح البخاري (حديث 3906)",
+      "stable_id": "pe_014"
     },
     {
       "name": "أسماء بنت أبي بكر رضي الله عنها",
@@ -969,7 +1395,8 @@
       "category": "FEMALE_COMPANIONS",
       "historical_bio": "كانت تحمل الزاد والماء إلى النبي ﷺ وأبيها في غار ثور سرًا رغم خطر قريش.",
       "role_in_seerah": "دور محوري في إنجاح خطة الهجرة النبوية.",
-      "primary_sources": "صحيح البخاري (حديث 3907)"
+      "primary_sources": "صحيح البخاري (حديث 3907)",
+      "stable_id": "pe_015"
     },
     {
       "name": "نسيبة بنت كعب (أم عمارة) رضي الله عنها",
@@ -978,7 +1405,8 @@
       "category": "FEMALE_COMPANIONS",
       "historical_bio": "شهدت بيعة العقبة الثانية ودافعت عن النبي ﷺ ببسالة يوم أحد.",
       "role_in_seerah": "نموذج للثبات والتضحية يوم أحد.",
-      "primary_sources": "الطبقات الكبرى؛ الإصابة"
+      "primary_sources": "الطبقات الكبرى؛ الإصابة",
+      "stable_id": "pe_016"
     },
     {
       "name": "حمزة بن عبد المطلب رضي الله عنه",
@@ -987,7 +1415,8 @@
       "category": "COMMANDERS",
       "historical_bio": "عم النبي ﷺ وقائد أول سرية وأحد أبطال بدر وسيد الشهداء في أحد.",
       "role_in_seerah": "سيد الشهداء وأحد أعظم قادة الصدر الأول.",
-      "primary_sources": "صحيح البخاري؛ سيرة ابن هشام"
+      "primary_sources": "صحيح البخاري؛ سيرة ابن هشام",
+      "stable_id": "pe_017"
     },
     {
       "name": "خالد بن الوليد رضي الله عنه",
@@ -996,7 +1425,8 @@
       "category": "COMMANDERS",
       "historical_bio": "أسلم قبل فتح مكة وتولى القيادة في مؤتة فأنقذ الجيش وسماه النبي ﷺ سيف الله المسلول.",
       "role_in_seerah": "قائد عسكري فذ في مؤتة وفتح مكة.",
-      "primary_sources": "صحيح البخاري (حديث 4262)"
+      "primary_sources": "صحيح البخاري (حديث 4262)",
+      "stable_id": "pe_018"
     },
     {
       "name": "زيد بن حارثة رضي الله عنه",
@@ -1005,7 +1435,8 @@
       "category": "COMMANDERS",
       "historical_bio": "حبّ رسول الله ﷺ، الصحابي الوحيد المذكور باسمه الصريح في القرآن، وقائد مؤتة الأول.",
       "role_in_seerah": "رافق النبي ﷺ في الطائف وقاد عدة سرايا حتى استشهد في مؤتة.",
-      "primary_sources": "سورة الأحزاب 37؛ صحيح البخاري"
+      "primary_sources": "سورة الأحزاب 37؛ صحيح البخاري",
+      "stable_id": "pe_019"
     },
     {
       "name": "أبو هريرة رضي الله عنه",
@@ -1014,7 +1445,8 @@
       "category": "NARRATORS",
       "historical_bio": "أسلم سنة 7 هـ عام خيبر ولازم النبي ﷺ فكان أكثر الصحابة حفظًا ورواية للحديث.",
       "role_in_seerah": "حفظ آلاف الأحاديث النبوية للأمة.",
-      "primary_sources": "صحيح البخاري (حديث 118)"
+      "primary_sources": "صحيح البخاري (حديث 118)",
+      "stable_id": "pe_020"
     },
     {
       "name": "أنس بن مالك رضي الله عنه",
@@ -1023,7 +1455,8 @@
       "category": "NARRATORS",
       "historical_bio": "خدم النبي ﷺ عشر سنين كاملة في المدينة ونقل تفاصيل أخلاقه وهديه اليومي.",
       "role_in_seerah": "من المكثرين لرواية السنة والسيرة النبوية.",
-      "primary_sources": "صحيح البخاري؛ صحيح مسلم"
+      "primary_sources": "صحيح البخاري؛ صحيح مسلم",
+      "stable_id": "pe_021"
     },
     {
       "name": "النجاشي (أصحمة) رحمه الله",
@@ -1032,7 +1465,8 @@
       "category": "OTHER",
       "historical_bio": "ملك الحبشة العادل الذي آوى المهاجرين وأسلم وصلّى عليه النبي ﷺ صلاة الغائب.",
       "role_in_seerah": "نموذج للعدل ونصرة المظلومين.",
-      "primary_sources": "صحيح البخاري (حديث 3877)"
+      "primary_sources": "صحيح البخاري (حديث 3877)",
+      "stable_id": "pe_022"
     }
   ],
   "quran_verses": [
@@ -1045,7 +1479,8 @@
       "tafsir_source": "صحيح البخاري (حديث 3)",
       "asbab_al_nuzul": "نزلت في غار حراء بداية الوحي.",
       "asbab_source": "صحيح البخاري",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_001"
     },
     {
       "surah_number": 74,
@@ -1056,7 +1491,8 @@
       "tafsir_source": "صحيح البخاري (حديث 4)",
       "asbab_al_nuzul": "نزلت بعد فترة الوحي.",
       "asbab_source": "صحيح البخاري",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_002"
     },
     {
       "surah_number": 9,
@@ -1067,7 +1503,8 @@
       "tafsir_source": "تفسير ابن كثير",
       "asbab_al_nuzul": "نزلت في قصة الهجرة وغار ثور.",
       "asbab_source": "صحيح البخاري (حديث 3653)",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_003"
     },
     {
       "surah_number": 8,
@@ -1078,7 +1515,8 @@
       "tafsir_source": "صحيح مسلم (حديث 1763)",
       "asbab_al_nuzul": "نزلت في غزوة بدر الكبرى.",
       "asbab_source": "صحيح مسلم",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_004"
     },
     {
       "surah_number": 3,
@@ -1089,7 +1527,8 @@
       "tafsir_source": "تفسير الطبري؛ صحيح البخاري",
       "asbab_al_nuzul": "نزلت في غزوة أحد.",
       "asbab_source": "صحيح البخاري (حديث 4043)",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_005"
     },
     {
       "surah_number": 33,
@@ -1100,7 +1539,8 @@
       "tafsir_source": "تفسير ابن كثير",
       "asbab_al_nuzul": "نزلت في غزوة الخندق (الأحزاب).",
       "asbab_source": "صحيح البخاري",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_006"
     },
     {
       "surah_number": 48,
@@ -1111,7 +1551,8 @@
       "tafsir_source": "صحيح البخاري (حديث 4833)",
       "asbab_al_nuzul": "نزلت بين مكة والمدينة في مرجع الحديبية.",
       "asbab_source": "صحيح البخاري",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_007"
     },
     {
       "surah_number": 110,
@@ -1122,7 +1563,8 @@
       "tafsir_source": "صحيح البخاري (حديث 4970)",
       "asbab_al_nuzul": "سورة النصر — فهم منها ابن عباس أجل النبي ﷺ.",
       "asbab_source": "صحيح البخاري",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_008"
     },
     {
       "surah_number": 5,
@@ -1133,7 +1575,8 @@
       "tafsir_source": "صحيح البخاري (حديث 45)",
       "asbab_al_nuzul": "نزلت عشية عرفة في حجة الوداع.",
       "asbab_source": "صحيح البخاري",
-      "asbab_verified": true
+      "asbab_verified": true,
+      "stable_id": "qv_009"
     }
   ],
   "hadiths": [
@@ -1147,7 +1590,9 @@
       "takhrij": "متفق عليه",
       "grade_code": "SAHIH",
       "grading_scholar": "الإمام البخاري",
-      "grading_source": "صحيح البخاري"
+      "grading_source": "صحيح البخاري",
+      "stable_id": "hd_001",
+      "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
     },
     {
       "hadith_text": "يا أبا بكر، ما ظنك باثنين الله ثالثهما؟",
@@ -1159,7 +1604,9 @@
       "takhrij": "متفق عليه",
       "grade_code": "SAHIH",
       "grading_scholar": "الإمام البخاري",
-      "grading_source": "صحيح البخاري"
+      "grading_source": "صحيح البخاري",
+      "stable_id": "hd_002",
+      "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
     },
     {
       "hadith_text": "أُحُدٌ جبلٌ يحبنا ونحبه.",
@@ -1171,7 +1618,9 @@
       "takhrij": "متفق عليه",
       "grade_code": "SAHIH",
       "grading_scholar": "الإمام البخاري",
-      "grading_source": "صحيح البخاري"
+      "grading_source": "صحيح البخاري",
+      "stable_id": "hd_003",
+      "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
     },
     {
       "hadith_text": "لأعطينّ الراية غدًا رجلًا يفتح الله على يديه، يحب الله ورسوله ويحبه الله ورسوله.",
@@ -1183,7 +1632,9 @@
       "takhrij": "متفق عليه",
       "grade_code": "SAHIH",
       "grading_scholar": "الإمام البخاري",
-      "grading_source": "صحيح البخاري"
+      "grading_source": "صحيح البخاري",
+      "stable_id": "hd_004",
+      "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
     },
     {
       "hadith_text": "ما من نبي إلا رعى الغنم. قالوا: وأنت؟ قال: نعم، كنت أرعاها على قراريط لأهل مكة.",
@@ -1195,7 +1646,9 @@
       "takhrij": "رواه البخاري",
       "grade_code": "SAHIH",
       "grading_scholar": "الإمام البخاري",
-      "grading_source": "صحيح البخاري"
+      "grading_source": "صحيح البخاري",
+      "stable_id": "hd_005",
+      "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
     },
     {
       "hadith_text": "إن دماءكم وأموالكم حرام عليكم كحرمة يومكم هذا في شهركم هذا في بلدكم هذا.",
@@ -1207,7 +1660,9 @@
       "takhrij": "رواه مسلم",
       "grade_code": "SAHIH",
       "grading_scholar": "الإمام مسلم",
-      "grading_source": "صحيح مسلم"
+      "grading_source": "صحيح مسلم",
+      "stable_id": "hd_006",
+      "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
     },
     {
       "hadith_text": "كان خُلقه القرآن.",
@@ -1219,7 +1674,9 @@
       "takhrij": "رواه مسلم",
       "grade_code": "SAHIH",
       "grading_scholar": "الإمام مسلم",
-      "grading_source": "صحيح مسلم"
+      "grading_source": "صحيح مسلم",
+      "stable_id": "hd_007",
+      "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
     },
     {
       "hadith_text": "ألا من كان يعبد محمدًا فإن محمدًا قد مات، ومن كان يعبد الله فإن الله حي لا يموت.",
@@ -1231,7 +1688,9 @@
       "takhrij": "رواه البخاري",
       "grade_code": "SAHIH",
       "grading_scholar": "الإمام البخاري",
-      "grading_source": "صحيح البخاري"
+      "grading_source": "صحيح البخاري",
+      "stable_id": "hd_008",
+      "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
     }
   ]
 }

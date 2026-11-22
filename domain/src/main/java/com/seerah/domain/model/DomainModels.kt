@@ -25,16 +25,33 @@ data class GeoPointModel(
     val longitude: Double
 )
 
+data class GeoPolygonRings(
+    val outerRing: List<GeoPointModel>,
+    val holes: List<List<GeoPointModel>> = emptyList()
+)
+
 data class GeoFeatureModel(
     val id: String,
     val layerKey: String,
-    val geometryType: String, // Point, LineString, Polygon
+    val geometryType: String, // Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection
     val label: String,
     val coordinates: List<GeoPointModel>,
+    val multiLines: List<List<GeoPointModel>> = emptyList(),
+    val polygons: List<GeoPolygonRings> = emptyList(),
     val certainty: GeographicCertainty,
     val sourceCitation: String,
     val phaseOrder: Int? = null,
     val featureType: String = "SITE"
+)
+
+data class GeoJsonRejection(
+    val featureId: String,
+    val reason: String
+)
+
+data class GeoJsonParseReport(
+    val features: List<GeoFeatureModel>,
+    val rejected: List<GeoJsonRejection>
 )
 
 data class UserPreferencesState(

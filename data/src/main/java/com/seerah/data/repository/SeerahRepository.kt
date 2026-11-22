@@ -57,6 +57,7 @@ class SeerahRepository(
     suspend fun setLayerEnabled(layerKey: String, enabled: Boolean) = database.qualityAuditDao().updateLayerEnabled(layerKey, enabled)
     fun observeAllCoordinates(): Flow<List<PlaceCoordinateEntity>> = database.qualityAuditDao().observeAllCoordinates()
     suspend fun getQualityAuditSnapshot() = database.qualityAuditDao().getQualityAuditSnapshot()
+    fun observeAllBattleFeatures() = database.qualityAuditDao().observeAllBattleFeatures()
     fun observeRoutesForMap(mapId: String): Flow<List<HistoricalRouteEntity>> = database.atlasGeoDao().observeRoutesForMap(mapId)
     fun observeRoutePoints(routeId: Long): Flow<List<RoutePointEntity>> = database.atlasGeoDao().observeRoutePoints(routeId)
     fun observeBattlePhases(battleMapId: String): Flow<List<BattlePhaseEntity>> = database.atlasGeoDao().observeBattlePhases(battleMapId)
