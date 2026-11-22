@@ -1,4 +1,4 @@
-name: Build & Release SEERAH APK
+name: Build & Release SEERAH APK (Verified Pipeline)
 
 on:
   push:
@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'رقم الإصدار للنشر داخل التطبيق (مثل v1.0.1)'
+        description: 'رقم الإصدار للنشر (مثل v3.0.0-alpha.3)'
         required: false
-        default: 'v1.0.1'
+        default: 'v3.0.0-alpha.3'
 
 permissions:
   contents: write
@@ -33,28 +33,68 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Run Unit Tests
+      - name: Run All Unit Tests
         run: gradle testDebugUnitTest --stacktrace
 
-      - name: Build Signed Release APK
-        run: gradle :app:assembleRelease --stacktrace
+      - name: Upload Room Exported Schemas
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: room-schemas
+          path: database/schemas/**
+          if-no-files-found: ignore
 
-      - name: Rename Release APK
+      - name: Verify All 4 Signing Secrets Present
+        id: keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.SEERAH_KEYSTORE_BASE64 }}
+          STORE_PASS: ${{ secrets.SEERAH_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SEERAH_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.SEERAH_KEY_PASSWORD }}
         run: |
-          mkdir -p dist
-          cp app/build/outputs/apk/release/*.apk dist/seerah-release.apk
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$STORE_PASS" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASS" ]; then
+            echo "$KEYSTORE_B64" | base64 --decode > /tmp/seerah-release.jks
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Missing one or more signing Secrets — skipping signed Release publish."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Upload APK Artifact
+      - name: Build & Verify Signed Release APK with apksigner
+        if: steps.keystore.outputs.signed == 'true'
+        env:
+          SEERAH_KEYSTORE_PATH: /tmp/seerah-release.jks
+          SEERAH_STORE_PASSWORD: ${{ secrets.SEERAH_STORE_PASSWORD }}
+          SEERAH_KEY_ALIAS: ${{ secrets.SEERAH_KEY_ALIAS }}
+          SEERAH_KEY_PASSWORD: ${{ secrets.SEERAH_KEY_PASSWORD }}
+        run: |
+          gradle :app:assembleRelease --stacktrace
+          mkdir -p dist-release
+          cp app/build/outputs/apk/release/*.apk dist-release/seerah-release.apk
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -n 1)
+          "$APKSIGNER" verify --verbose --print-certs dist-release/seerah-release.apk
+          sha256sum dist-release/seerah-release.apk | awk '{print $1}' > dist-release/seerah-release.apk.sha256
+
+      - name: Build Debug APK (Artifacts only — NEVER published as Release)
+        run: |
+          gradle :app:assembleDebug --stacktrace
+          mkdir -p dist-debug
+          cp app/build/outputs/apk/debug/*.apk dist-debug/seerah-debug.apk
+          sha256sum dist-debug/seerah-debug.apk | awk '{print $1}' > dist-debug/seerah-debug.apk.sha256
+
+      - name: Upload Debug APK & Test Reports
         uses: actions/upload-artifact@v4
         with:
-          name: seerah-release-apk
-          path: dist/seerah-release.apk
+          name: seerah-debug-apk
+          path: dist-debug/*
 
-      - name: Publish GitHub Release (for In-App Auto-Updater)
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+      - name: Publish Verified Signed Release to GitHub Releases
+        if: steps.keystore.outputs.signed == 'true' && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || inputs.release_tag }}
           name: "سِيرَة | SEERAH ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || inputs.release_tag }}"
-          body: "إصدار موقّع وجاهز للتحديث المباشر من داخل تطبيق سِيرَة."
-          files: dist/seerah-release.apk
+          body: "إصدار موقّع ومفحوص بـ apksigner مع بصمة SHA-256."
+          files: |
+            dist-release/seerah-release.apk
+            dist-release/seerah-release.apk.sha256
