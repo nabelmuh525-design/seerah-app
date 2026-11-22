@@ -36,7 +36,7 @@ sealed class UpdateDownloadProgress {
 }
 
 /**
- * محدث التطبيق الآمن (v3.0.0-alpha.2):
+ * محدث التطبيق الآمن (v3.0.1-alpha.5):
  * - يختار حصريًا ملف seerah-release.apk (لا يقبل seerah-debug.apk).
  * - ينزّل ملف seerah-release.apk.sha256 ويتحقق من تطابق SHA-256 قبل السماح بالتثبيت.
  */
@@ -49,8 +49,8 @@ class SeerahAppUpdater(
     fun currentVersionName(): String {
         return runCatching {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            info.versionName ?: "3.0.0-alpha.2"
-        }.getOrDefault("3.0.0-alpha.2")
+            info.versionName ?: "3.0.1-alpha.5"
+        }.getOrDefault("3.0.1-alpha.5")
     }
 
     suspend fun checkLatestRelease(): Result<AppReleaseInfo> = withContext(Dispatchers.IO) {

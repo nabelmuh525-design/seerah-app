@@ -51,7 +51,7 @@ import com.seerah.database.entity.*
         ContentVersionEntity::class,
         AuditLogEntity::class
     ],
-    version = 2,
+    version = 4,
     exportSchema = true
 )
 abstract class SeerahDatabase : RoomDatabase() {
@@ -246,7 +246,28 @@ abstract class SeerahDatabase : RoomDatabase() {
             }
         }
 
-        val ALL_MIGRATIONS: Array<Migration> = arrayOf(MIGRATION_1_2)
+        
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `events` ADD COLUMN `stable_id` TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE `people` ADD COLUMN `stable_id` TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE `places` ADD COLUMN `stable_id` TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE `quran_verses` ADD COLUMN `stable_id` TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE `hadiths` ADD COLUMN `stable_id` TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
+        
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `hadith_grades` ADD COLUMN `stable_id` TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE `hadith_grades` ADD COLUMN `is_human_review` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `hadith_grades` ADD COLUMN `review_state` TEXT NOT NULL DEFAULT 'UNDER_REVIEW'")
+                db.execSQL("ALTER TABLE `hadith_grades` ADD COLUMN `reviewed_at_epoch_ms` INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        val ALL_MIGRATIONS: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
 
         fun build(context: Context): SeerahDatabase {
             return Room.databaseBuilder(

@@ -65,7 +65,8 @@ enum class HadithGradeStatus(val code: String, val arabicLabel: String) {
             gradingScholar: String,
             gradingSource: String,
             referenceLocator: String,
-            originalGradeText: String
+            originalGradeText: String,
+            isCitationVerifiedByReviewer: Boolean = false
         ): HadithGradeStatus {
             val status = fromCode(requestedCode)
             if (status in setOf(SAHIH, HASAN, DAIF, DAIF_JIDDAN, MAWDU)) {
@@ -75,6 +76,9 @@ enum class HadithGradeStatus(val code: String, val arabicLabel: String) {
                     originalGradeText.isBlank()
                 ) {
                     return INCOMPLETE_CITATION
+                }
+                if (!isCitationVerifiedByReviewer) {
+                    return UNDER_REVIEW
                 }
             }
             return status

@@ -12,6 +12,7 @@ import androidx.room.PrimaryKey
 )
 data class HadithEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "stable_id", defaultValue = "") val stableId: String = "",
     @ColumnInfo(name = "event_id") val eventId: Long? = null,
     @ColumnInfo(name = "hadith_text") val hadithText: String,
     @ColumnInfo(name = "normalized_text") val normalizedText: String,
@@ -39,11 +40,15 @@ data class HadithEntity(
 )
 data class HadithGradeEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "stable_id", defaultValue = "") val stableId: String = "",
     @ColumnInfo(name = "hadith_id") val hadithId: Long,
-    @ColumnInfo(name = "grade_code") val gradeCode: String, // SAHIH, HASAN, DAIF, DAIF_JIDDAN, MAWDU, DISPUTED, UNVERIFIED
+    @ColumnInfo(name = "grade_code") val gradeCode: String,
     @ColumnInfo(name = "grading_scholar") val gradingScholar: String,
     @ColumnInfo(name = "grading_source") val gradingSource: String,
-    val notes: String = ""
+    val notes: String = "",
+    @ColumnInfo(name = "is_human_review", defaultValue = "0") val isHumanReview: Boolean = false,
+    @ColumnInfo(name = "review_state", defaultValue = "UNDER_REVIEW") val reviewState: String = "UNDER_REVIEW",
+    @ColumnInfo(name = "reviewed_at_epoch_ms", defaultValue = "0") val reviewedAtEpochMs: Long = 0L
 )
 
 @Entity(
@@ -52,6 +57,7 @@ data class HadithGradeEntity(
 )
 data class QuranVerseEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "stable_id", defaultValue = "") val stableId: String = "",
     @ColumnInfo(name = "surah_number") val surahNumber: Int,
     @ColumnInfo(name = "surah_name") val surahName: String,
     @ColumnInfo(name = "ayah_number") val ayahNumber: Int,

@@ -12,8 +12,8 @@ android {
         applicationId = "com.seerah.encyclopedia"
         minSdk = 24
         targetSdk = 35
-        versionCode = 10
-        versionName = "3.0.0-alpha.3"
+        versionCode = 14
+        versionName = "3.0.1-alpha.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

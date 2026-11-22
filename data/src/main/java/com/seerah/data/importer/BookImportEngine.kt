@@ -231,14 +231,23 @@ class BookImportEngine(
         editionName: String,
         investigator: String
     ): ImportReport {
-        // فحص وجود نصوص مدمجة داخل PDF؛ وإن كان الملف مصوّرًا يُوسَم للمراجعة الآلية (OCR)
-        val rawAscii = file.readBytes().toString(Charsets.ISO_8859_1)
-        val hasTextOperators = rawAscii.contains("BT") && rawAscii.contains("Tj")
-        val extractedNotice = if (hasTextOperators) {
-            "تم حفظ ملف PDF في المكتبة المحلية. لاستخراج النص العربي الكامل بدقة عالية يُنصح بتفعيل وحدة OCR أو استيراد نسخة نصية (EPUB/JSON/TXT)."
-        } else {
-            "ملف PDF مصوّر (Scanned): تم وسمه تلقائيًا بأن النص يحتاج استخراجًا آليًا (OCR) ومراجعة علمية قبل الاعتماد."
+        // فتح ملف PDF عبر PdfRenderer بالتدفق دون تحميل الملف كاملًا في الذاكرة (لا readBytes ولا فحص BT/Tj)
+        val pageCount = try {
+            android.os.ParcelFileDescriptor.open(file, android.os.ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                android.graphics.pdf.PdfRenderer(pfd).use { renderer ->
+                    renderer.pageCount
+                }
+            }
+        } catch (e: Exception) {
+            return ImportReport(
+                success = false,
+                fileName = fileName,
+                format = "PDF",
+                message = "ملف PDF تالف أو غير مدعوم أو محمي بكلمة مرور: ${e.message ?: "تعذر الفتح"}"
+            )
         }
+
+        val honestNotice = "تم حفظ ملف PDF صالح ($pageCount صفحة) في المكتبة المحلية. استخراج النص العربي المباشر وOCR المحلي غير مدمجين بعد في هذا الإصدار؛ لا يتم اختلاق نص بديل ولا وسمه كـ OCR مكتمل."
         return persistBookWithPages(
             title = fileName.substringBeforeLast('.'),
             authorName = authorName,
@@ -246,10 +255,10 @@ class BookImportEngine(
             filePath = file.absolutePath,
             hash = hash,
             isPrimary = isPrimary,
-            isOcr = true,
+            isOcr = false,
             editionName = editionName,
             investigator = investigator,
-            pages = listOf("صفحة الفهرسة الأولية" to extractedNotice)
+            pages = listOf("بيانات الفهرسة الأولية ($pageCount صفحة)" to honestNotice)
         )
     }
 

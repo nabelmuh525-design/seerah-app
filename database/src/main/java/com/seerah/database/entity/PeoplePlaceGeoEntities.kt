@@ -12,6 +12,7 @@ import androidx.room.PrimaryKey
 )
 data class PersonEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "stable_id", defaultValue = "") val stableId: String = "",
     val name: String,
     @ColumnInfo(name = "normalized_name") val normalizedName: String,
     val kunyah: String = "",
@@ -54,6 +55,7 @@ data class PersonEventEntity(
 )
 data class PlaceEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "stable_id", defaultValue = "") val stableId: String = "",
     val name: String,
     @ColumnInfo(name = "normalized_name") val normalizedName: String,
     @ColumnInfo(name = "historical_name") val historicalName: String = "",

@@ -8,16 +8,17 @@ import com.seerah.database.entity.*
 import com.seerah.domain.model.AtlasMapDefinition
 import com.seerah.domain.model.HadithGradeStatus
 import com.seerah.domain.model.MapLayerType
+import org.json.JSONArray
 import org.json.JSONObject
 import java.security.MessageDigest
 
 /**
- * مهيّئ الموسوعة الذري (Atomic Transactional Seeder — v3.0.0-alpha.3):
- * - ينفذ استيراد الحزمة بالكامل داخل database.withTransaction (إما نجاح كامل أو rollback كامل).
- * - لا يعتمد شرط count() == 0؛ يسجل حالة كل قسم على حدة في content_versions،
- *   ولا يعتمد بصمة الحزمة الرئيسية إلا بعد التحقق من تطابق العدد المتوقع والمستورد لكل قسم.
- * - ينشئ روابط علائقية فعلية (event_sources, person_events, place_sources, event_verses).
- * - يحافظ بالكامل على بيانات المستخدم (favorites, user_notes, bookmarks, الكتب المستوردة).
+ * مزامِن الموسوعة الآمن (v3.0.1-alpha.5):
+ * 1. يحمي المراجعات الحديثية البشرية (is_human_review = 1) ولا يحذفها أبدًا؛ وإذا تغيّر نص الحديث
+ *    أو مصدره يضع المراجعة البشرية في حالة NEEDS_REVALIDATION بدل حذفها أو استبدالها.
+ * 2. يقرأ جميع العلاقات (place_stable_id, person_events, event_verses) من بيانات الحزمة فقط
+ *    (صفر قواعد مكتوبة يدويًا داخل الكود، وصفر تخمين لأول مكان في الخريطة).
+ * 3. يتحقق من وجود جميع المعرفات المشار إليها في العلاقات قبل التنفيذ داخل withTransaction.
  */
 class SeerahCatalogSeeder(
     private val context: Context,
@@ -117,32 +118,50 @@ class SeerahCatalogSeeder(
 
         val packHash = sha256(rawJson)
         val existingVersion = database.qualityAuditDao().getContentVersion(CORE_PACK_KEY)
-        if (existingVersion != null && existingVersion.sha256Hash == packHash) {
-            return
-        }
+        if (existingVersion != null && existingVersion.sha256Hash == packHash) return
 
         val root = JSONObject(rawJson)
-        val packTag = root.optString("version", "3.0.0-alpha.3")
+        val packTag = root.optString("version", FALLBACK_PACK_VERSION)
         val now = System.currentTimeMillis()
 
-        // معاملة ذرية كاملة: أي خطأ في أي قسم يعيد القاعدة لحالتها السابقة دون تسجيل البصمة
-        database.withTransaction {
-            val eventsArr = root.optJSONArray("events")
-            val placesArr = root.optJSONArray("places")
-            val peopleArr = root.optJSONArray("people")
-            val versesArr = root.optJSONArray("quran_verses")
-            val hadithsArr = root.optJSONArray("hadiths")
+        val placesArr = requireNotNull(root.optJSONArray("places"))
+        val eventsArr = requireNotNull(root.optJSONArray("events"))
+        val peopleArr = requireNotNull(root.optJSONArray("people"))
+        val versesArr = requireNotNull(root.optJSONArray("quran_verses"))
+        val hadithsArr = requireNotNull(root.optJSONArray("hadiths"))
+        val personEventsArr = root.optJSONArray("person_events") ?: JSONArray()
+        val eventVersesArr = root.optJSONArray("event_verses") ?: JSONArray()
 
-            // 1. استيراد الأماكن بمعرفات مستقرة
-            var placesImported = 0
-            val placeIdsByMap = mutableMapOf<String, Long>()
-            if (placesArr != null) {
-                for (i in 0 until placesArr.length()) {
-                    val o = placesArr.optJSONObject(i) ?: continue
-                    val name = o.optString("name")
-                    val existing = database.atlasGeoDao().searchPlaces(ArabicNormalizer.normalize(name), 1).firstOrNull()
-                    val placeId = existing?.id ?: database.atlasGeoDao().insertPlace(
-                        PlaceEntity(
+        val placeStableIds = collectUniqueStableIds("places", placesArr)
+        val eventStableIds = collectUniqueStableIds("events", eventsArr)
+        val personStableIds = collectUniqueStableIds("people", peopleArr)
+        val verseStableIds = collectUniqueStableIds("quran_verses", versesArr)
+        collectUniqueStableIds("hadiths", hadithsArr)
+
+        // التحقق المسبق من سلامة جميع المعرفات المشار إليها في العلاقات
+        for (i in 0 until personEventsArr.length()) {
+            val r = personEventsArr.getJSONObject(i)
+            check(r.optString("person_stable_id") in personStableIds) { "معرف شخصية غير موجود في person_events" }
+            check(r.optString("event_stable_id") in eventStableIds) { "معرف حدث غير موجود في person_events" }
+        }
+        for (i in 0 until eventVersesArr.length()) {
+            val r = eventVersesArr.getJSONObject(i)
+            check(r.optString("event_stable_id") in eventStableIds) { "معرف حدث غير موجود في event_verses" }
+            check(r.optString("verse_stable_id") in verseStableIds) { "معرف آية غير موجود في event_verses" }
+        }
+
+        database.withTransaction {
+            val placeDbIdByStable = mutableMapOf<String, Long>()
+            for (i in 0 until placesArr.length()) {
+                val o = placesArr.getJSONObject(i)
+                val stableId = o.getString("stable_id")
+                val name = o.getString("name")
+                val existing = database.atlasGeoDao().findPlaceByStableId(stableId)
+                    ?: database.atlasGeoDao().findPlaceByName(name)
+                val placeId = if (existing != null) {
+                    database.atlasGeoDao().updatePlace(
+                        existing.copy(
+                            stableId = stableId,
                             name = name,
                             normalizedName = ArabicNormalizer.normalize(name),
                             historicalName = o.optString("historical_name"),
@@ -152,83 +171,115 @@ class SeerahCatalogSeeder(
                             mapId = o.optString("map_id", "arabia")
                         )
                     )
-                    if (existing == null) {
-                        database.atlasGeoDao().insertPlaceCoordinate(
-                            PlaceCoordinateEntity(
-                                placeId = placeId,
-                                latitude = o.optDouble("latitude"),
-                                longitude = o.optDouble("longitude"),
-                                accuracyNote = o.optString("coordinate_note", "إحداثيات تقريبية — قيد المراجعة"),
-                                sourceCitation = o.optString("coordinate_source", "")
-                            )
+                    existing.id
+                } else {
+                    database.atlasGeoDao().insertPlace(
+                        PlaceEntity(
+                            stableId = stableId,
+                            name = name,
+                            normalizedName = ArabicNormalizer.normalize(name),
+                            historicalName = o.optString("historical_name"),
+                            description = o.optString("description"),
+                            historicalSignificance = o.optString("historical_significance"),
+                            certaintyLevel = o.optString("certainty_level", "UNSPECIFIED"),
+                            mapId = o.optString("map_id", "arabia")
                         )
-                    }
-                    placeIdsByMap.putIfAbsent(o.optString("map_id", "arabia"), placeId)
-                    placesImported++
+                    )
                 }
-                check(placesImported == placesArr.length()) { "عدم تطابق عدد الأماكن المستوردة" }
-                database.qualityAuditDao().upsertContentVersion(
-                    ContentVersionEntity(packKey = "section_places", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
+                database.atlasGeoDao().deleteCoordinatesForPlace(placeId)
+                database.atlasGeoDao().insertPlaceCoordinate(
+                    PlaceCoordinateEntity(
+                        placeId = placeId,
+                        latitude = o.optDouble("latitude"),
+                        longitude = o.optDouble("longitude"),
+                        accuracyNote = o.optString("coordinate_note", "إحداثيات تقريبية — قيد المراجعة"),
+                        sourceCitation = o.optString("coordinate_source", "")
+                    )
                 )
+                placeDbIdByStable[stableId] = placeId
             }
 
-            // 2. استيراد الأحداث مع ربطها بالأماكن والمصادر
-            var eventsImported = 0
-            val eventIdByOrder = mutableMapOf<Int, Long>()
-            if (eventsArr != null) {
-                var prevId: Long? = null
-                for (i in 0 until eventsArr.length()) {
-                    val o = eventsArr.optJSONObject(i) ?: continue
-                    val title = o.optString("title")
-                    val order = o.optInt("chronological_order", i + 1)
-                    val mapId = o.optString("map_id", "arabia")
-                    val existing = database.eventDao().searchEventsFts(ArabicNormalizer.toFtsQuery(title), 1).firstOrNull { it.title == title }
-                    val eventId = existing?.id ?: database.eventDao().insertEvent(
-                        EventEntity(
+            // الأحداث: ربط بالمكان فقط عبر place_stable_id الصريح (صفر تخمين!)
+            val eventDbIdByStable = mutableMapOf<String, Long>()
+            var prevId: Long? = null
+            for (i in 0 until eventsArr.length()) {
+                val o = eventsArr.getJSONObject(i)
+                val stableId = o.getString("stable_id")
+                val title = o.getString("title")
+                val placeStableId = o.optString("place_stable_id", "")
+                val resolvedPlaceId = if (placeStableId.isNotBlank()) {
+                    check(placeStableId in placeStableIds) { "place_stable_id غير موجود: $placeStableId" }
+                    placeDbIdByStable[placeStableId]
+                } else null
+
+                val existing = database.eventDao().findEventByStableId(stableId)
+                    ?: database.eventDao().findEventByTitle(title)
+                val eventId = if (existing != null) {
+                    database.eventDao().updateEvent(
+                        existing.copy(
+                            stableId = stableId,
                             title = title,
                             normalizedTitle = ArabicNormalizer.normalize(title),
                             stageCode = o.optString("stage_code"),
                             eventType = o.optString("event_type"),
-                            chronologicalOrder = order,
+                            chronologicalOrder = o.optInt("chronological_order", i + 1),
                             shortSummary = o.optString("short_summary"),
+                            detailedAnalysis = o.optString("detailed_analysis", existing.detailedAnalysis),
                             causeText = o.optString("cause_text"),
                             outcomeText = o.optString("outcome_text"),
-                            placeId = placeIdsByMap[mapId],
-                            mapId = mapId,
+                            placeId = resolvedPlaceId,
+                            mapId = o.optString("map_id", "arabia"),
                             previousEventId = prevId,
-                            verificationStatus = "NEEDS_COMPLETION"
+                            verificationStatus = o.optString("verification_status", "NEEDS_COMPLETION")
                         )
                     )
-                    if (existing == null) {
-                        database.eventDao().insertEventDate(
-                            EventDateEntity(
-                                eventId = eventId,
-                                hijriDisplay = o.optString("start_date_hijri", o.optString("hijri_date")),
-                                gregorianDisplay = o.optString("gregorian_date"),
-                                isDisputed = o.optBoolean("date_disputed", false),
-                                sourceCitation = o.optString("date_source", o.optString("source_citation"))
-                            )
+                    existing.id
+                } else {
+                    database.eventDao().insertEvent(
+                        EventEntity(
+                            stableId = stableId,
+                            title = title,
+                            normalizedTitle = ArabicNormalizer.normalize(title),
+                            stageCode = o.optString("stage_code"),
+                            eventType = o.optString("event_type"),
+                            chronologicalOrder = o.optInt("chronological_order", i + 1),
+                            shortSummary = o.optString("short_summary"),
+                            detailedAnalysis = o.optString("detailed_analysis", ""),
+                            causeText = o.optString("cause_text"),
+                            outcomeText = o.optString("outcome_text"),
+                            placeId = resolvedPlaceId,
+                            mapId = o.optString("map_id", "arabia"),
+                            previousEventId = prevId,
+                            verificationStatus = o.optString("verification_status", "NEEDS_COMPLETION")
                         )
-                    }
-                    eventIdByOrder[order] = eventId
-                    prevId = eventId
-                    eventsImported++
+                    )
                 }
-                check(eventsImported == eventsArr.length()) { "عدم تطابق عدد الأحداث المستوردة" }
-                database.qualityAuditDao().upsertContentVersion(
-                    ContentVersionEntity(packKey = "section_events", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
+                database.eventDao().deleteEventDates(eventId)
+                database.eventDao().insertEventDate(
+                    EventDateEntity(
+                        eventId = eventId,
+                        hijriDisplay = o.optString("start_date_hijri", o.optString("hijri_date")),
+                        gregorianDisplay = o.optString("gregorian_date"),
+                        isDisputed = o.optBoolean("date_disputed", false),
+                        sourceCitation = o.optString("date_source", o.optString("source_citation"))
+                    )
                 )
+                eventDbIdByStable[stableId] = eventId
+                prevId = eventId
             }
 
-            // 3. استيراد الشخصيات وربطها بالأحداث الأساسية (person_events)
-            var peopleImported = 0
-            if (peopleArr != null) {
-                for (i in 0 until peopleArr.length()) {
-                    val o = peopleArr.optJSONObject(i) ?: continue
-                    val name = o.optString("name")
-                    val existing = database.peopleDao().searchPeople(ArabicNormalizer.normalize(name), 1).firstOrNull { it.name == name }
-                    val personId = existing?.id ?: database.peopleDao().insertPerson(
-                        PersonEntity(
+            // الشخصيات
+            val personDbIdByStable = mutableMapOf<String, Long>()
+            for (i in 0 until peopleArr.length()) {
+                val o = peopleArr.getJSONObject(i)
+                val stableId = o.getString("stable_id")
+                val name = o.getString("name")
+                val existing = database.peopleDao().findPersonByStableId(stableId)
+                    ?: database.peopleDao().findPersonByName(name)
+                val personId = if (existing != null) {
+                    database.peopleDao().updatePerson(
+                        existing.copy(
+                            stableId = stableId,
                             name = name,
                             normalizedName = ArabicNormalizer.normalize(name),
                             kunyah = o.optString("kunyah"),
@@ -239,36 +290,39 @@ class SeerahCatalogSeeder(
                             primarySources = o.optString("primary_sources")
                         )
                     )
-                    // ربط النبي ﷺ بالحدث الأول عند الإنشاء الأول
-                    if (existing == null && name.contains("النبي محمد") && eventIdByOrder[4] != null) {
-                        database.peopleDao().insertPersonEvent(
-                            PersonEventEntity(
-                                personId = personId,
-                                eventId = eventIdByOrder[4]!!,
-                                roleDescription = "المولد النبوي الشريف",
-                                sourceCitation = o.optString("primary_sources")
-                            )
+                    existing.id
+                } else {
+                    database.peopleDao().insertPerson(
+                        PersonEntity(
+                            stableId = stableId,
+                            name = name,
+                            normalizedName = ArabicNormalizer.normalize(name),
+                            kunyah = o.optString("kunyah"),
+                            lineage = o.optString("lineage"),
+                            category = o.optString("category"),
+                            historicalBio = o.optString("historical_bio"),
+                            roleInSeerah = o.optString("role_in_seerah"),
+                            primarySources = o.optString("primary_sources")
                         )
-                    }
-                    peopleImported++
+                    )
                 }
-                check(peopleImported == peopleArr.length()) { "عدم تطابق عدد الشخصيات المستوردة" }
-                database.qualityAuditDao().upsertContentVersion(
-                    ContentVersionEntity(packKey = "section_people", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
-                )
+                personDbIdByStable[stableId] = personId
             }
 
-            // 4. استيراد الآيات
-            var versesImported = 0
-            if (versesArr != null) {
-                for (i in 0 until versesArr.length()) {
-                    val o = versesArr.optJSONObject(i) ?: continue
-                    val uthmani = o.optString("uthmani_text")
-                    val verseId = database.quranHadithDao().insertVerse(
-                        QuranVerseEntity(
-                            surahNumber = o.optInt("surah_number"),
-                            surahName = o.optString("surah_name"),
-                            ayahNumber = o.optInt("ayah_number"),
+            // الآيات
+            val verseDbIdByStable = mutableMapOf<String, Long>()
+            for (i in 0 until versesArr.length()) {
+                val o = versesArr.getJSONObject(i)
+                val stableId = o.getString("stable_id")
+                val surah = o.optInt("surah_number")
+                val ayah = o.optInt("ayah_number")
+                val uthmani = o.optString("uthmani_text")
+                val existing = database.quranHadithDao().findVerseByStableId(stableId)
+                    ?: database.quranHadithDao().findVerse(surah, ayah)
+                val verseId = if (existing != null) {
+                    database.quranHadithDao().updateVerse(
+                        existing.copy(
+                            stableId = stableId,
                             uthmaniText = uthmani,
                             normalizedText = ArabicNormalizer.normalize(uthmani),
                             tafsirSummary = o.optString("tafsir_summary"),
@@ -278,44 +332,107 @@ class SeerahCatalogSeeder(
                             asbabVerified = o.optBoolean("asbab_verified", false)
                         )
                     )
-                    // ربط آية العلق بحدث نزول الوحي (order=11)
-                    if (o.optInt("surah_number") == 96 && eventIdByOrder[11] != null) {
-                        database.quranHadithDao().insertEventVerse(
-                            EventVerseEntity(
-                                eventId = eventIdByOrder[11]!!,
-                                verseId = verseId,
-                                relationNote = "أول ما نزل من القرآن في غار حراء",
-                                sourceCitation = "صحيح البخاري (حديث 3)"
-                            )
+                    existing.id
+                } else {
+                    database.quranHadithDao().insertVerse(
+                        QuranVerseEntity(
+                            stableId = stableId,
+                            surahNumber = surah,
+                            surahName = o.optString("surah_name"),
+                            ayahNumber = ayah,
+                            uthmaniText = uthmani,
+                            normalizedText = ArabicNormalizer.normalize(uthmani),
+                            tafsirSummary = o.optString("tafsir_summary"),
+                            tafsirSource = o.optString("tafsir_source"),
+                            asbabAlNuzul = o.optString("asbab_al_nuzul"),
+                            asbabSource = o.optString("asbab_source"),
+                            asbabVerified = o.optBoolean("asbab_verified", false)
                         )
-                    }
-                    versesImported++
+                    )
                 }
-                check(versesImported == versesArr.length()) { "عدم تطابق عدد الآيات المستوردة" }
-                database.qualityAuditDao().upsertContentVersion(
-                    ContentVersionEntity(packKey = "section_verses", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
-                )
+                verseDbIdByStable[stableId] = verseId
             }
 
-            // 5. استيراد الأحاديث بالتحقق الصارم validateGradeStrict
-            var hadithsImported = 0
-            if (hadithsArr != null) {
-                for (i in 0 until hadithsArr.length()) {
-                    val o = hadithsArr.optJSONObject(i) ?: continue
-                    val text = o.optString("hadith_text")
-                    val hadithNumber = o.optString("hadith_number", "")
-                    val hadithId = database.quranHadithDao().insertHadith(
-                        HadithEntity(
+            // العلاقات من بيانات الحزمة فقط (person_events و event_verses)
+            for (i in 0 until personEventsArr.length()) {
+                val r = personEventsArr.getJSONObject(i)
+                val pid = personDbIdByStable.getValue(r.getString("person_stable_id"))
+                val eid = eventDbIdByStable.getValue(r.getString("event_stable_id"))
+                if (database.peopleDao().countPersonEvent(pid, eid) == 0) {
+                    database.peopleDao().insertPersonEvent(
+                        PersonEventEntity(
+                            personId = pid,
+                            eventId = eid,
+                            roleDescription = r.optString("role_description"),
+                            sourceCitation = r.optString("source_citation")
+                        )
+                    )
+                }
+            }
+            for (i in 0 until eventVersesArr.length()) {
+                val r = eventVersesArr.getJSONObject(i)
+                val eid = eventDbIdByStable.getValue(r.getString("event_stable_id"))
+                val vid = verseDbIdByStable.getValue(r.getString("verse_stable_id"))
+                if (database.quranHadithDao().countEventVerse(eid, vid) == 0) {
+                    database.quranHadithDao().insertEventVerse(
+                        EventVerseEntity(
+                            eventId = eid,
+                            verseId = vid,
+                            relationNote = r.optString("relation_note"),
+                            sourceCitation = r.optString("source_citation")
+                        )
+                    )
+                }
+            }
+
+            // الأحاديث مع حماية المراجعات البشرية (لا حذف للمراجعة البشرية؛ NEEDS_REVALIDATION عند تغيّر النص/المصدر)
+            for (i in 0 until hadithsArr.length()) {
+                val o = hadithsArr.getJSONObject(i)
+                val stableId = o.getString("stable_id")
+                val text = o.optString("hadith_text")
+                val hadithNumber = o.optString("hadith_number", "")
+                val sourceName = o.optString("source_name")
+                val existing = database.quranHadithDao().findHadithByStableId(stableId)
+                    ?: database.quranHadithDao().findHadith(sourceName, hadithNumber)
+                val contentChanged = existing != null && (existing.hadithText != text || existing.sourceName != sourceName)
+
+                val hadithId = if (existing != null) {
+                    database.quranHadithDao().updateHadith(
+                        existing.copy(
+                            stableId = stableId,
                             hadithText = text,
                             normalizedText = ArabicNormalizer.normalize(text),
                             narrator = o.optString("narrator"),
-                            sourceName = o.optString("source_name"),
+                            sourceName = sourceName,
+                            bookTitle = o.optString("book_title"),
+                            chapterTitle = o.optString("chapter_title"),
+                            takhrij = o.optString("takhrij")
+                        )
+                    )
+                    existing.id
+                } else {
+                    database.quranHadithDao().insertHadith(
+                        HadithEntity(
+                            stableId = stableId,
+                            hadithText = text,
+                            normalizedText = ArabicNormalizer.normalize(text),
+                            narrator = o.optString("narrator"),
+                            sourceName = sourceName,
                             bookTitle = o.optString("book_title"),
                             chapterTitle = o.optString("chapter_title"),
                             hadithNumber = hadithNumber,
                             takhrij = o.optString("takhrij")
                         )
                     )
+                }
+
+                if (contentChanged) {
+                    // الحفاظ على المراجعات البشرية مع وسمها بـ NEEDS_REVALIDATION
+                    database.quranHadithDao().markHumanReviewsNeedsRevalidation(hadithId)
+                }
+
+                val existingHuman = database.quranHadithDao().getGradesForHadithSync(hadithId).any { it.isHumanReview }
+                if (!existingHuman) {
                     val scholar = o.optString("grading_scholar", "")
                     val gradeSource = o.optString("grading_source", "")
                     val origGradeText = o.optString("original_grade_text", "")
@@ -325,38 +442,48 @@ class SeerahCatalogSeeder(
                         gradingScholar = scholar,
                         gradingSource = gradeSource,
                         referenceLocator = hadithNumber,
-                        originalGradeText = origGradeText
+                        originalGradeText = origGradeText,
+                        isCitationVerifiedByReviewer = false
                     )
+                    database.quranHadithDao().deleteNonHumanGradesForHadith(hadithId)
                     database.quranHadithDao().insertHadithGrade(
                         HadithGradeEntity(
+                            stableId = "grade_$stableId",
                             hadithId = hadithId,
                             gradeCode = validated.code,
                             gradingScholar = scholar,
                             gradingSource = gradeSource,
-                            notes = origGradeText
+                            notes = origGradeText,
+                            isHumanReview = false,
+                            reviewState = validated.code,
+                            reviewedAtEpochMs = 0L
                         )
                     )
-                    hadithsImported++
                 }
-                check(hadithsImported == hadithsArr.length()) { "عدم تطابق عدد الأحاديث المستوردة" }
-                database.qualityAuditDao().upsertContentVersion(
-                    ContentVersionEntity(packKey = "section_hadiths", versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
-                )
             }
 
-            // اعتماد بصمة الحزمة الرئيسية فقط بعد نجاح جميع الأقسام بالكامل داخل المعاملة الذرية
             database.qualityAuditDao().upsertContentVersion(
                 ContentVersionEntity(packKey = CORE_PACK_KEY, versionTag = packTag, sha256Hash = packHash, installedAtEpochMs = now)
             )
             database.qualityAuditDao().insertAuditLog(
                 AuditLogEntity(
-                    action = "ATOMIC_SEED_SUCCESS",
+                    action = "ATOMIC_SYNC_V43_SUCCESS",
                     target = CORE_PACK_KEY,
-                    details = "v=$packTag events=$eventsImported places=$placesImported people=$peopleImported verses=$versesImported hadiths=$hadithsImported",
+                    details = "v=$packTag pe_rels=${personEventsArr.length()} ev_rels=${eventVersesArr.length()}",
                     createdAtEpochMs = now
                 )
             )
         }
+    }
+
+    private fun collectUniqueStableIds(section: String, arr: JSONArray): Set<String> {
+        val seen = HashSet<String>()
+        for (i in 0 until arr.length()) {
+            val id = arr.getJSONObject(i).optString("stable_id").trim()
+            check(id.isNotBlank()) { "معرف stable_id فارغ في قسم $section عند الفهرس $i" }
+            check(seen.add(id)) { "معرف stable_id مكرر ($id) في قسم $section" }
+        }
+        return seen
     }
 
     private fun sha256(text: String): String {
@@ -366,5 +493,6 @@ class SeerahCatalogSeeder(
 
     companion object {
         const val CORE_PACK_KEY = "core_seerah_json"
+        const val FALLBACK_PACK_VERSION = "3.0.1-alpha.5"
     }
 }

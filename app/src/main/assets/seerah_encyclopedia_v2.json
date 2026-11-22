@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0-alpha.3",
+  "version": "3.0.1-alpha.5",
   "events": [
     {
       "chronological_order": 1,
@@ -19,7 +19,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح مسلم (حديث 2276)؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 2,
@@ -39,7 +40,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ البداية والنهاية",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_001"
     },
     {
       "chronological_order": 3,
@@ -59,7 +61,8 @@
       "end_date_hijri": "",
       "date_certainty": "DISPUTED",
       "date_source": "سورة الفيل؛ سيرة ابن هشام",
-      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر."
+      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر.",
+      "place_stable_id": "pl_001"
     },
     {
       "chronological_order": 4,
@@ -79,7 +82,8 @@
       "end_date_hijri": "",
       "date_certainty": "DISPUTED",
       "date_source": "صحيح مسلم (حديث 1162 في يوم الاثنين)؛ الرحيق المختوم",
-      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر."
+      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر.",
+      "place_stable_id": "pl_001"
     },
     {
       "chronological_order": 5,
@@ -99,7 +103,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح مسلم (حديث 162)؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 6,
@@ -119,7 +124,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ الطبقات الكبرى لابن سعد",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 7,
@@ -139,7 +145,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 2262)؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 8,
@@ -159,7 +166,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ مسند أحمد",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_001"
     },
     {
       "chronological_order": 9,
@@ -179,7 +187,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_001"
     },
     {
       "chronological_order": 10,
@@ -199,7 +208,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ مسند أحمد",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_001"
     },
     {
       "chronological_order": 11,
@@ -219,7 +229,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 3)؛ صحيح مسلم (حديث 160)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_002"
     },
     {
       "chronological_order": 12,
@@ -239,7 +250,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 4)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 13,
@@ -259,7 +271,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 14,
@@ -279,7 +292,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "الطبقات الكبرى لابن سعد؛ الرحيق المختوم",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 15,
@@ -299,7 +313,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 4770)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 16,
@@ -319,7 +334,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 17,
@@ -339,7 +355,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 18,
@@ -359,7 +376,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "مسند أحمد؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 19,
@@ -379,7 +397,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 3863)؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 20,
@@ -399,7 +418,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 1590)؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_003"
     },
     {
       "chronological_order": 21,
@@ -419,7 +439,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 22,
@@ -439,7 +460,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 3231)؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_004"
     },
     {
       "chronological_order": 23,
@@ -459,7 +481,8 @@
       "end_date_hijri": "",
       "date_certainty": "DISPUTED",
       "date_source": "سورة الإسراء؛ صحيح البخاري (حديث 3887)",
-      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر."
+      "alternative_date_opinions": "وردت أقوال متعددة للمؤرخين في تعيين اليوم/السنة بدقة وتحتاج عرضًا مقارنًا من المصادر.",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 24,
@@ -479,7 +502,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 18، 3892)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 25,
@@ -499,7 +523,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ مسند أحمد",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 26,
@@ -519,7 +544,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة الأنفال 30؛ صحيح البخاري (حديث 3905)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 27,
@@ -539,7 +565,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 3653، 3906)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_005"
     },
     {
       "chronological_order": 28,
@@ -559,7 +586,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 3906)؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_007"
     },
     {
       "chronological_order": 29,
@@ -579,7 +607,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 3906)؛ سنن أبي داود",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_008"
     },
     {
       "chronological_order": 30,
@@ -599,7 +628,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 399، 3937)؛ سيرة ابن هشام",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_008"
     },
     {
       "chronological_order": 31,
@@ -619,7 +649,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ السيرة النبوية الصحيحة",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 32,
@@ -639,7 +670,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة الأنفال؛ صحيح البخاري (كتاب المغازي)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_009"
     },
     {
       "chronological_order": 33,
@@ -659,7 +691,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سيرة ابن هشام؛ صحيح مسلم (حديث 1765)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 34,
@@ -679,7 +712,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة آل عمران؛ صحيح البخاري (حديث 4043)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_010"
     },
     {
       "chronological_order": 35,
@@ -699,7 +733,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة الحشر؛ صحيح البخاري (حديث 4028)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 36,
@@ -719,7 +754,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة الأحزاب؛ صحيح البخاري (حديث 4103، 4121)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_011"
     },
     {
       "chronological_order": 37,
@@ -739,7 +775,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة الفتح؛ صحيح البخاري (حديث 2731)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_012"
     },
     {
       "chronological_order": 38,
@@ -759,7 +796,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 7، 2940)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 39,
@@ -779,7 +817,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 4210، 4251)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_013"
     },
     {
       "chronological_order": 40,
@@ -799,7 +838,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 4261–4266)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_014"
     },
     {
       "chronological_order": 41,
@@ -819,7 +859,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 4276–4280)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_001"
     },
     {
       "chronological_order": 42,
@@ -839,7 +880,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة التوبة 25–26؛ صحيح البخاري (حديث 4314)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_015"
     },
     {
       "chronological_order": 43,
@@ -859,7 +901,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة التوبة؛ صحيح البخاري (حديث 4418)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_016"
     },
     {
       "chronological_order": 44,
@@ -879,7 +922,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "سورة النصر؛ صحيح البخاري (حديث 4368–4395)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": ""
     },
     {
       "chronological_order": 45,
@@ -899,7 +943,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح مسلم (حديث 1218)؛ صحيح البخاري (حديث 4406)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_017"
     },
     {
       "chronological_order": 46,
@@ -919,7 +964,8 @@
       "end_date_hijri": "",
       "date_certainty": "PROBABLE",
       "date_source": "صحيح البخاري (حديث 4440–4463)",
-      "alternative_date_opinions": ""
+      "alternative_date_opinions": "",
+      "place_stable_id": "pl_008"
     }
   ],
   "places": [
@@ -1691,6 +1737,136 @@
       "grading_source": "صحيح البخاري",
       "stable_id": "hd_008",
       "original_grade_text": "مخرج في الصحيح (يحتاج توثيق الطبعة والرقم النهائي عند المراجعة)"
+    }
+  ],
+  "person_events": [
+    {
+      "stable_id": "rel_pe_001",
+      "person_stable_id": "pe_001",
+      "event_stable_id": "ev_004",
+      "role_description": "المولد النبوي الشريف",
+      "source_citation": "سيرة ابن هشام"
+    },
+    {
+      "stable_id": "rel_pe_002",
+      "person_stable_id": "pe_001",
+      "event_stable_id": "ev_011",
+      "role_description": "نزول الوحي وبداية النبوة",
+      "source_citation": "صحيح البخاري (حديث 3)"
+    },
+    {
+      "stable_id": "rel_pe_003",
+      "person_stable_id": "pe_002",
+      "event_stable_id": "ev_011",
+      "role_description": "تثبيت النبي ﷺ والذهاب به إلى ورقة بن نوفل",
+      "source_citation": "صحيح البخاري (حديث 3)"
+    },
+    {
+      "stable_id": "rel_pe_004",
+      "person_stable_id": "pe_006",
+      "event_stable_id": "ev_027",
+      "role_description": "رفيق النبي ﷺ في الغار والهجرة",
+      "source_citation": "صحيح البخاري (حديث 3653)"
+    },
+    {
+      "stable_id": "rel_pe_005",
+      "person_stable_id": "pe_009",
+      "event_stable_id": "ev_026",
+      "role_description": "المبيت في فراش النبي ﷺ لرد الأمانات",
+      "source_citation": "سيرة ابن هشام"
+    },
+    {
+      "stable_id": "rel_pe_006",
+      "person_stable_id": "pe_009",
+      "event_stable_id": "ev_039",
+      "role_description": "حمل الراية وفتح خيبر على يديه",
+      "source_citation": "صحيح البخاري (حديث 4210)"
+    },
+    {
+      "stable_id": "rel_pe_007",
+      "person_stable_id": "pe_017",
+      "event_stable_id": "ev_034",
+      "role_description": "سيد الشهداء يوم أحد",
+      "source_citation": "صحيح البخاري؛ سيرة ابن هشام"
+    },
+    {
+      "stable_id": "rel_pe_008",
+      "person_stable_id": "pe_012",
+      "event_stable_id": "ev_036",
+      "role_description": "المشورة بحفر الخندق شمال المدينة",
+      "source_citation": "سيرة ابن هشام؛ مسند أحمد"
+    },
+    {
+      "stable_id": "rel_pe_009",
+      "person_stable_id": "pe_011",
+      "event_stable_id": "ev_024",
+      "role_description": "أول سفير للدعوة إلى المدينة",
+      "source_citation": "صحيح البخاري"
+    },
+    {
+      "stable_id": "rel_pe_010",
+      "person_stable_id": "pe_018",
+      "event_stable_id": "ev_040",
+      "role_description": "تولّي القيادة والانحياز بالجيش بسلام",
+      "source_citation": "صحيح البخاري (حديث 4262)"
+    }
+  ],
+  "event_verses": [
+    {
+      "stable_id": "rel_ev_001",
+      "event_stable_id": "ev_011",
+      "verse_stable_id": "qv_001",
+      "relation_note": "أول ما نزل من القرآن في غار حراء",
+      "source_citation": "صحيح البخاري (حديث 3)"
+    },
+    {
+      "stable_id": "rel_ev_002",
+      "event_stable_id": "ev_012",
+      "verse_stable_id": "qv_002",
+      "relation_note": "بدء الأمر بالإنذار بعد فترة الوحي",
+      "source_citation": "صحيح البخاري (حديث 4)"
+    },
+    {
+      "stable_id": "rel_ev_003",
+      "event_stable_id": "ev_027",
+      "verse_stable_id": "qv_003",
+      "relation_note": "قصة الغار والهجرة",
+      "source_citation": "صحيح البخاري (حديث 3653)"
+    },
+    {
+      "stable_id": "rel_ev_004",
+      "event_stable_id": "ev_032",
+      "verse_stable_id": "qv_004",
+      "relation_note": "الإمداد بالملائكة يوم بدر",
+      "source_citation": "صحيح مسلم (حديث 1763)"
+    },
+    {
+      "stable_id": "rel_ev_005",
+      "event_stable_id": "ev_034",
+      "verse_stable_id": "qv_005",
+      "relation_note": "آيات غزوة أحد وموقعة الرماة",
+      "source_citation": "صحيح البخاري (حديث 4043)"
+    },
+    {
+      "stable_id": "rel_ev_006",
+      "event_stable_id": "ev_036",
+      "verse_stable_id": "qv_006",
+      "relation_note": "رد الأحزاب بالريح والجنود",
+      "source_citation": "تفسير ابن كثير؛ صحيح البخاري"
+    },
+    {
+      "stable_id": "rel_ev_007",
+      "event_stable_id": "ev_037",
+      "verse_stable_id": "qv_007",
+      "relation_note": "نزول سورة الفتح في مرجع الحديبية",
+      "source_citation": "صحيح البخاري (حديث 4833)"
+    },
+    {
+      "stable_id": "rel_ev_008",
+      "event_stable_id": "ev_045",
+      "verse_stable_id": "qv_009",
+      "relation_note": "نزلت عشية عرفة في حجة الوداع",
+      "source_citation": "صحيح البخاري (حديث 45)"
     }
   ]
 }

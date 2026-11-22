@@ -114,7 +114,29 @@ class Alpha3ComprehensiveTest {
         )
         assertEquals(
             HadithGradeStatus.SAHIH,
-            HadithGradeStatus.validateGradeStrict("SAHIH", "الإمام البخاري", "صحيح البخاري", "3", "متفق عليه")
+            HadithGradeStatus.validateGradeStrict("SAHIH", "الإمام البخاري", "صحيح البخاري", "3", "متفق عليه", isCitationVerifiedByReviewer = true)
         )
+    }
+
+    @Test
+    fun tileToBoundsContainsOriginalLatLon() {
+        val lat = 21.4225
+        val lon = 39.8262
+        val zoom = 10
+        val (tx, ty) = MbTilesReader.latLonToTileXY(lat, lon, zoom)
+        val b = MbTilesReader.tileToBounds(zoom, tx, ty)
+        assertTrue("Lat $lat must be inside ${b.southLat}..${b.northLat}", lat in b.southLat..b.northLat)
+        assertTrue("Lon $lon must be inside ${b.westLon}..${b.eastLon}", lon in b.westLon..b.eastLon)
+    }
+
+    @Test(expected = SecurityException::class)
+    fun epubParserBlocksZipSlipEntry() {
+        val baos = ByteArrayOutputStream()
+        ZipOutputStream(baos).use { zos ->
+            zos.putNextEntry(ZipEntry("../../evil.xhtml"))
+            zos.write("<html/>".toByteArray(Charsets.UTF_8))
+            zos.closeEntry()
+        }
+        EpubOpfParser.parseChaptersFromZip(ByteArrayInputStream(baos.toByteArray()))
     }
 }

@@ -94,6 +94,18 @@ interface EventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: EventEntity): Long
 
+    @Update
+    suspend fun updateEvent(event: EventEntity)
+
+    @Query("SELECT * FROM events WHERE title = :title LIMIT 1")
+    suspend fun findEventByTitle(title: String): EventEntity?
+
+    @Query("SELECT * FROM events WHERE stable_id = :stableId LIMIT 1")
+    suspend fun findEventByStableId(stableId: String): EventEntity?
+
+    @Query("DELETE FROM event_dates WHERE event_id = :eventId")
+    suspend fun deleteEventDates(eventId: Long)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEventDate(date: EventDateEntity): Long
 
@@ -138,6 +150,18 @@ interface PeopleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPerson(person: PersonEntity): Long
 
+    @Update
+    suspend fun updatePerson(person: PersonEntity)
+
+    @Query("SELECT * FROM people WHERE name = :name LIMIT 1")
+    suspend fun findPersonByName(name: String): PersonEntity?
+
+    @Query("SELECT * FROM people WHERE stable_id = :stableId LIMIT 1")
+    suspend fun findPersonByStableId(stableId: String): PersonEntity?
+
+    @Query("SELECT COUNT(*) FROM person_events WHERE person_id = :personId AND event_id = :eventId")
+    suspend fun countPersonEvent(personId: Long, eventId: Long): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPersonEvent(link: PersonEventEntity): Long
 }
@@ -179,6 +203,18 @@ interface AtlasGeoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlace(place: PlaceEntity): Long
+
+    @Update
+    suspend fun updatePlace(place: PlaceEntity)
+
+    @Query("SELECT * FROM places WHERE name = :name LIMIT 1")
+    suspend fun findPlaceByName(name: String): PlaceEntity?
+
+    @Query("SELECT * FROM places WHERE stable_id = :stableId LIMIT 1")
+    suspend fun findPlaceByStableId(stableId: String): PlaceEntity?
+
+    @Query("DELETE FROM place_coordinates WHERE place_id = :placeId")
+    suspend fun deleteCoordinatesForPlace(placeId: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlaceCoordinate(coord: PlaceCoordinateEntity): Long
@@ -241,11 +277,41 @@ interface QuranHadithDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertVerse(verse: QuranVerseEntity): Long
 
+    @Update
+    suspend fun updateVerse(verse: QuranVerseEntity)
+
+    @Query("SELECT * FROM quran_verses WHERE surah_number = :surah AND ayah_number = :ayah LIMIT 1")
+    suspend fun findVerse(surah: Int, ayah: Int): QuranVerseEntity?
+
+    @Query("SELECT * FROM quran_verses WHERE stable_id = :stableId LIMIT 1")
+    suspend fun findVerseByStableId(stableId: String): QuranVerseEntity?
+
+    @Query("SELECT COUNT(*) FROM event_verses WHERE event_id = :eventId AND verse_id = :verseId")
+    suspend fun countEventVerse(eventId: Long, verseId: Long): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEventVerse(link: EventVerseEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHadith(hadith: HadithEntity): Long
+
+    @Update
+    suspend fun updateHadith(hadith: HadithEntity)
+
+    @Query("SELECT * FROM hadiths WHERE source_name = :source AND hadith_number = :num LIMIT 1")
+    suspend fun findHadith(source: String, num: String): HadithEntity?
+
+    @Query("SELECT * FROM hadiths WHERE stable_id = :stableId LIMIT 1")
+    suspend fun findHadithByStableId(stableId: String): HadithEntity?
+
+    @Query("SELECT * FROM hadith_grades WHERE hadith_id = :hadithId")
+    suspend fun getGradesForHadithSync(hadithId: Long): List<HadithGradeEntity>
+
+    @Query("DELETE FROM hadith_grades WHERE hadith_id = :hadithId AND is_human_review = 0")
+    suspend fun deleteNonHumanGradesForHadith(hadithId: Long)
+
+    @Query("UPDATE hadith_grades SET review_state = 'NEEDS_REVALIDATION' WHERE hadith_id = :hadithId AND is_human_review = 1")
+    suspend fun markHumanReviewsNeedsRevalidation(hadithId: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHadithGrade(grade: HadithGradeEntity): Long

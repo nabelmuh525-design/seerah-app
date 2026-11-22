@@ -17,6 +17,7 @@ import androidx.room.PrimaryKey
 )
 data class EventEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "stable_id", defaultValue = "") val stableId: String = "",
     val title: String,
     @ColumnInfo(name = "normalized_title") val normalizedTitle: String,
     @ColumnInfo(name = "stage_code") val stageCode: String, // e.g. BIRTH, REVELATION, HIJRA, BATTLES...
