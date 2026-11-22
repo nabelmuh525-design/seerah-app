@@ -18,10 +18,27 @@ class SeerahEnumsTest {
 
     @Test
     fun rejectsSahihGradeWithoutScholarAndReference() {
-        val rejected = HadithGradeStatus.validateGrade("SAHIH", "", "")
+        val rejected = HadithGradeStatus.validateGradeStrict("SAHIH", "", "", "", "")
         assertEquals(HadithGradeStatus.INCOMPLETE_CITATION, rejected)
 
-        val accepted = HadithGradeStatus.validateGrade("SAHIH", "الإمام البخاري", "صحيح البخاري (حديث 3)")
+        val unverified = HadithGradeStatus.validateGradeStrict(
+            requestedCode = "SAHIH",
+            gradingScholar = "الإمام البخاري",
+            gradingSource = "صحيح البخاري",
+            referenceLocator = "حديث 3",
+            originalGradeText = "صحيح",
+            isCitationVerifiedByReviewer = false
+        )
+        assertEquals(HadithGradeStatus.UNDER_REVIEW, unverified)
+
+        val accepted = HadithGradeStatus.validateGradeStrict(
+            requestedCode = "SAHIH",
+            gradingScholar = "الإمام البخاري",
+            gradingSource = "صحيح البخاري",
+            referenceLocator = "حديث 3",
+            originalGradeText = "صحيح",
+            isCitationVerifiedByReviewer = true
+        )
         assertEquals(HadithGradeStatus.SAHIH, accepted)
     }
 }
