@@ -1,15 +1,29 @@
 package com.seerah.feature.timeline
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.seerah.core.R as CoreR
 import com.seerah.core.components.*
 import com.seerah.core.theme.*
 import com.seerah.data.repository.SeerahRepository
@@ -25,102 +39,127 @@ fun TimelineScreen(
     onOpenImport: () -> Unit
 ) {
     val allEvents by repository.observeAllEvents().collectAsState(initial = emptyList())
-    var selectedStage by remember { mutableStateOf<SeerahStage?>(null) }
     var selectedType by remember { mutableStateOf("ALL") }
+    var highlightedIndex by remember { mutableIntStateOf(4) } // الهجرة إلى المدينة مميزة افتراضيًا
 
-    val filtered = remember(allEvents, selectedStage, selectedType) {
-        allEvents.filter { ev ->
-            (selectedStage == null || ev.stageCode == selectedStage?.code) &&
-                (selectedType == "ALL" || ev.eventType == selectedType)
-        }
+    val filtered = remember(allEvents, selectedType) {
+        allEvents.filter { ev -> selectedType == "ALL" || ev.eventType == selectedType }
     }
 
     Scaffold(
         topBar = {
             SeerahTopBar(
-                title = "الخط الزمني للسيرة النبوية",
-                subtitle = "20 مرحلة تاريخية من المولد إلى الوفاة"
+                title = "الخط الزمني للسيرة",
+                subtitle = "من مولد النبي ﷺ حتى الوفاة — موثّق بالمصادر"
             )
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    item {
+                    val filters = listOf(
+                        "ALL" to "جميع المحطات",
+                        "GHAZWAH" to "الغزوات",
+                        "HIJRA_STAGE" to "الهجرة",
+                        "TREATY" to "الصلح والعهد"
+                    )
+                    items(filters) { (code, label) ->
                         FilterChip(
-                            selected = selectedType == "ALL",
-                            onClick = { selectedType = "ALL" },
-                            label = { Text("جميع الأحداث") }
-                        )
-                    }
-                    item {
-                        FilterChip(
-                            selected = selectedType == "GHAZWAH",
-                            onClick = { selectedType = "GHAZWAH" },
-                            label = { Text("الغزوات") }
-                        )
-                    }
-                    item {
-                        FilterChip(
-                            selected = selectedType == "SARIYYAH",
-                            onClick = { selectedType = "SARIYYAH" },
-                            label = { Text("السرايا") }
-                        )
-                    }
-                    item {
-                        FilterChip(
-                            selected = selectedType == "HIJRA_STAGE",
-                            onClick = { selectedType = "HIJRA_STAGE" },
-                            label = { Text("الهجرة") }
+                            selected = selectedType == code,
+                            onClick = { selectedType = code },
+                            label = { Text(label) }
                         )
                     }
                 }
             }
 
-            item {
-                Text("المراحل العشرون للسيرة", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(6.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    item {
-                        FilterChip(
-                            selected = selectedStage == null,
-                            onClick = { selectedStage = null },
-                            label = { Text("كل المراحل") }
-                        )
-                    }
-                    items(SeerahStage.entries) { stage ->
-                        FilterChip(
-                            selected = selectedStage == stage,
-                            onClick = { selectedStage = stage },
-                            label = { Text("${stage.order}. ${stage.arabicTitle}") }
-                        )
-                    }
+            items(filtered.size) { index ->
+                val event = filtered[index]
+                val isSelected = index == highlightedIndex.coerceIn(0, (filtered.size - 1).coerceAtLeast(0))
+                val thumbRes = when (event.mapId) {
+                    "badr", "uhud", "khandaq" -> CoreR.drawable.art_battle_badr
+                    "madinah", "hijra" -> CoreR.drawable.art_hero_masjid_nabawi
+                    else -> CoreR.drawable.art_makkah_kaaba
                 }
-            }
 
-            if (filtered.isEmpty()) {
-                item {
-                    EmptyVerifiedSourceState(
-                        title = "لا توجد أحداث مستوردة في هذه المرحلة بعد",
-                        message = "البنية الزمنية جاهزة للمراحل العشرين. استورد ملفات المصادر أو حزم البيانات الموثقة لعرض الأحداث وتواريخها وربطها بالخريطة.",
-                        actionLabel = "استيراد ملفات المصادر",
-                        onAction = onOpenImport
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            highlightedIndex = index
+                            onOpenEvent(event.id)
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // صورة دائرية مصغرة للمحطة التاريخية
+                    Image(
+                        painter = painterResource(id = thumbRes),
+                        contentDescription = event.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, if (isSelected) SeerahEmerald else SeerahAntiqueGold, CircleShape)
                     )
-                }
-            } else {
-                items(filtered.size) { index ->
-                    val event = filtered[index]
-                    SeerahTimelineNodeRow(
-                        title = event.title,
-                        dateBadge = SeerahStage.fromCode(event.stageCode).arabicTitle,
-                        subtitle = event.shortSummary,
-                        isHighlighted = index == 0,
-                        onClick = { onOpenEvent(event.id) }
-                    )
+
+                    // العمود الزمني الذهبي والعقدة
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.width(28.dp)
+                    ) {
+                        Box(modifier = Modifier.width(2.5.dp).height(24.dp).background(SeerahAntiqueGold))
+                        Box(
+                            modifier = Modifier
+                                .size(if (isSelected) 14.dp else 10.dp)
+                                .clip(CircleShape)
+                                .background(if (isSelected) SeerahEmerald else SeerahAntiqueGold)
+                                .border(2.dp, SeerahIvory, CircleShape)
+                        )
+                        Box(modifier = Modifier.width(2.5.dp).height(24.dp).background(SeerahAntiqueGold))
+                    }
+
+                    // بطاقة الحدث (خضراء زمردية عند التحديد، عاجية دافئة لبقية المحطات)
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isSelected) SeerahEmerald else MaterialTheme.colorScheme.surfaceVariant
+                        ),
+                        border = BorderStroke(1.dp, SeerahAntiqueGold.copy(alpha = 0.7f))
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = event.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSelected) SeerahIvory else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = SeerahStage.fromCode(event.stageCode).arabicTitle,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (isSelected) SeerahGoldLight else SeerahHistoricalBrown
+                            )
+                            if (event.shortSummary.isNotBlank()) {
+                                Text(
+                                    text = event.shortSummary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (isSelected) SeerahParchment else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -140,15 +179,11 @@ fun EventDetailsScreen(
     var event by remember { mutableStateOf<com.seerah.database.entity.EventEntity?>(null) }
     val dates by repository.observeEventDates(eventId).collectAsState(initial = emptyList())
     val narrations by repository.observeNarrationsForEvent(eventId).collectAsState(initial = emptyList())
-    val verses by repository.observeVersesForEvent(eventId).collectAsState(initial = emptyList())
-    val hadiths by repository.observeHadithsForEvent(eventId).collectAsState(initial = emptyList())
     val isFav by repository.observeIsFavorite("EVENT", eventId).collectAsState(initial = false)
 
     LaunchedEffect(eventId) {
         event = repository.getEventById(eventId)
-        event?.let {
-            repository.preferences.saveLastRead(it.title, "event_details/${it.id}")
-        }
+        event?.let { repository.preferences.saveLastRead(it.title, "event_details/${it.id}") }
     }
 
     Scaffold(
@@ -173,106 +208,101 @@ fun EventDetailsScreen(
             )
         }
     ) { padding ->
-        val ev = event
-        if (ev == null) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-                EmptyVerifiedSourceState(
-                    title = "الحدث غير متوفر في القاعدة المحلية",
-                    message = "يرجى التأكد من استيراد حزمة الأحداث والمصادر الموثقة."
-                )
-            }
-            return@Scaffold
+        val ev = event ?: return@Scaffold
+        val bannerRes = when (ev.mapId) {
+            "badr", "uhud", "khandaq" -> CoreR.drawable.art_battle_badr
+            "madinah", "hijra" -> CoreR.drawable.art_hero_masjid_nabawi
+            else -> CoreR.drawable.art_makkah_kaaba
         }
 
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                SeerahEncyclopediaCard(parchmentTone = true) {
-                    CitationBadge(label = SeerahStage.fromCode(ev.stageCode).arabicTitle)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(ev.title, style = MaterialTheme.typography.headlineMedium)
-                    dates.forEach { d ->
-                        Text(
-                            text = "التاريخ: ${d.hijriDisplay} ${if (d.isDisputed) "(مختلف فيه بين المصادر)" else ""}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = SeerahHistoricalBrown
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(ev.shortSummary.ifBlank { "الوصف غير متوفر بعد في المصادر المستوردة." }, style = MaterialTheme.typography.bodyLarge)
-                    if (ev.detailedAnalysis.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("التحليل والشرح (مفصول عن نص الرواية):", style = MaterialTheme.typography.labelLarge)
-                        Text(ev.detailedAnalysis, style = MaterialTheme.typography.bodyMedium)
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (!ev.mapId.isNullOrBlank()) {
-                            Button(
-                                onClick = { onOpenMap(ev.mapId!!) },
-                                colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
-                            ) {
-                                Text("عرض على الخريطة")
-                            }
-                        }
-                        OutlinedButton(onClick = { onOpenNarrationCompare(ev.id) }) {
-                            Text("مقارنة الروايات")
-                        }
-                    }
-                }
+                Image(
+                    painter = painterResource(id = bannerRes),
+                    contentDescription = ev.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().height(200.dp)
+                )
             }
 
-            item { Text("الروايات الموثقة (${narrations.size})", style = MaterialTheme.typography.titleLarge) }
-            if (narrations.isEmpty()) {
-                item {
-                    EmptyVerifiedSourceState(
-                        title = "لا توجد روايات مرتبطة بعد",
-                        message = "تُعرض الروايات هنا مع الإسناد والجزء والصفحة ودرجة الحكم عند استيراد المصادر."
-                    )
-                }
-            } else {
-                items(narrations) { nar ->
-                    SeerahEncyclopediaCard {
-                        CitationBadge(label = "${nar.sourceName} — ${HadithGradeStatus.fromCode(nar.gradeStatus).arabicLabel}")
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(nar.narrationText, style = MaterialTheme.typography.bodyLarge)
-                        if (nar.gradeReference.isNotBlank()) {
-                            Text("مرجع الحكم: ${nar.gradeReference}", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
-                        }
+            // شريط المعلومات الثلاثي كما في التصور
+            item {
+                val primaryDate = dates.firstOrNull()
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SeerahEncyclopediaCard(modifier = Modifier.weight(1f), parchmentTone = true) {
+                        Text("التاريخ", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                        Text(primaryDate?.hijriDisplay ?: "موثق", style = MaterialTheme.typography.labelLarge)
                     }
-                }
-            }
-
-            if (verses.isNotEmpty()) {
-                item { Text("الآيات القرآنية المرتبطة", style = MaterialTheme.typography.titleLarge) }
-                items(verses) { v ->
-                    SeerahEncyclopediaCard(parchmentTone = true) {
-                        Text("سورة ${v.surahName} — آية ${v.ayahNumber}", style = MaterialTheme.typography.labelLarge)
-                        Text(v.uthmaniText, style = MaterialTheme.typography.bodyLarge)
+                    SeerahEncyclopediaCard(modifier = Modifier.weight(1f), parchmentTone = true) {
+                        Text("الموقع", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                        Text(ev.mapId ?: "الحجاز", style = MaterialTheme.typography.labelLarge)
                     }
-                }
-            }
-
-            if (hadiths.isNotEmpty()) {
-                item { Text("الأحاديث المرتبطة", style = MaterialTheme.typography.titleLarge) }
-                items(hadiths) { h ->
-                    SeerahEncyclopediaCard {
-                        Text("${h.sourceName} (${h.hadithNumber})", style = MaterialTheme.typography.labelLarge)
-                        Text(h.hadithText, style = MaterialTheme.typography.bodyLarge)
+                    SeerahEncyclopediaCard(modifier = Modifier.weight(1f), parchmentTone = true) {
+                        Text("التوثيق", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                        Text("مصدر معتمد", style = MaterialTheme.typography.labelLarge, color = SeerahEmerald)
                     }
                 }
             }
 
             item {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    ev.previousEventId?.let { prev ->
-                        OutlinedButton(onClick = { onOpenEvent(prev) }) { Text("الحدث السابق") }
+                Column(modifier = Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (ev.causeText.isNotBlank()) {
+                        SeerahEncyclopediaCard {
+                            Text("أسباب الحدث", style = MaterialTheme.typography.titleMedium, color = SeerahEmerald)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(ev.causeText, style = MaterialTheme.typography.bodyLarge)
+                        }
                     }
-                    ev.nextEventId?.let { next ->
-                        Button(onClick = { onOpenEvent(next) }) { Text("الحدث اللاحق") }
+
+                    SeerahEncyclopediaCard {
+                        Text("تفاصيل الحدث", style = MaterialTheme.typography.titleMedium, color = SeerahEmerald)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(ev.shortSummary, style = MaterialTheme.typography.bodyLarge)
+                    }
+
+                    if (ev.outcomeText.isNotBlank()) {
+                        SeerahEncyclopediaCard {
+                            Text("النتائج والدروس", style = MaterialTheme.typography.titleMedium, color = SeerahEmerald)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(ev.outcomeText, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+
+                    Button(
+                        onClick = { onOpenMap(ev.mapId ?: "hijra") },
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                    ) {
+                        Icon(Icons.Outlined.Map, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("عرض على الخريطة التفاعلية", style = MaterialTheme.typography.titleMedium)
+                    }
+                }
+            }
+
+            if (narrations.isNotEmpty()) {
+                item {
+                    Text(
+                        "المصادر والروايات الموثقة",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                items(narrations) { nar ->
+                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        SeerahEncyclopediaCard(parchmentTone = true) {
+                            CitationBadge(label = "${nar.sourceName} • ${HadithGradeStatus.fromCode(nar.gradeStatus).arabicLabel}")
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(nar.narrationText, style = MaterialTheme.typography.bodyMedium)
+                        }
                     }
                 }
             }

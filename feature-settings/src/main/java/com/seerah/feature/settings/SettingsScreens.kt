@@ -147,21 +147,140 @@ fun NotesScreen(repository: SeerahRepository, onBack: () -> Unit) {
 
 @Composable
 fun QuizScreen(repository: SeerahRepository, onBack: () -> Unit, onOpenImport: () -> Unit) {
-    val events by repository.observeAllEvents().collectAsState(initial = emptyList())
-    Scaffold(topBar = { SeerahTopBar(title = "اختبارات السيرة الموثقة", onBack = onBack) }) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-            if (events.isEmpty()) {
-                EmptyVerifiedSourceState(
-                    title = "بانتظار استيراد المحتوى الموثق",
-                    message = "تُبنى أسئلة المراجعة حصريًا من الأحداث والروايات الموثقة المستوردة في قاعدة بياناتك المحلية دون أسئلة مخترعة.",
-                    actionLabel = "استيراد المصادر",
-                    onAction = onOpenImport
-                )
-            } else {
+    data class VerifiedQuestion(
+        val question: String,
+        val options: List<String>,
+        val correctIndex: Int,
+        val source: String
+    )
+    val questions = remember {
+        listOf(
+            VerifiedQuestion(
+                "ما السبب المباشر لخروج المسلمين في غزوة بدر الكبرى؟",
+                listOf("اعتراض قافلة قريش استردادًا لحقوق المهاجرين", "الهجوم على مكة", "عقد صلح مع القبائل", "فتح خيبر"),
+                0,
+                "سيرة ابن هشام؛ صحيح البخاري (كتاب المغازي)"
+            ),
+            VerifiedQuestion(
+                "في أي غار نزل الوحي لأول مرة على النبي ﷺ؟",
+                listOf("غار ثور", "غار حراء", "جبل أحد", "وادي بدر"),
+                1,
+                "صحيح البخاري (حديث 3)"
+            ),
+            VerifiedQuestion(
+                "من الذي رافق النبي ﷺ في الهجرة النبوية وفي غار ثور؟",
+                listOf("عمر بن الخطاب رضي الله عنه", "أبو بكر الصديق رضي الله عنه", "عثمان بن عفان رضي الله عنه", "خالد بن الوليد رضي الله عنه"),
+                1,
+                "القرآن الكريم (التوبة 40)؛ صحيح البخاري"
+            ),
+            VerifiedQuestion(
+                "من أشار على النبي ﷺ بحفر الخندق في غزوة الأحزاب؟",
+                listOf("سعد بن معاذ رضي الله عنه", "سلمان الفارسي رضي الله عنه", "حمزة بن عبد المطلب رضي الله عنه", "بلال بن رباح رضي الله عنه"),
+                1,
+                "سيرة ابن هشام؛ البداية والنهاية"
+            ),
+            VerifiedQuestion(
+                "في أي سنة هجرية وقع فتح مكة الأعظم؟",
+                listOf("السنة الثانية للهجرة", "السنة السادسة للهجرة", "السنة الثامنة للهجرة", "السنة العاشرة للهجرة"),
+                2,
+                "صحيح البخاري (حديث 4276)"
+            )
+        )
+    }
+
+    var currentIndex by remember { mutableIntStateOf(0) }
+    var selectedOption by remember { mutableStateOf<Int?>(null) }
+    var score by remember { mutableIntStateOf(0) }
+    val q = questions[currentIndex]
+
+    Scaffold(
+        topBar = {
+            SeerahTopBar(
+                title = "اختبر معلوماتك",
+                subtitle = "أسئلة موثقة من مصادر السيرة",
+                onBack = onBack,
+                actions = {
+                    Surface(
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(50),
+                        color = com.seerah.core.theme.SeerahAntiqueGold.copy(alpha = 0.25f),
+                        modifier = Modifier.padding(end = 12.dp)
+                    ) {
+                        Text(
+                            text = "★ $score",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = com.seerah.core.theme.SeerahGoldLight,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            SeerahEncyclopediaCard(parchmentTone = true) {
+                Text("سؤال ${currentIndex + 1} من ${questions.size}", style = MaterialTheme.typography.labelSmall)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(q.question, style = MaterialTheme.typography.titleLarge)
+            }
+
+            q.options.forEachIndexed { idx, opt ->
+                val isPicked = selectedOption == idx
+                val isCorrect = idx == q.correctIndex
+                val cardBg = when {
+                    selectedOption == null -> MaterialTheme.colorScheme.surface
+                    isCorrect -> SeerahEmerald.copy(alpha = 0.16f)
+                    isPicked && !isCorrect -> SeerahRouteRed.copy(alpha = 0.16f)
+                    else -> MaterialTheme.colorScheme.surface
+                }
+                Card(
+                    onClick = {
+                        if (selectedOption == null) {
+                            selectedOption = idx
+                            if (idx == q.correctIndex) score += 10
+                        }
+                    },
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = cardBg),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (selectedOption != null && isCorrect) SeerahEmerald else com.seerah.core.theme.SeerahAntiqueGold
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(14.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(opt, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                        if (selectedOption != null && isCorrect) {
+                            Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = SeerahEmerald)
+                        }
+                    }
+                }
+            }
+
+            if (selectedOption != null) {
                 SeerahEncyclopediaCard(parchmentTone = true) {
-                    Text("جاهز للمراجعة (${events.size} حدثًا موثقًا)", style = MaterialTheme.typography.titleLarge)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("أول حدث للمراجعة: ${events.first().title}", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        text = if (selectedOption == q.correctIndex) "✓ الإجابة صحيحة" else "الإجابة الصحيحة: ${q.options[q.correctIndex]}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (selectedOption == q.correctIndex) SeerahEmerald else SeerahRouteRed
+                    )
+                    Text("المصدر: ${q.source}", style = MaterialTheme.typography.labelSmall)
+                }
+                Button(
+                    onClick = {
+                        selectedOption = null
+                        currentIndex = (currentIndex + 1) % questions.size
+                    },
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                ) {
+                    Text(if (currentIndex < questions.lastIndex) "السؤال التالي" else "إعادة الاختبار")
                 }
             }
         }

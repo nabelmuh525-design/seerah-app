@@ -18,13 +18,14 @@ import kotlinx.coroutines.withContext
  * المستودع الموحد لتطبيق سِيرَة (Offline-First Repository).
  */
 class SeerahRepository(
+    private val context: android.content.Context,
     val database: SeerahDatabase,
     val preferences: SeerahPreferences,
     val importEngine: BookImportEngine,
     val backupRestoreManager: BackupRestoreManager,
     val appUpdater: SeerahAppUpdater
 ) {
-    private val seeder = SeerahCatalogSeeder(database)
+    private val seeder = SeerahCatalogSeeder(context, database)
 
     suspend fun initializeOfflineCatalog() = withContext(Dispatchers.IO) {
         seeder.seedCatalogIfNeeded()

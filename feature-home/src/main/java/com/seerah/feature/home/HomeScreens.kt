@@ -1,27 +1,36 @@
 package com.seerah.feature.home
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.seerah.core.R as CoreR
 import com.seerah.core.components.*
 import com.seerah.core.theme.*
 import com.seerah.data.repository.SeerahRepository
 import com.seerah.domain.model.AtlasMapDefinition
-import com.seerah.domain.model.SeerahStage
 import kotlinx.coroutines.delay
 
 @Composable
@@ -30,138 +39,120 @@ fun SplashScreen(
     onNavigateNext: (Boolean) -> Unit
 ) {
     LaunchedEffect(onboardingCompleted) {
-        delay(1100)
+        delay(1200)
         onNavigateNext(onboardingCompleted)
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(SeerahDeepGreen, SeerahEmerald))),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = CoreR.drawable.art_hero_masjid_nabawi),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            SeerahDeepGreen.copy(alpha = 0.65f),
+                            Color.Transparent,
+                            SeerahDeepGreen.copy(alpha = 0.85f)
+                        )
+                    )
+                )
+        )
         Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 92.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(32.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Explore,
-                contentDescription = "شعار سِيرَة",
-                tint = SeerahAntiqueGold,
-                modifier = Modifier.size(72.dp)
+            Text(
+                text = "السِّيرَة النَّبَوِيَّة",
+                style = MaterialTheme.typography.displayLarge.copy(fontSize = 38.sp),
+                color = SeerahGoldLight,
+                textAlign = TextAlign.Center
             )
             Text(
-                text = "سِيرَة",
-                style = MaterialTheme.typography.displayLarge,
-                color = SeerahIvory
-            )
-            Text(
-                text = "SEERAH",
+                text = "سِيرَة — موسوعة تفاعلية شاملة",
                 style = MaterialTheme.typography.titleMedium,
-                color = SeerahAntiqueGold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "«رحلة موثقة في حياة رسول الله محمد ﷺ»",
-                style = MaterialTheme.typography.bodyLarge,
                 color = SeerahParchment,
                 textAlign = TextAlign.Center
             )
-            Text(
-                text = "نقرأ الأحداث، ونشاهد الأماكن، ونتتبع التاريخ، ونرجع إلى المصادر.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = SeerahParchment.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center
-            )
         }
+        Text(
+            text = "«رحلة موثقة في حياة رسول الله محمد ﷺ»",
+            style = MaterialTheme.typography.bodyLarge,
+            color = SeerahParchment,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 52.dp, start = 24.dp, end = 24.dp)
+        )
     }
 }
 
 @Composable
-fun OnboardingScreen(
-    onFinish: () -> Unit
-) {
-    val pages = listOf(
-        Triple(
-            "القراءة التاريخية والتوثيق العلمي",
-            "كل حدث ورواية في سِيرَة مرتبطة بمصدرها وطبعتها ومحققها دون اختلاق أو أحكام حديثية آلية.",
-            Icons.Outlined.MenuBook
-        ),
-        Triple(
-            "الأطلس التاريخي والعسكري التفاعلي",
-            "استكشف خرائط مكة والمدينة وبدر وأحد والخندق والهجرة بطبقات مستقلة تعمل دون إنترنت عبر GeoJSON وMBTiles.",
-            Icons.Outlined.Map
-        ),
-        Triple(
-            "مكتبتك العلمية الخاصة",
-            "استورد كتبك ومصادرك بصيغ PDF وEPUB وTXT وJSON وXML وSQLite وفهرسها محليًا للبحث الفوري دون إنترنت.",
-            Icons.Outlined.LibraryBooks
+fun OnboardingScreen(onFinish: () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = CoreR.drawable.art_hero_masjid_nabawi),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
         )
-    )
-    var step by remember { mutableIntStateOf(0) }
-    val current = pages[step]
-
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(SeerahDeepGreen.copy(alpha = 0.6f), Color.Transparent, SeerahDeepGreen.copy(alpha = 0.92f))
+                    )
+                )
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .padding(24.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.padding(top = 60.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("سِيرَة", style = MaterialTheme.typography.headlineMedium, color = SeerahEmerald)
-                TextButton(onClick = onFinish) { Text("تخطي") }
+                Text(
+                    text = "السِّيرَة النَّبَوِيَّة",
+                    style = MaterialTheme.typography.displayLarge.copy(fontSize = 40.sp),
+                    color = SeerahGoldLight
+                )
+                Text(
+                    text = "موسوعة تفاعلية شاملة",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = SeerahParchment
+                )
             }
 
-            SeerahEncyclopediaCard(parchmentTone = true) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)
-                ) {
-                    Icon(
-                        imageVector = current.third,
-                        contentDescription = null,
-                        tint = SeerahEmerald,
-                        modifier = Modifier.size(64.dp)
-                    )
-                    Text(
-                        text = current.first,
-                        style = MaterialTheme.typography.headlineMedium,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text = current.second,
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(bottom = 24.dp)
             ) {
-                Text("${step + 1} / ${pages.size}", style = MaterialTheme.typography.labelLarge)
-                Button(
-                    onClick = {
-                        if (step < pages.lastIndex) step++ else onFinish()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
-                ) {
-                    Text(if (step < pages.lastIndex) "التالي" else "ابدأ الرحلة")
-                }
+                Text(
+                    text = "نقرأ الأحداث، ونشاهد الأماكن، ونتتبع التاريخ، ونرجع إلى المصادر.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = SeerahIvory,
+                    textAlign = TextAlign.Center
+                )
+                SeerahGoldButton(
+                    text = "ابدأ الرحلة  ←",
+                    onClick = onFinish,
+                    modifier = Modifier.fillMaxWidth(0.75f)
+                )
             }
         }
     }
@@ -184,107 +175,216 @@ fun HomeScreen(
     onOpenEvent: (Long) -> Unit
 ) {
     val events by repository.observeAllEvents().collectAsState(initial = emptyList())
-    val books by repository.observeBooks().collectAsState(initial = emptyList())
-    val importedBooksCount = books.count { it.isImported }
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(bottom = 24.dp)
     ) {
-        // 1 & 2. شعار التطبيق وترحيب بالمستخدم
+        // بطاقة البداية الفخمة المطابقة تمامًا للتصور البصري
         item {
-            SeerahHeroBanner(
-                badge = "موسوعة السيرة النبوية التفاعلية",
-                title = "سِيرَة | رحلة موثقة في حياة رسول الله محمد ﷺ",
-                subtitle = "نقرأ الأحداث، ونشاهد الأماكن، ونتتبع التاريخ، ونرجع إلى المصادر."
-            )
-        }
-
-        // 10. بطاقة البحث الشامل
-        item {
-            SeerahEncyclopediaCard(onClick = onOpenSearch) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Icon(Icons.Outlined.Search, contentDescription = null, tint = SeerahEmerald)
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("البحث الشامل دون إنترنت", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "ابحث في الأحداث والغزوات والشخصيات والأماكن والكتب والآيات والأحاديث",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-
-        // 3. بطاقة استكمال القراءة
-        item {
-            SeerahEncyclopediaCard(
-                parchmentTone = true,
-                onClick = {
-                    if (lastReadRoute.isNotBlank()) onOpenRoute(lastReadRoute) else onOpenLibrary()
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(410.dp)
+                    .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
             ) {
+                Image(
+                    painter = painterResource(id = CoreR.drawable.art_hero_masjid_nabawi),
+                    contentDescription = "المسجد النبوي",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    SeerahDeepGreen.copy(alpha = 0.55f),
+                                    Color.Transparent,
+                                    SeerahDeepGreen.copy(alpha = 0.88f)
+                                )
+                            )
+                        )
+                )
+                // شريط علوي شفاف للبحث
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("استكمال القراءة", style = MaterialTheme.typography.labelLarge, color = SeerahHistoricalBrown)
+                    Surface(
+                        shape = RoundedCornerShape(50),
+                        color = SeerahDeepGreen.copy(alpha = 0.7f),
+                        border = BorderStroke(1.dp, SeerahAntiqueGold.copy(alpha = 0.6f))
+                    ) {
                         Text(
-                            text = lastReadTitle.ifBlank { "لم تبدأ القراءة بعد — استورد كتبك الموثقة أو تصفح الخط الزمني" },
-                            style = MaterialTheme.typography.titleMedium
+                            text = "سِيرَة | SEERAH",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = SeerahGoldLight,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
                         )
                     }
-                    Icon(Icons.Outlined.AutoStories, contentDescription = null, tint = SeerahAntiqueGold, modifier = Modifier.size(30.dp))
+                    IconButton(
+                        onClick = onOpenSearch,
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = SeerahDeepGreen.copy(alpha = 0.7f))
+                    ) {
+                        Icon(Icons.Outlined.Search, contentDescription = "بحث", tint = SeerahGoldLight)
+                    }
+                }
+
+                // العنوان الذهبي وزر ابدأ الرحلة
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = "السِّيرَة النَّبَوِيَّة",
+                        style = MaterialTheme.typography.displayLarge.copy(fontSize = 36.sp),
+                        color = SeerahGoldLight,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = "موسوعة تفاعلية شاملة • خط زمني • خريطة تفاعلية • معرفة موثقة",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = SeerahParchment,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    SeerahGoldButton(
+                        text = "ابدأ الرحلة  ←",
+                        onClick = onOpenTimeline,
+                        modifier = Modifier.fillMaxWidth(0.72f)
+                    )
                 }
             }
         }
 
-        // قسم: اكتشف السيرة على الخريطة (5. بطاقة الأطلس التاريخي + الخرائط السريعة)
+        // شريط استكمال القراءة
+        if (lastReadTitle.isNotBlank()) {
+            item {
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SeerahEncyclopediaCard(
+                        parchmentTone = true,
+                        onClick = { onOpenRoute(lastReadRoute) }
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("استكمال القراءة", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                                Text(lastReadTitle, style = MaterialTheme.typography.titleMedium)
+                            }
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = SeerahEmerald)
+                        }
+                    }
+                }
+            }
+        }
+
+        // قسم: اكتشف السيرة على الخريطة التفاعلية
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("اكتشف السيرة على الخريطة", style = MaterialTheme.typography.titleLarge)
-                    TextButton(onClick = { onOpenAtlas("arabia") }) { Text("فتح الأطلس") }
+                    TextButton(onClick = { onOpenAtlas("hijra") }) { Text("فتح الأطلس") }
                 }
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(listOf(
-                        AtlasMapDefinition.BADR,
-                        AtlasMapDefinition.UHUD,
-                        AtlasMapDefinition.HIJRA,
-                        AtlasMapDefinition.KHANDAQ,
-                        AtlasMapDefinition.MAKKAH,
-                        AtlasMapDefinition.MADINAH
-                    )) { mapDef ->
-                        Card(
-                            onClick = {
-                                if (mapDef == AtlasMapDefinition.HIJRA) onOpenHijra() else onOpenAtlas(mapDef.mapId)
-                            },
-                            modifier = Modifier.width(210.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = SeerahParchment)
-                        ) {
-                            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                Icon(Icons.Outlined.Map, contentDescription = null, tint = SeerahHistoricalBrown)
-                                Text(mapDef.arabicTitle, style = MaterialTheme.typography.titleMedium, color = SeerahInkDark)
-                                Text(
-                                    mapDef.description,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = SeerahInkMuted,
-                                    maxLines = 2
+
+                Card(
+                    onClick = { onOpenAtlas("hijra") },
+                    shape = RoundedCornerShape(18.dp),
+                    border = BorderStroke(1.5.dp, SeerahAntiqueGold),
+                    modifier = Modifier.fillMaxWidth().height(175.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Image(
+                            painter = painterResource(id = CoreR.drawable.art_map_hijaz_atlas),
+                            contentDescription = "خريطة الحجاز التاريخية",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.horizontalGradient(
+                                        listOf(SeerahDeepGreen.copy(alpha = 0.85f), Color.Transparent)
+                                    )
                                 )
+                        )
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(18.dp)
+                                .fillMaxWidth(0.75f),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text("الأطلس التاريخي التفاعلي", style = MaterialTheme.typography.titleLarge, color = SeerahGoldLight)
+                            Text("مكة المكرمة • المدينة المنورة • مسار الهجرة • بدر • أحد", style = MaterialTheme.typography.bodyMedium, color = SeerahIvory)
+                        }
+                    }
+                }
+            }
+        }
+
+        // قسم: أبرز محطات السيرة (بطاقات أفقية مصورة)
+        if (events.isNotEmpty()) {
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("رحلة عبر أحداث السيرة", style = MaterialTheme.typography.titleLarge)
+                        TextButton(onClick = onOpenTimeline) { Text("عرض الكل") }
+                    }
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(events.take(6)) { ev ->
+                            val imgRes = when (ev.mapId) {
+                                "badr", "uhud", "khandaq" -> CoreR.drawable.art_battle_badr
+                                "madinah", "hijra" -> CoreR.drawable.art_hero_masjid_nabawi
+                                else -> CoreR.drawable.art_makkah_kaaba
+                            }
+                            Card(
+                                onClick = { onOpenEvent(ev.id) },
+                                shape = RoundedCornerShape(16.dp),
+                                border = BorderStroke(1.dp, SeerahAntiqueGold.copy(alpha = 0.7f)),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                                modifier = Modifier.width(210.dp)
+                            ) {
+                                Column {
+                                    Image(
+                                        painter = painterResource(id = imgRes),
+                                        contentDescription = ev.title,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxWidth().height(105.dp)
+                                    )
+                                    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Text(ev.title, style = MaterialTheme.typography.titleMedium, maxLines = 1)
+                                        Text(ev.shortSummary, style = MaterialTheme.typography.labelSmall, maxLines = 2, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
                             }
                         }
                     }
@@ -292,75 +392,20 @@ fun HomeScreen(
             }
         }
 
-        // قسم: رحلة عبر أحداث السيرة (4. بطاقة رحلة عبر الزمن + حدث مميز)
+        // بطاقات الوصول السريع للأقسام الرئيسية
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("رحلة عبر أحداث السيرة", style = MaterialTheme.typography.titleLarge)
-                    TextButton(onClick = onOpenTimeline) { Text("الخط الزمني الكامل") }
-                }
-
-                val featured = events.firstOrNull()
-                if (featured != null) {
-                    SeerahEncyclopediaCard(onClick = { onOpenEvent(featured.id) }) {
-                        CitationBadge(label = SeerahStage.fromCode(featured.stageCode).arabicTitle)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(featured.title, style = MaterialTheme.typography.titleLarge)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(featured.shortSummary, style = MaterialTheme.typography.bodyMedium)
-                    }
-                } else {
-                    EmptyVerifiedSourceState(
-                        title = "بانتظار استيراد حزمة الأحداث الموثقة",
-                        message = "لا يعرض تطبيق سِيرَة أحداثًا مخترعة أو غير موثقة. استورد ملفات الكتب أو حزم السيرة (JSON/EPUB/PDF/SQLite) لتفعيل الحدث المميز والخط الزمني.",
-                        actionLabel = "استيراد المصادر الآن",
-                        onAction = onOpenLibrary
-                    )
-                }
-            }
-        }
-
-        // بطاقات الأقسام الرئيسية (6. الغزوات، 7. الشخصيات، 8. الأماكن، 9. المكتبة العلمية) بتصميم متنوع غير مكرر
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Text("أقسام الموسوعة", style = MaterialTheme.typography.titleLarge)
-
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                    HomeSectionTile(
-                        title = "الغزوات والسرايا",
-                        subtitle = "الأطلس العسكري والمراحل",
-                        icon = Icons.Outlined.Shield,
-                        modifier = Modifier.weight(1f),
-                        onClick = onOpenBattles
-                    )
-                    HomeSectionTile(
-                        title = "شخصيات السيرة",
-                        subtitle = "الصحابة والرواة والقادة",
-                        icon = Icons.Outlined.Groups,
-                        modifier = Modifier.weight(1f),
-                        onClick = onOpenPeople
-                    )
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                    LuxuryFeatureTile("الغزوات والسرايا", "بدر • أحد • الخندق", Icons.Outlined.Shield, Modifier.weight(1f), onOpenBattles)
+                    LuxuryFeatureTile("موسوعة الشخصيات", "النبي ﷺ والصحابة", Icons.Outlined.Groups, Modifier.weight(1f), onOpenPeople)
                 }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                    HomeSectionTile(
-                        title = "الأماكن التاريخية",
-                        subtitle = "مع درجة اليقين الجغرافي",
-                        icon = Icons.Outlined.Place,
-                        modifier = Modifier.weight(1f),
-                        onClick = onOpenPlaces
-                    )
-                    HomeSectionTile(
-                        title = "المكتبة العلمية",
-                        subtitle = "$importedBooksCount مستورد من ${books.size} مرجع",
-                        icon = Icons.Outlined.MenuBook,
-                        modifier = Modifier.weight(1f),
-                        onClick = onOpenLibrary
-                    )
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                    LuxuryFeatureTile("مسار الهجرة", "من مكة إلى المدينة", Icons.Outlined.Route, Modifier.weight(1f), onOpenHijra)
+                    LuxuryFeatureTile("المكتبة والمصادر", "توثيق واستيراد الكتب", Icons.Outlined.MenuBook, Modifier.weight(1f), onOpenLibrary)
                 }
             }
         }
@@ -368,18 +413,17 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeSectionTile(
+private fun LuxuryFeatureTile(
     title: String,
     subtitle: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    SeerahEncyclopediaCard(modifier = modifier, onClick = onClick) {
-        Icon(icon, contentDescription = null, tint = SeerahEmerald, modifier = Modifier.size(28.dp))
-        Spacer(modifier = Modifier.height(10.dp))
+    SeerahEncyclopediaCard(modifier = modifier, parchmentTone = true, onClick = onClick) {
+        Icon(icon, contentDescription = null, tint = SeerahEmerald, modifier = Modifier.size(26.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(4.dp))
         Text(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

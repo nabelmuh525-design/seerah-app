@@ -28,6 +28,7 @@ class SeerahApplication : Application() {
         val updater = SeerahAppUpdater(this)
 
         repository = SeerahRepository(
+            context = this,
             database = database,
             preferences = prefs,
             importEngine = importer,

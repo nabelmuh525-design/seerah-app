@@ -2,26 +2,39 @@ package com.seerah.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.seerah.core.R
 
-/**
- * نظام الخطوط لتطبيق سِيرَة.
- * يدعم خطوط Noto Sans Arabic و Noto Naskh Arabic و Amiri عند إضافتها إلى res/font،
- * مع الاعتماد الآمن على عائلات النظام العربية (Serif للعناوين التاريخية و SansSerif للواجهة)
- * لضمان البناء والتشغيل دون أخطاء.
- */
-val AmiriDisplayFamily: FontFamily = FontFamily.Serif
-val NotoNaskhFamily: FontFamily = FontFamily.Serif
-val NotoSansArabicFamily: FontFamily = FontFamily.SansSerif
+val AmiriDisplayFamily: FontFamily = FontFamily(
+    Font(R.font.noto_naskh_arabic_regular, FontWeight.Normal),
+    Font(R.font.noto_naskh_arabic_bold, FontWeight.SemiBold),
+    Font(R.font.noto_naskh_arabic_bold, FontWeight.Bold)
+)
+
+val NotoNaskhFamily: FontFamily = FontFamily(
+    Font(R.font.noto_naskh_arabic_regular, FontWeight.Normal),
+    Font(R.font.noto_naskh_arabic_bold, FontWeight.Bold)
+)
+
+val NotoSansArabicFamily: FontFamily = FontFamily(
+    Font(R.font.noto_sans_arabic_regular, FontWeight.Normal),
+    Font(R.font.noto_sans_arabic_bold, FontWeight.SemiBold),
+    Font(R.font.noto_sans_arabic_bold, FontWeight.Bold)
+)
+
+val KufiOrnamentalFamily: FontFamily = FontFamily(
+    Font(R.font.noto_kufi_arabic_bold, FontWeight.Bold)
+)
 
 fun buildSeerahTypography(scale: Float = 1.0f): Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = AmiriDisplayFamily,
         fontWeight = FontWeight.Bold,
-        fontSize = (32 * scale).sp,
-        lineHeight = (44 * scale).sp
+        fontSize = (34 * scale).sp,
+        lineHeight = (46 * scale).sp
     ),
     headlineLarge = TextStyle(
         fontFamily = AmiriDisplayFamily,
@@ -31,9 +44,9 @@ fun buildSeerahTypography(scale: Float = 1.0f): Typography = Typography(
     ),
     headlineMedium = TextStyle(
         fontFamily = AmiriDisplayFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         fontSize = (22 * scale).sp,
-        lineHeight = (30 * scale).sp
+        lineHeight = (32 * scale).sp
     ),
     titleLarge = TextStyle(
         fontFamily = NotoSansArabicFamily,
@@ -45,13 +58,13 @@ fun buildSeerahTypography(scale: Float = 1.0f): Typography = Typography(
         fontFamily = NotoSansArabicFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = (16 * scale).sp,
-        lineHeight = (23 * scale).sp
+        lineHeight = (24 * scale).sp
     ),
     bodyLarge = TextStyle(
         fontFamily = NotoNaskhFamily,
         fontWeight = FontWeight.Normal,
         fontSize = (16 * scale).sp,
-        lineHeight = (26 * scale).sp
+        lineHeight = (28 * scale).sp
     ),
     bodyMedium = TextStyle(
         fontFamily = NotoSansArabicFamily,
@@ -69,6 +82,6 @@ fun buildSeerahTypography(scale: Float = 1.0f): Typography = Typography(
         fontFamily = NotoSansArabicFamily,
         fontWeight = FontWeight.Medium,
         fontSize = (11 * scale).sp,
-        lineHeight = (15 * scale).sp
+        lineHeight = (16 * scale).sp
     )
 )
