@@ -522,7 +522,7 @@ fun AboutScreen(onBack: () -> Unit) {
         ) {
             item {
                 SeerahHeroBanner(
-                    badge = "الإصدار 1.0.0",
+                    badge = "الإصدار 3.0.1-alpha.5",
                     title = "سِيرَة | SEERAH",
                     subtitle = "موسوعة السيرة النبوية التفاعلية — «رحلة موثقة في حياة رسول الله محمد ﷺ»"
                 )

@@ -161,23 +161,7 @@ fun HistoricalAtlasScreen(
                 }
             }
 
-            // أدوات التحكم بالخريطة (التكبير، التصغير، إعادة الضبط، الطبقات، الاستيراد)
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedButton(onClick = { zoom = (zoom + 0.3f).coerceAtMost(4f) }, modifier = Modifier.weight(1f)) {
-                        Text("تكبير +")
-                    }
-                    OutlinedButton(onClick = { zoom = (zoom - 0.3f).coerceAtLeast(0.6f) }, modifier = Modifier.weight(1f)) {
-                        Text("تصغير -")
-                    }
-                    OutlinedButton(onClick = { zoom = 1f; panOffset = Offset.Zero }, modifier = Modifier.weight(1f)) {
-                        Text("إعادة ضبط")
-                    }
-                }
-            }
+
 
             if (selectedMap.isBattleMap) {
                 item {
