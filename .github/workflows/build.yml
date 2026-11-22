@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'رقم الإصدار للنشر (مثل v3.0.0-alpha.3)'
+        description: 'رقم الإصدار للنشر (مثل v3.0.1-alpha.5)'
         required: false
-        default: 'v3.0.0-alpha.3'
+        default: 'v3.0.1-alpha.5'
 
 permissions:
   contents: write
@@ -35,6 +35,14 @@ jobs:
 
       - name: Run All Unit Tests
         run: gradle testDebugUnitTest --stacktrace
+
+      - name: Upload Unit Test Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-reports
+          path: "**/build/reports/tests/**"
+          if-no-files-found: ignore
 
       - name: Upload Room Exported Schemas
         uses: actions/upload-artifact@v4
