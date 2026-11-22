@@ -41,6 +41,13 @@ fun HistoricalAtlasScreen(
     }
     val allPlaces by repository.observeAllPlaces().collectAsState(initial = emptyList())
     val allCoords by repository.observeAllCoordinates().collectAsState(initial = emptyList())
+    val downloads by repository.observeDownloads().collectAsState(initial = emptyList())
+    val activeMbTilesPath = remember(downloads, selectedMap) {
+        downloads.firstOrNull {
+            it.packageType == "MAP_MBTILES" && it.status == "IMPORTED" && it.localPath.isNotBlank() &&
+                (it.packageKey.contains(selectedMap.mapId) || it.packageKey.contains("arabia") || it.packageKey.contains("hijaz"))
+        }?.localPath
+    }
 
     val features by repository.observeBattleFeatures(selectedMap.mapId).collectAsState(initial = emptyList())
     val places by repository.observePlacesForMap(selectedMap.mapId).collectAsState(initial = emptyList())
@@ -92,6 +99,7 @@ fun HistoricalAtlasScreen(
                         features = features,
                         places = allPlaces,
                         coordinates = allCoords,
+                        mbtilesLocalPath = activeMbTilesPath,
                         zoom = zoom,
                         panOffset = panOffset,
                         onTransform = { zDelta, pDelta ->
@@ -305,9 +313,11 @@ fun MapLayersScreen(
     onBack: () -> Unit
 ) {
     val layers by repository.observeLayers().collectAsState(initial = emptyList())
+    val places by repository.observeAllPlaces().collectAsState(initial = emptyList())
+    val allFeatures by repository.observeAllBattleFeatures().collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
 
-    Scaffold(topBar = { SeerahTopBar(title = "طبقات الخريطة (10 طبقات)", onBack = onBack) }) { padding ->
+    Scaffold(topBar = { SeerahTopBar(title = "طبقات الخريطة (12 طبقة)", onBack = onBack) }) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(16.dp),
@@ -315,7 +325,12 @@ fun MapLayersScreen(
         ) {
             items(MapLayerType.entries) { layer ->
                 val dbLayer = layers.firstOrNull { it.layerKey == layer.key }
-                val checked = dbLayer?.isEnabledByDefault ?: true
+                val hasData = when (layer.key) {
+                    "historical_sites", "cities_villages" -> places.isNotEmpty()
+                    else -> allFeatures.any { it.layerKey == layer.key }
+                }
+                val checked = if (hasData) (dbLayer?.isEnabledByDefault ?: true) else false
+
                 SeerahEncyclopediaCard {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -325,14 +340,17 @@ fun MapLayersScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(layer.arabicTitle, style = MaterialTheme.typography.titleMedium)
                             Text(
-                                text = if (dbLayer?.geojsonPath.isNullOrBlank()) "جاهزة لاستقبال بيانات GeoJSON" else "مرتبطة بملف محلي",
+                                text = if (hasData) "نشطة — مرتبطة ببيانات جغرافية محلية" else "لا بيانات بعد — استورد حزمة GeoJSON لهذه الطبقة",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Switch(
                             checked = checked,
-                            onCheckedChange = { enabled -> scope.launch { repository.setLayerEnabled(layer.key, enabled) } }
+                            enabled = hasData,
+                            onCheckedChange = { enabled ->
+                                scope.launch { repository.setLayerEnabled(layer.key, enabled) }
+                            }
                         )
                     }
                 }

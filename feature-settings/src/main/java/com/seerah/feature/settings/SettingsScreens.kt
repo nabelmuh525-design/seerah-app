@@ -444,7 +444,7 @@ fun SettingsScreen(
                                 OutlinedButton(
                                     onClick = {
                                         scope.launch {
-                                            repository.appUpdater.downloadUpdateApk(info.apkDownloadUrl).collect { state ->
+                                            repository.appUpdater.downloadUpdateApk(info.apkDownloadUrl, info.sha256DownloadUrl).collect { state ->
                                                 downloadProgress = state
                                                 if (state is UpdateDownloadProgress.ReadyToInstall) {
                                                     repository.appUpdater.installApk(state.apkFile).onFailure {

@@ -1,6 +1,7 @@
 package com.seerah.feature.atlas
 
 import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -17,14 +18,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.seerah.core.theme.*
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import com.seerah.data.geo.GeoJsonParser
+import com.seerah.data.geo.MbTilesReader
+import java.io.File
 import com.seerah.database.entity.BattleMapFeatureEntity
 import com.seerah.database.entity.PlaceCoordinateEntity
 import com.seerah.database.entity.PlaceEntity
@@ -32,18 +39,20 @@ import com.seerah.domain.model.AtlasMapDefinition
 import com.seerah.domain.model.GeoFeatureModel
 import com.seerah.domain.model.GeoPointModel
 import com.seerah.domain.model.GeographicCertainty
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.ln
+import kotlin.math.sin
 import kotlin.math.tan
 
 /**
- * محرك الأطلس الجغرافي التاريخي الحقيقي (WGS84 / Web-Mercator GIS Canvas v3.0):
- * - يُسقط الإحداثيات الجغرافية الحقيقية (latitude, longitude) من قاعدة بيانات Room
- *   وملفات GeoJSON (RFC 7946) بدلاً من الإحداثيات النسبية لصور ثابتة.
- * - يعرض شبكة خطوط الطول والعرض الحقيقية بدرجاتها، ومقياس رسم بالكيلومتر،
- *   وأداة قياس المسافة الجغرافية (Haversine km) بين آخر موقعين تم اختيارهما.
- * - يميّز بصريًا بين المواقع المؤكدة والمختلف فيها دون رسم مسارات تخمينية.
+ * محرك الأطلس الجغرافي (v3.0.0-alpha.2):
+ * - نطاق جغرافي مستقل (bbox) لكل خريطة من الخرائط الـ 14.
+ * - تصفية المواقع بحسب نطاق الخريطة المختارة.
+ * - رسم فعلي لجميع هندسات GeoJSON المستوردة (Point, LineString, Polygon, MultiLineString).
+ * - منع تصادم وتراكم الأسماء العربية على الشاشة (Label Collision Avoidance).
+ * - مقياس رسم ديناميكي محسوب عند خط العرض الفعلي لمركز العرض.
  */
 @Composable
 fun HistoricalMapCanvas(
@@ -52,21 +61,30 @@ fun HistoricalMapCanvas(
     features: List<BattleMapFeatureEntity>,
     places: List<PlaceEntity> = emptyList(),
     coordinates: List<PlaceCoordinateEntity> = emptyList(),
+    mbtilesLocalPath: String? = null,
     zoom: Float,
     panOffset: Offset,
     onTransform: (zoomDelta: Float, panDelta: Offset) -> Unit,
     onFeatureSelected: (GeoFeatureModel?) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    // بناء قائمة النقاط الجغرافية الحقيقية من Room (Places + Coordinates)
+    val minLat = mapDefinition.minLat
+    val maxLat = mapDefinition.maxLat
+    val minLon = mapDefinition.minLon
+    val maxLon = mapDefinition.maxLon
+
     val coordByPlace = remember(coordinates) { coordinates.associateBy { it.placeId } }
-    val geoPoints = remember(places, coordByPlace, enabledLayers) {
+
+    // 1. تصفية المواقع بحسب النطاق الجغرافي للخريطة الحالية أو ارتباطها المباشر بـ mapId
+    val geoPoints = remember(places, coordByPlace, enabledLayers, mapDefinition) {
         if (!enabledLayers.contains("historical_sites") && !enabledLayers.contains("cities_villages")) {
             emptyList()
         } else {
             places.mapNotNull { place ->
                 val c = coordByPlace[place.id] ?: return@mapNotNull null
                 if (!GeoJsonParser.isValidCoordinate(c.latitude, c.longitude)) return@mapNotNull null
+                val inBounds = mapDefinition.contains(c.latitude, c.longitude) || place.mapId == mapDefinition.mapId
+                if (!inBounds) return@mapNotNull null
                 GeoFeatureModel(
                     id = "place_${place.id}",
                     layerKey = "historical_sites",
@@ -81,13 +99,24 @@ fun HistoricalMapCanvas(
         }
     }
 
-    // نطاق الإحداثيات الجغرافية (الحجاز والجزيرة العربية: 19°N..32°N, 34°E..43°E)
-    val minLat = 20.0
-    val maxLat = 32.0
-    val minLon = 34.5
-    val maxLon = 42.5
+    // 2. تحليل ورسم معالم GeoJSON المستوردة فعليًا (LineString, Polygon, MultiLineString, Point)
+    val importedGeoFeatures = remember(features, enabledLayers) {
+        features.flatMap { entity ->
+            runCatching { GeoJsonParser.parseFeatureCollection(entity.geojsonGeometry) }
+                .getOrDefault(emptyList())
+        }.filter { enabledLayers.contains(it.layerKey) }
+    }
 
     var canvasSize by remember { mutableStateOf(Size.Zero) }
+    val mbTilesReader = remember(mbtilesLocalPath) {
+        mbtilesLocalPath?.takeIf { it.isNotBlank() }?.let { path ->
+            val reader = MbTilesReader(File(path))
+            if (reader.open()) reader else null
+        }
+    }
+    DisposableEffect(mbTilesReader) {
+        onDispose { mbTilesReader?.close() }
+    }
     var lastTwoSelected by remember { mutableStateOf<List<GeoFeatureModel>>(emptyList()) }
 
     fun mercatorY(lat: Double): Double {
@@ -99,8 +128,8 @@ fun HistoricalMapCanvas(
     val yMaxMerc = mercatorY(maxLat)
 
     fun projectLatLon(lat: Double, lon: Double, size: Size): Offset {
-        val nx = ((lon - minLon) / (maxLon - minLon)).toFloat()
-        val ny = (1.0 - (mercatorY(lat) - yMinMerc) / (yMaxMerc - yMinMerc)).toFloat()
+        val nx = ((lon - minLon) / (maxLon - minLon).coerceAtLeast(0.0001)).toFloat()
+        val ny = (1.0 - (mercatorY(lat) - yMinMerc) / (yMaxMerc - yMinMerc).coerceAtLeast(0.0001)).toFloat()
         val bx = nx * size.width
         val by = ny * size.height
         val cx = size.width / 2f
@@ -115,7 +144,7 @@ fun HistoricalMapCanvas(
         Paint().apply {
             isAntiAlias = true
             color = android.graphics.Color.parseColor("#0B2923")
-            textSize = 26f
+            textSize = 25f
             typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
             textAlign = Paint.Align.CENTER
         }
@@ -124,7 +153,7 @@ fun HistoricalMapCanvas(
         Paint().apply {
             isAntiAlias = true
             color = android.graphics.Color.parseColor("#795735")
-            textSize = 20f
+            textSize = 19f
             textAlign = Paint.Align.LEFT
         }
     }
@@ -144,6 +173,8 @@ fun HistoricalMapCanvas(
         }
     }
 
+    val allClickable = remember(geoPoints, importedGeoFeatures) { geoPoints + importedGeoFeatures }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -155,11 +186,11 @@ fun HistoricalMapCanvas(
                     onTransform(gestureZoom, pan)
                 }
             }
-            .pointerInput(geoPoints, zoom, panOffset, canvasSize) {
+            .pointerInput(allClickable, zoom, panOffset, canvasSize, mapDefinition) {
                 detectTapGestures { tap ->
                     if (canvasSize == Size.Zero) return@detectTapGestures
-                    val hit = geoPoints.minByOrNull { f ->
-                        val pt = f.coordinates.first()
+                    val hit = allClickable.minByOrNull { f ->
+                        val pt = f.coordinates.firstOrNull() ?: return@minByOrNull Float.MAX_VALUE
                         val s = projectLatLon(pt.latitude, pt.longitude, canvasSize)
                         hypot(tap.x - s.x, tap.y - s.y)
                     }
@@ -178,45 +209,105 @@ fun HistoricalMapCanvas(
             canvasSize = size
             drawRect(color = SeerahParchment)
 
-            // 1. شبكة خطوط الطول والعرض الحقيقية (WGS84 Graticule)
-            for (lat in 20..32 step 2) {
-                val y = projectLatLon(lat.toDouble(), minLon, size).y
+            // 0. عرض بلاطات MBTiles الفعلية دون إنترنت عند توفر ملف .mbtiles محلي
+            if (mbTilesReader != null) {
+                val tileZoom = (6 + (zoom * 1.5f).toInt()).coerceIn(5, 13)
+                val (xMin, yMin) = MbTilesReader.latLonToTileXY(maxLat, minLon, tileZoom)
+                val (xMax, yMax) = MbTilesReader.latLonToTileXY(minLat, maxLon, tileZoom)
+                val cols = (xMax - xMin + 1).coerceIn(1, 6)
+                val rows = (yMax - yMin + 1).coerceIn(1, 6)
+                val tileW = (size.width / cols).toInt().coerceAtLeast(1)
+                val tileH = (size.height / rows).toInt().coerceAtLeast(1)
+                for (tx in xMin..(xMin + cols - 1)) {
+                    for (ty in yMin..(yMin + rows - 1)) {
+                        val bmp = mbTilesReader.getTileBitmapCached(tileZoom, tx, ty)
+                        if (bmp != null) {
+                            drawImage(
+                                image = bmp.asImageBitmap(),
+                                dstOffset = IntOffset((tx - xMin) * tileW, (ty - yMin) * tileH),
+                                dstSize = IntSize(tileW, tileH)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 1. شبكة إحداثيات WGS84 ديناميكية تناسب نطاق الخريطة
+            val latStep = ((maxLat - minLat) / 5.0).coerceAtLeast(0.02)
+            val lonStep = ((maxLon - minLon) / 5.0).coerceAtLeast(0.02)
+            var latCur = minLat
+            while (latCur <= maxLat + 0.0001) {
+                val y = projectLatLon(latCur, minLon, size).y
                 if (y in 0f..size.height) {
-                    drawLine(SeerahAntiqueGold.copy(alpha = 0.28f), Offset(0f, y), Offset(size.width, y), 1.2f)
-                    drawContext.canvas.nativeCanvas.drawText("${lat}°N", 10f, y - 4f, gridTextPaint)
+                    drawLine(SeerahAntiqueGold.copy(alpha = 0.25f), Offset(0f, y), Offset(size.width, y), 1.1f)
+                    drawContext.canvas.nativeCanvas.drawText("${"%.2f".format(latCur)}°N", 8f, y - 4f, gridTextPaint)
                 }
+                latCur += latStep
             }
-            for (lon in 35..42 step 2) {
-                val x = projectLatLon(minLat, lon.toDouble(), size).x
+            var lonCur = minLon
+            while (lonCur <= maxLon + 0.0001) {
+                val x = projectLatLon(minLat, lonCur, size).x
                 if (x in 0f..size.width) {
-                    drawLine(SeerahAntiqueGold.copy(alpha = 0.28f), Offset(x, 0f), Offset(x, size.height), 1.2f)
-                    drawContext.canvas.nativeCanvas.drawText("${lon}°E", x + 4f, 24f, gridTextPaint)
+                    drawLine(SeerahAntiqueGold.copy(alpha = 0.25f), Offset(x, 0f), Offset(x, size.height), 1.1f)
+                    drawContext.canvas.nativeCanvas.drawText("${"%.2f".format(lonCur)}°E", x + 4f, 22f, gridTextPaint)
+                }
+                lonCur += lonStep
+            }
+
+            // 2. رسم معالم GeoJSON المستوردة (Polygon, LineString, MultiLineString, Point)
+            importedGeoFeatures.forEach { feat ->
+                val screenPts = feat.coordinates.map { projectLatLon(it.latitude, it.longitude, size) }
+                val isDisputed = feat.certainty != GeographicCertainty.CONFIRMED
+                val dash = if (isDisputed) PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f) else null
+
+                when (feat.geometryType) {
+                    "Polygon" -> if (screenPts.size >= 3) {
+                        val poly = Path().apply {
+                            moveTo(screenPts.first().x, screenPts.first().y)
+                            screenPts.drop(1).forEach { lineTo(it.x, it.y) }
+                            close()
+                        }
+                        drawPath(poly, color = SeerahHistoricalBrown.copy(alpha = 0.28f))
+                        drawPath(poly, color = SeerahMountainDark, style = Stroke(2f, pathEffect = dash))
+                    }
+                    "LineString", "MultiLineString" -> if (screenPts.size >= 2) {
+                        val lineColor = when (feat.layerKey) {
+                            "valleys" -> SeerahMutedBlue
+                            "hijra_routes" -> SeerahRouteGreen
+                            "battles", "military_roads" -> SeerahRouteRed
+                            else -> SeerahHistoricalBrown
+                        }
+                        val path = Path().apply {
+                            moveTo(screenPts.first().x, screenPts.first().y)
+                            screenPts.drop(1).forEach { lineTo(it.x, it.y) }
+                        }
+                        drawPath(path, color = lineColor, style = Stroke(4.5f, cap = StrokeCap.Round, pathEffect = dash))
+                        val p1 = screenPts[screenPts.lastIndex - 1]
+                        val p2 = screenPts.last()
+                        val angle = atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble())
+                        val aLen = 14f
+                        drawLine(lineColor, p2, Offset(p2.x - (aLen * cos(angle - 0.5)).toFloat(), p2.y - (aLen * sin(angle - 0.5)).toFloat()), 3f)
+                        drawLine(lineColor, p2, Offset(p2.x - (aLen * cos(angle + 0.5)).toFloat(), p2.y - (aLen * sin(angle + 0.5)).toFloat()), 3f)
+                    }
+                    else -> if (screenPts.isNotEmpty()) {
+                        drawCircle(SeerahAntiqueGold, radius = 8f, center = screenPts.first())
+                    }
                 }
             }
 
-            // 2. خط قياس المسافة الجغرافية الحقيقية (Haversine) بين آخر موقعين مختارين
+            // 3. خط قياس المسافة المستقيمة بين آخر موقعين
             if (lastTwoSelected.size == 2) {
-                val p1 = lastTwoSelected[0].coordinates.first()
-                val p2 = lastTwoSelected[1].coordinates.first()
-                val s1 = projectLatLon(p1.latitude, p1.longitude, size)
-                val s2 = projectLatLon(p2.latitude, p2.longitude, size)
-                drawLine(
-                    color = SeerahRouteGreen,
-                    start = s1,
-                    end = s2,
-                    strokeWidth = 3.5f,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f)
-                )
+                val s1 = projectLatLon(lastTwoSelected[0].coordinates.first().latitude, lastTwoSelected[0].coordinates.first().longitude, size)
+                val s2 = projectLatLon(lastTwoSelected[1].coordinates.first().latitude, lastTwoSelected[1].coordinates.first().longitude, size)
+                drawLine(SeerahRouteGreen, s1, s2, strokeWidth = 3f, pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f))
             }
 
-            // 3. رسم المواقع التاريخية بإحداثياتها الجغرافية الحقيقية
+            // 4. رسم المواقع مع منع تصادم الأسماء (Label Collision Avoidance)
+            val placedLabelRects = mutableListOf<RectF>()
             geoPoints.forEach { feat ->
                 val coord = feat.coordinates.first()
                 val pt = projectLatLon(coord.latitude, coord.longitude, size)
-                val isDisputed = feat.certainty == GeographicCertainty.DISPUTED ||
-                    feat.certainty == GeographicCertainty.UNSPECIFIED ||
-                    feat.certainty == GeographicCertainty.APPROXIMATE
-
+                val isDisputed = feat.certainty != GeographicCertainty.CONFIRMED
                 val pinColor = when {
                     isDisputed -> SeerahAntiqueGold
                     feat.featureType in setOf("badr", "uhud", "khandaq", "khaybar", "hunayn_taif", "tabuk") -> SeerahRouteRed
@@ -224,38 +315,42 @@ fun HistoricalMapCanvas(
                 }
 
                 if (isDisputed) {
-                    drawCircle(
-                        color = SeerahAntiqueGold.copy(alpha = 0.28f),
-                        radius = 20f,
-                        center = pt
-                    )
+                    drawCircle(SeerahAntiqueGold.copy(alpha = 0.28f), radius = 18f, center = pt)
                 }
-                drawCircle(color = SeerahIvory, radius = 11f, center = pt)
-                drawCircle(color = pinColor, radius = 8f, center = pt)
+                drawCircle(SeerahIvory, radius = 10f, center = pt)
+                drawCircle(pinColor, radius = 7.5f, center = pt)
 
-                val textW = labelPaint.measureText(feat.label) + 22f
-                val boxH = 34f
-                val left = pt.x - textW / 2f
-                val top = pt.y - 12f - boxH - 4f
-                drawContext.canvas.nativeCanvas.drawRoundRect(left, top, left + textW, top + boxH, 10f, 10f, labelBgPaint)
-                drawContext.canvas.nativeCanvas.drawRoundRect(left, top, left + textW, top + boxH, 10f, 10f, labelBorderPaint)
-                drawContext.canvas.nativeCanvas.drawText(feat.label, pt.x, top + 24f, labelPaint)
+                val textW = labelPaint.measureText(feat.label) + 20f
+                val boxH = 32f
+                val candidateRect = RectF(
+                    pt.x - textW / 2f,
+                    pt.y - 12f - boxH - 4f,
+                    pt.x + textW / 2f,
+                    pt.y - 12f - 4f
+                )
+                val collides = placedLabelRects.any { RectF.intersects(it, candidateRect) }
+                if (!collides) {
+                    placedLabelRects.add(candidateRect)
+                    drawContext.canvas.nativeCanvas.drawRoundRect(candidateRect, 10f, 10f, labelBgPaint)
+                    drawContext.canvas.nativeCanvas.drawRoundRect(candidateRect, 10f, 10f, labelBorderPaint)
+                    drawContext.canvas.nativeCanvas.drawText(feat.label, pt.x, candidateRect.top + 23f, labelPaint)
+                }
             }
 
-            // 4. مقياس الرسم الجغرافي الحقيقي (كم)
-            val kmPerPx = (GeoJsonParser.haversineKm(GeoPointModel(24.0, minLon), GeoPointModel(24.0, maxLon)) / (size.width * zoom)).coerceAtLeast(0.01)
+            // 5. مقياس الرسم الديناميكي عند خط عرض مركز الخريطة الفعلي
+            val centerLat = ((minLat + maxLat) / 2.0).coerceIn(-80.0, 80.0)
+            val widthKm = GeoJsonParser.haversineKm(GeoPointModel(centerLat, minLon), GeoPointModel(centerLat, maxLon))
+            val kmPerPx = (widthKm / (size.width * zoom)).coerceAtLeast(0.001)
             val barPx = 110f
-            val barKm = (barPx * kmPerPx).toInt().coerceAtLeast(1)
+            val barKm = barPx * kmPerPx
+            val scaleLabel = if (barKm >= 1.0) "≈ ${"%.1f".format(barKm)} كم" else "≈ ${(barKm * 1000).toInt()} م"
             val by = size.height - 20f
             drawLine(SeerahInkDark, Offset(18f, by), Offset(18f + barPx, by), 3f)
-            drawContext.canvas.nativeCanvas.drawText("≈ $barKm كم (WGS84)", 18f, by - 8f, gridTextPaint)
+            drawContext.canvas.nativeCanvas.drawText("$scaleLabel (${"%.1f".format(centerLat)}°N)", 18f, by - 8f, gridTextPaint)
         }
 
-        // شارة العنوان وقياس المسافة الحقيقية
         Column(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(10.dp),
+            modifier = Modifier.align(Alignment.TopEnd).padding(10.dp),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {

@@ -28,6 +28,7 @@ import com.seerah.core.components.*
 import com.seerah.core.theme.*
 import com.seerah.data.repository.SeerahRepository
 import com.seerah.domain.model.HadithGradeStatus
+import com.seerah.domain.model.ContentReviewStatus
 import com.seerah.domain.model.SeerahStage
 import kotlinx.coroutines.launch
 
@@ -179,6 +180,7 @@ fun EventDetailsScreen(
     var event by remember { mutableStateOf<com.seerah.database.entity.EventEntity?>(null) }
     val dates by repository.observeEventDates(eventId).collectAsState(initial = emptyList())
     val narrations by repository.observeNarrationsForEvent(eventId).collectAsState(initial = emptyList())
+    val formalSources by repository.observeEventSources(eventId).collectAsState(initial = emptyList())
     val isFav by repository.observeIsFavorite("EVENT", eventId).collectAsState(initial = false)
 
     LaunchedEffect(eventId) {
@@ -246,7 +248,14 @@ fun EventDetailsScreen(
                     }
                     SeerahEncyclopediaCard(modifier = Modifier.weight(1f), parchmentTone = true) {
                         Text("التوثيق", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("مصدر معتمد", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                        val hasFormalCitation = formalSources.any { it.volume.isNotBlank() && it.page.isNotBlank() }
+                        val statusLabel = if (ev.verificationStatus == "VERIFIED" && hasFormalCitation) {
+                            ContentReviewStatus.VERIFIED.arabicLabel
+                        } else {
+                            val parsed = ContentReviewStatus.fromCode(ev.verificationStatus)
+                            if (parsed == ContentReviewStatus.VERIFIED) ContentReviewStatus.NEEDS_COMPLETION.arabicLabel else parsed.arabicLabel
+                        }
+                        Text(statusLabel, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
