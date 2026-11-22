@@ -150,7 +150,7 @@ fun BattleDetailsScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(
                             onClick = { onOpenBattleMap(b.mapId ?: "badr") },
-                            colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                         ) { Text("الخريطة التفاعلية") }
                         OutlinedButton(onClick = { onOpenNarrationCompare(b.id) }) { Text("الروايات (${narrations.size})") }
                     }

@@ -122,8 +122,8 @@ fun HistoricalAtlasScreen(
                             border = androidx.compose.foundation.BorderStroke(1.dp, SeerahAntiqueGold)
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
-                                Text(feat.label, style = MaterialTheme.typography.titleMedium, color = SeerahEmerald)
-                                Text(feat.certainty.arabicLabel, style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                                Text(feat.label, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                                Text(feat.certainty.arabicLabel, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text("المصدر: ${feat.sourceCitation}", style = MaterialTheme.typography.bodyMedium)
                             }
                         }
@@ -167,7 +167,7 @@ fun HistoricalAtlasScreen(
                     Button(
                         onClick = { onOpenBattleMap(selectedMap.mapId) },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                     ) {
                         Text("فتح خريطة «${selectedMap.arabicTitle}» مع الشريط الزمني للمراحل")
                     }
@@ -267,7 +267,7 @@ fun BattleMapScreen(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = onOpenImport, colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)) {
+                    Button(onClick = onOpenImport, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
                         Text("استيراد بيانات الخريطة")
                     }
                 } else {
@@ -351,7 +351,7 @@ fun MapLegendScreen(onBack: () -> Unit) {
         ) {
             items(legendItems) { (symbol, meaning) ->
                 SeerahEncyclopediaCard(parchmentTone = true) {
-                    Text(symbol, style = MaterialTheme.typography.titleMedium, color = SeerahHistoricalBrown)
+                    Text(symbol, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(meaning, style = MaterialTheme.typography.bodyMedium)
                 }
             }
@@ -393,7 +393,7 @@ fun HijraJourneyScreen(
                 Button(
                     onClick = onOpenAtlas,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                 ) {
                     Text("استعراض مسار الهجرة على الخريطة التفاعلية")
                 }

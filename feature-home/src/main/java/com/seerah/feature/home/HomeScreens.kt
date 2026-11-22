@@ -282,10 +282,10 @@ fun HomeScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("استكمال القراءة", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                                Text("استكمال القراءة", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(lastReadTitle, style = MaterialTheme.typography.titleMedium)
                             }
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = SeerahEmerald)
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }
@@ -421,7 +421,7 @@ private fun LuxuryFeatureTile(
     onClick: () -> Unit
 ) {
     SeerahEncyclopediaCard(modifier = modifier, parchmentTone = true, onClick = onClick) {
-        Icon(icon, contentDescription = null, tint = SeerahEmerald, modifier = Modifier.size(26.dp))
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(26.dp))
         Spacer(modifier = Modifier.height(8.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         Text(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -22,6 +23,8 @@ import com.seerah.core.theme.SeerahEmerald
 import com.seerah.core.theme.SeerahTheme
 import com.seerah.domain.model.SearchContentFilter
 import com.seerah.domain.model.UserPreferencesState
+import com.seerah.data.updater.AppReleaseInfo
+import com.seerah.data.updater.UpdateDownloadProgress
 import com.seerah.feature.atlas.*
 import com.seerah.feature.battles.*
 import com.seerah.feature.hadith.*
@@ -46,6 +49,84 @@ class MainActivity : ComponentActivity() {
         setContent {
             val prefs by repository.preferences.state.collectAsState(initial = UserPreferencesState())
             val scope = rememberCoroutineScope()
+            var pendingUpdateRelease by remember { mutableStateOf<AppReleaseInfo?>(null) }
+            var autoUpdateProgress by remember { mutableStateOf<UpdateDownloadProgress>(UpdateDownloadProgress.Idle) }
+            var autoUpdateError by remember { mutableStateOf("") }
+
+            LaunchedEffect(Unit) {
+                repository.appUpdater.checkLatestRelease().onSuccess { info ->
+                    if (info.isUpdateAvailable) {
+                        pendingUpdateRelease = info
+                    }
+                }
+            }
+
+            pendingUpdateRelease?.let { release ->
+                AlertDialog(
+                    onDismissRequest = {
+                        if (autoUpdateProgress !is UpdateDownloadProgress.Downloading) {
+                            pendingUpdateRelease = null
+                        }
+                    },
+                    title = { Text("يتوفر تحديث جديد لتطبيق سِيرَة (${release.latestVersion})") },
+                    text = {
+                        androidx.compose.foundation.layout.Column(
+                            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(release.releaseNotes.ifBlank { "يتضمن هذا التحديث تحسينات ومحتوى جديدًا." })
+                            when (val prog = autoUpdateProgress) {
+                                is UpdateDownloadProgress.Downloading -> {
+                                    LinearProgressIndicator(progress = { prog.percent / 100f })
+                                    Text("جارٍ التحميل... ${prog.percent}%")
+                                }
+                                is UpdateDownloadProgress.Error -> {
+                                    Text(prog.message, color = MaterialTheme.colorScheme.error)
+                                }
+                                else -> {}
+                            }
+                            if (autoUpdateError.isNotBlank()) {
+                                Text(autoUpdateError, color = MaterialTheme.colorScheme.error)
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            enabled = autoUpdateProgress !is UpdateDownloadProgress.Downloading,
+                            onClick = {
+                                val ready = autoUpdateProgress as? UpdateDownloadProgress.ReadyToInstall
+                                if (ready != null) {
+                                    repository.appUpdater.installApk(ready.apkFile).onFailure {
+                                        autoUpdateError = it.message ?: "تعذر بدء التثبيت"
+                                    }
+                                } else {
+                                    scope.launch {
+                                        repository.appUpdater.downloadUpdateApk(release.apkDownloadUrl).collect { st ->
+                                            autoUpdateProgress = st
+                                            if (st is UpdateDownloadProgress.ReadyToInstall) {
+                                                repository.appUpdater.installApk(st.apkFile).onFailure {
+                                                    autoUpdateError = it.message ?: "يرجى السماح بالتثبيت ثم الضغط مجددًا"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ) {
+                            Text(
+                                if (autoUpdateProgress is UpdateDownloadProgress.ReadyToInstall) "تثبيت الآن"
+                                else "تحميل وتثبيت التحديث"
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        if (autoUpdateProgress !is UpdateDownloadProgress.Downloading) {
+                            TextButton(onClick = { pendingUpdateRelease = null }) {
+                                Text("لاحقًا")
+                            }
+                        }
+                    }
+                )
+            }
 
             SeerahTheme(darkTheme = prefs.darkMode, fontScale = prefs.fontScale) {
                 val navController = rememberNavController()

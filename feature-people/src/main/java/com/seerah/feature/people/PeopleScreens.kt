@@ -68,8 +68,8 @@ fun PeopleEncyclopediaScreen(
                                 textAlign = TextAlign.Center
                             )
                         }
-                        Text("النبي محمد ﷺ", style = MaterialTheme.typography.headlineMedium, color = SeerahEmerald)
-                        Text("رسول الله وخاتم الأنبياء", style = MaterialTheme.typography.bodyMedium, color = SeerahHistoricalBrown)
+                        Text("النبي محمد ﷺ", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+                        Text("رسول الله وخاتم الأنبياء", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             listOf("سيرته", "صفاته", "مواقفه").forEachIndexed { idx, label ->
@@ -120,7 +120,7 @@ fun PeopleEncyclopediaScreen(
                     }
                     if (person.primarySources.isNotBlank()) {
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("المصدر: ${person.primarySources}", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                        Text("المصدر: ${person.primarySources}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -149,7 +149,7 @@ fun PersonDetailsScreen(
                 SeerahEncyclopediaCard(parchmentTone = true) {
                     CitationBadge(label = PersonCategory.fromCode(p.category).arabicTitle)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(p.name, style = MaterialTheme.typography.headlineMedium, color = SeerahEmerald)
+                    Text(p.name, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
                     if (p.kunyah.isNotBlank()) Text("الكنية: ${p.kunyah}", style = MaterialTheme.typography.bodyMedium)
                     if (p.lineage.isNotBlank()) Text("النسب: ${p.lineage}", style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(8.dp))

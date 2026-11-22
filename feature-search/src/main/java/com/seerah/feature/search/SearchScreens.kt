@@ -40,7 +40,7 @@ fun GlobalSearchScreen(
             Button(
                 onClick = { if (query.isNotBlank()) onSubmitQuery(query.trim()) },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
             ) {
                 Text("بحث في الموسوعة والمكتبة")
             }

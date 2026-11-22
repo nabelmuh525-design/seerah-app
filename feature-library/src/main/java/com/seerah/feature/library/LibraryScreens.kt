@@ -86,7 +86,7 @@ fun SourcesLibraryScreen(
                     Text("المؤلف: ${book.authorName}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (book.isOcrExtracted) {
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("تنبيه: نص مستخرج آليًا (OCR) ويحتاج مراجعة.", style = MaterialTheme.typography.labelSmall, color = SeerahRouteRed)
+                        Text("تنبيه: نص مستخرج آليًا (OCR) ويحتاج مراجعة.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
@@ -140,7 +140,7 @@ fun BookDetailsScreen(
             } else {
                 items(pages) { page ->
                     SeerahEncyclopediaCard {
-                        Text("ج${page.volumeNumber} — ص${page.pageNumber} ${if (page.chapterTitle.isNotBlank()) "• ${page.chapterTitle}" else ""}", style = MaterialTheme.typography.labelLarge, color = SeerahHistoricalBrown)
+                        Text("ج${page.volumeNumber} — ص${page.pageNumber} ${if (page.chapterTitle.isNotBlank()) "• ${page.chapterTitle}" else ""}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(page.rawText, style = MaterialTheme.typography.bodyLarge)
                     }
@@ -188,7 +188,7 @@ fun ImportBooksScreen(
             item {
                 SeerahEncyclopediaCard(parchmentTone = true) {
                     Text("الصيغ المدعومة محليًا دون إنترنت:", style = MaterialTheme.typography.titleMedium)
-                    Text("PDF • TXT • EPUB • XML • JSON / GeoJSON • CSV • SQLite / MBTiles • ZIP", style = MaterialTheme.typography.labelLarge, color = SeerahEmerald)
+                    Text("PDF • TXT • EPUB • XML • JSON / GeoJSON • CSV • SQLite / MBTiles • ZIP", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.height(6.dp))
                     Text("تُحفظ الملفات محليًا فقط ولا تُرسل إلى أي خادم خارجي، مع كشف تلقائي للتكرار (SHA-256).", style = MaterialTheme.typography.bodyMedium)
                 }
@@ -229,7 +229,7 @@ fun ImportBooksScreen(
                     onClick = { picker.launch(arrayOf("*/*")) },
                     enabled = !isImporting,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                 ) {
                     Text(if (isImporting) "جارٍ الاستيراد والفهرسة..." else "اختيار ملف من الهاتف")
                 }
@@ -269,7 +269,7 @@ fun LibraryManagementScreen(
                         repository.deleteImportedBook(target)
                         bookPendingDelete = null
                     }
-                }) { Text("حذف", color = SeerahRouteRed) }
+                }) { Text("حذف", color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
                 TextButton(onClick = { bookPendingDelete = null }) { Text("إلغاء") }
@@ -301,7 +301,7 @@ fun LibraryManagementScreen(
                                 Text("${book.fileFormat} • ${book.pageCount} صفحة", style = MaterialTheme.typography.labelSmall)
                             }
                             IconButton(onClick = { bookPendingDelete = book }) {
-                                Icon(Icons.Outlined.DeleteOutline, contentDescription = "حذف بعد التأكيد", tint = SeerahRouteRed)
+                                Icon(Icons.Outlined.DeleteOutline, contentDescription = "حذف بعد التأكيد", tint = MaterialTheme.colorScheme.error)
                             }
                         }
                     }

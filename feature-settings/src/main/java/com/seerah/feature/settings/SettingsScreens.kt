@@ -63,7 +63,7 @@ fun MoreHubScreen(
             items(entries) { (label, icon, action) ->
                 SeerahEncyclopediaCard(onClick = action) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Icon(icon, contentDescription = null, tint = SeerahEmerald)
+                        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Text(label, style = MaterialTheme.typography.titleMedium)
                     }
                 }
@@ -126,7 +126,7 @@ fun NotesScreen(repository: SeerahRepository, onBack: () -> Unit) {
                                 }
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                     ) { Text("حفظ الملاحظة") }
                 }
             }
@@ -135,7 +135,7 @@ fun NotesScreen(repository: SeerahRepository, onBack: () -> Unit) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text(note.title, style = MaterialTheme.typography.titleMedium)
                         IconButton(onClick = { scope.launch { repository.deleteNote(note) } }) {
-                            Icon(Icons.Outlined.DeleteOutline, contentDescription = "حذف", tint = SeerahRouteRed)
+                            Icon(Icons.Outlined.DeleteOutline, contentDescription = "حذف", tint = MaterialTheme.colorScheme.error)
                         }
                     }
                     Text(note.content, style = MaterialTheme.typography.bodyMedium)
@@ -257,7 +257,7 @@ fun QuizScreen(repository: SeerahRepository, onBack: () -> Unit, onOpenImport: (
                     ) {
                         Text(opt, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                         if (selectedOption != null && isCorrect) {
-                            Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = SeerahEmerald)
+                            Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }
@@ -278,7 +278,7 @@ fun QuizScreen(repository: SeerahRepository, onBack: () -> Unit, onOpenImport: (
                         currentIndex = (currentIndex + 1) % questions.size
                     },
                     modifier = Modifier.fillMaxWidth().height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                 ) {
                     Text(if (currentIndex < questions.lastIndex) "السؤال التالي" else "إعادة الاختبار")
                 }
@@ -300,7 +300,7 @@ fun DownloadsScreen(repository: SeerahRepository, onBack: () -> Unit, onOpenImpo
                 SeerahEncyclopediaCard(parchmentTone = true) {
                     Text("التطبيق يعمل دون إنترنت (Offline-First) ولا يقوم بتنزيل أي ملفات تلقائيًا دون موافقتك.", style = MaterialTheme.typography.bodyMedium)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = onOpenImport, colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)) {
+                    Button(onClick = onOpenImport, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
                         Text("استيراد حزمة كتب أو خرائط من الهاتف")
                     }
                 }
@@ -377,7 +377,7 @@ fun SettingsScreen(
                     Text(
                         "الإصدار المثبّت حاليًا: v${repository.appUpdater.currentVersionName()}",
                         style = MaterialTheme.typography.labelLarge,
-                        color = SeerahEmerald
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
@@ -401,7 +401,7 @@ fun SettingsScreen(
                         },
                         enabled = !isCheckingUpdate,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                     ) {
                         Text(if (isCheckingUpdate) "جارٍ التحقق من التحديثات..." else "التحقق من وجود تحديث")
                     }
@@ -431,11 +431,11 @@ fun SettingsScreen(
                                         }
                                     },
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                                 ) { Text("تثبيت التحديث الآن") }
                             }
                             is UpdateDownloadProgress.Error -> {
-                                Text(prog.message, style = MaterialTheme.typography.labelSmall, color = SeerahRouteRed)
+                                Text(prog.message, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
                             }
                             UpdateDownloadProgress.Idle -> {
                                 OutlinedButton(
@@ -475,7 +475,7 @@ fun SettingsScreen(
 
                     if (statusMessage.isNotBlank()) {
                         Spacer(modifier = Modifier.height(6.dp))
-                        Text(statusMessage, style = MaterialTheme.typography.labelLarge, color = SeerahEmerald)
+                        Text(statusMessage, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                     }
                     healthReport?.let { hr ->
                         Spacer(modifier = Modifier.height(6.dp))

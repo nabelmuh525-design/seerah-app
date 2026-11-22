@@ -104,7 +104,7 @@ fun PlaceDetailsScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(
                         onClick = { onOpenAtlas(pl.mapId) },
-                        colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                     ) { Text("فتح الموقع على الخريطة") }
                 }
             }

@@ -237,16 +237,16 @@ fun EventDetailsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     SeerahEncyclopediaCard(modifier = Modifier.weight(1f), parchmentTone = true) {
-                        Text("التاريخ", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                        Text("التاريخ", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(primaryDate?.hijriDisplay ?: "موثق", style = MaterialTheme.typography.labelLarge)
                     }
                     SeerahEncyclopediaCard(modifier = Modifier.weight(1f), parchmentTone = true) {
-                        Text("الموقع", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
+                        Text("الموقع", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(ev.mapId ?: "الحجاز", style = MaterialTheme.typography.labelLarge)
                     }
                     SeerahEncyclopediaCard(modifier = Modifier.weight(1f), parchmentTone = true) {
-                        Text("التوثيق", style = MaterialTheme.typography.labelSmall, color = SeerahHistoricalBrown)
-                        Text("مصدر معتمد", style = MaterialTheme.typography.labelLarge, color = SeerahEmerald)
+                        Text("التوثيق", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("مصدر معتمد", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -255,21 +255,21 @@ fun EventDetailsScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (ev.causeText.isNotBlank()) {
                         SeerahEncyclopediaCard {
-                            Text("أسباب الحدث", style = MaterialTheme.typography.titleMedium, color = SeerahEmerald)
+                            Text("أسباب الحدث", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(ev.causeText, style = MaterialTheme.typography.bodyLarge)
                         }
                     }
 
                     SeerahEncyclopediaCard {
-                        Text("تفاصيل الحدث", style = MaterialTheme.typography.titleMedium, color = SeerahEmerald)
+                        Text("تفاصيل الحدث", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(ev.shortSummary, style = MaterialTheme.typography.bodyLarge)
                     }
 
                     if (ev.outcomeText.isNotBlank()) {
                         SeerahEncyclopediaCard {
-                            Text("النتائج والدروس", style = MaterialTheme.typography.titleMedium, color = SeerahEmerald)
+                            Text("النتائج والدروس", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(ev.outcomeText, style = MaterialTheme.typography.bodyLarge)
                         }
@@ -279,7 +279,7 @@ fun EventDetailsScreen(
                         onClick = { onOpenMap(ev.mapId ?: "hijra") },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SeerahEmerald)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                     ) {
                         Icon(Icons.Outlined.Map, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
