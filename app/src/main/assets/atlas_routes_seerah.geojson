@@ -1,0 +1,357 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "route_hijra",
+      "properties": {
+        "name": "مسار الهجرة النبوية الشريفة",
+        "layer": "hijra_routes",
+        "feature_type": "HIJRA_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي وفق الروايات التاريخية (مكة ← غار ثور ← الساحل ← قباء ← المدينة)"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.8262,
+            21.4225
+          ],
+          [
+            39.8498,
+            21.3771
+          ],
+          [
+            39.58,
+            21.55
+          ],
+          [
+            39.34,
+            21.92
+          ],
+          [
+            39.18,
+            22.38
+          ],
+          [
+            39.05,
+            22.92
+          ],
+          [
+            39.18,
+            23.55
+          ],
+          [
+            39.6173,
+            24.4392
+          ],
+          [
+            39.6111,
+            24.4672
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_badr",
+      "properties": {
+        "name": "مسار غزوة بدر الكبرى (2 هـ)",
+        "layer": "battles",
+        "feature_type": "BATTLE_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي لغزوة بدر الكبرى — يحتاج استكمال نقاط تفصيلية من مصدر مطبوع"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.6111,
+            24.4672
+          ],
+          [
+            39.36,
+            24.22
+          ],
+          [
+            39.05,
+            23.98
+          ],
+          [
+            38.791,
+            23.781
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_uhud",
+      "properties": {
+        "name": "مسار غزوة أحد (3 هـ)",
+        "layer": "battles",
+        "feature_type": "BATTLE_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي من المدينة إلى سفح جبل أحد"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.6111,
+            24.4672
+          ],
+          [
+            39.606,
+            24.486
+          ],
+          [
+            39.611,
+            24.503
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_hudaybiyyah",
+      "properties": {
+        "name": "مسار صلح الحديبية (6 هـ)",
+        "layer": "battles",
+        "feature_type": "BATTLE_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي لرحلة العمرة وصلح الحديبية"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.6111,
+            24.4672
+          ],
+          [
+            39.543,
+            24.414
+          ],
+          [
+            39.092,
+            23.103
+          ],
+          [
+            39.34,
+            21.92
+          ],
+          [
+            39.6042,
+            21.4414
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_khaybar",
+      "properties": {
+        "name": "مسار غزوة خيبر (7 هـ)",
+        "layer": "battles",
+        "feature_type": "BATTLE_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي لغزوة خيبر شمال المدينة المنورة"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.6111,
+            24.4672
+          ],
+          [
+            39.46,
+            25.08
+          ],
+          [
+            39.2939,
+            25.6986
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_conquest_makkah",
+      "properties": {
+        "name": "مسار فتح مكة (8 هـ)",
+        "layer": "battles",
+        "feature_type": "BATTLE_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي لفتح مكة المكرمة في رمضان 8 هـ"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.6111,
+            24.4672
+          ],
+          [
+            39.092,
+            23.103
+          ],
+          [
+            39.2,
+            22.35
+          ],
+          [
+            39.68,
+            21.62
+          ],
+          [
+            39.8262,
+            21.4225
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_hunayn_taif",
+      "properties": {
+        "name": "مسار غزوة حنين والطائف (8 هـ)",
+        "layer": "battles",
+        "feature_type": "BATTLE_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي لغزوة حنين وحصار الطائف"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.8262,
+            21.4225
+          ],
+          [
+            40.06,
+            21.5
+          ],
+          [
+            40.4158,
+            21.2703
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_tabuk",
+      "properties": {
+        "name": "مسار غزوة تبوك (9 هـ)",
+        "layer": "battles",
+        "feature_type": "BATTLE_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي لغزوة تبوك (جيش العسرة)"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.6111,
+            24.4672
+          ],
+          [
+            39.2939,
+            25.6986
+          ],
+          [
+            37.95,
+            26.79
+          ],
+          [
+            36.5662,
+            28.3835
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_mutah",
+      "properties": {
+        "name": "مسار غزوة/سرية مؤتة (8 هـ)",
+        "layer": "battles",
+        "feature_type": "BATTLE_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي لسرية/غزوة مؤتة في جنوب الشام"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.6111,
+            24.4672
+          ],
+          [
+            37.95,
+            26.79
+          ],
+          [
+            36.5662,
+            28.3835
+          ],
+          [
+            35.734,
+            30.192
+          ],
+          [
+            35.701,
+            31.091
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "route_caravan_sham",
+      "properties": {
+        "name": "طريق القوافل التاريخي (مكة — الشام)",
+        "layer": "roads",
+        "feature_type": "CARAVAN_ROUTE",
+        "certainty": "APPROXIMATE",
+        "source": "مسار تقريبي لطريق قوافل قريش بين مكة والشام"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            39.8262,
+            21.4225
+          ],
+          [
+            39.34,
+            21.92
+          ],
+          [
+            39.092,
+            23.103
+          ],
+          [
+            38.791,
+            23.781
+          ],
+          [
+            37.95,
+            26.79
+          ],
+          [
+            36.5662,
+            28.3835
+          ],
+          [
+            35.701,
+            31.091
+          ]
+        ]
+      }
+    }
+  ]
+}

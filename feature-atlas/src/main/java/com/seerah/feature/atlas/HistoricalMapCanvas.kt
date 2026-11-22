@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.PathFillType
@@ -33,7 +34,6 @@ import com.seerah.core.theme.*
 import com.seerah.data.geo.GeoJsonParser
 import com.seerah.data.geo.MapProjectionEngine
 import com.seerah.data.geo.MbTilesReader
-import kotlinx.coroutines.launch
 import com.seerah.database.entity.BattleMapFeatureEntity
 import com.seerah.database.entity.PlaceCoordinateEntity
 import com.seerah.database.entity.PlaceEntity
@@ -41,22 +41,23 @@ import com.seerah.domain.model.AtlasMapDefinition
 import com.seerah.domain.model.GeoFeatureModel
 import com.seerah.domain.model.GeoPointModel
 import com.seerah.domain.model.GeographicCertainty
+import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.*
 
 /**
- * محرك الأطلس الجغرافي (v3.0.0-alpha.4.1):
- * - يُسقط بلاطات MBTiles باستخدام إحداثياتها الجغرافية الحقيقية (MbTilesReader.tileToBounds)
- *   بنفس تحويل Web Mercator + Zoom + Pan المطبق على المواقع ومعالم GeoJSON (تطابق تام).
- * - يتجاهل البلاطات الواقعة خارج نطاق الشاشة (Viewport Culling).
- * - يرسم جميع الأنواع السبعة لـ GeoJSON RFC 7946:
- *   Point, MultiPoint, LineString, MultiLineString, Polygon (بثقوب EvenOdd), MultiPolygon, GeometryCollection.
+ * محرك الأطلس الجغرافي (v3.0.2-alpha.6):
+ * - خريطة أساس أوفلاين مدمجة (سواحل البحر الأحمر والخليج العربي والتضاريس والأودية)
+ *   مع مسارات السيرة والهجرة والغزوات التقريبية.
+ * - يُسقط بلاطات MBTiles (عند استيرادها) باستخدام إحداثياتها الجغرافية الحقيقية (Web Mercator + Zoom + Pan).
+ * - يرسم جميع الأنواع السبعة لـ GeoJSON RFC 7946 مع توزيع ذكي لتسميات المواقع يمنع التداخل.
  */
 @Composable
 fun HistoricalMapCanvas(
     mapDefinition: AtlasMapDefinition,
     enabledLayers: Set<String>,
     features: List<BattleMapFeatureEntity>,
+    bundledBaseFeatures: List<GeoFeatureModel> = emptyList(),
     places: List<PlaceEntity> = emptyList(),
     coordinates: List<PlaceCoordinateEntity> = emptyList(),
     mbtilesLocalPath: String? = null,
@@ -96,11 +97,27 @@ fun HistoricalMapCanvas(
         }
     }
 
+    val activeBundledFeatures = remember(bundledBaseFeatures, enabledLayers) {
+        bundledBaseFeatures.filter { enabledLayers.contains(it.layerKey) }
+    }
+
     val importedGeoFeatures = remember(features, enabledLayers) {
         features.flatMap { entity ->
             runCatching { GeoJsonParser.parseFeatureCollection(entity.geojsonGeometry) }
                 .getOrDefault(emptyList())
         }.filter { enabledLayers.contains(it.layerKey) }
+    }
+
+    val allGeoFeatures = remember(activeBundledFeatures, importedGeoFeatures) {
+        activeBundledFeatures + importedGeoFeatures
+    }
+
+    // تقسيم المعالم: طبقة الأساس (مياه + تضاريس + أودية) تُرسم تحت الشبكة، والمسارات فوقها
+    val baseTerrainFeatures = remember(allGeoFeatures) {
+        allGeoFeatures.filter { it.featureType in setOf("WATER", "MOUNTAIN", "VALLEY") || it.layerKey in setOf("terrain", "mountains", "valleys") }
+    }
+    val overlayFeatures = remember(allGeoFeatures) {
+        allGeoFeatures.filterNot { it.featureType in setOf("WATER", "MOUNTAIN", "VALLEY") || it.layerKey in setOf("terrain", "mountains", "valleys") }
     }
 
     var canvasSize by remember { mutableStateOf(Size.Zero) }
@@ -181,23 +198,41 @@ fun HistoricalMapCanvas(
         Paint().apply {
             isAntiAlias = true
             color = android.graphics.Color.parseColor("#0B2923")
-            textSize = 25f
+            textSize = 24f
             typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+    }
+    val waterLabelPaint = remember {
+        Paint().apply {
+            isAntiAlias = true
+            color = android.graphics.Color.parseColor("#3E666B")
+            textSize = 23f
+            typeface = Typeface.create(Typeface.SERIF, Typeface.ITALIC)
+            textAlign = Paint.Align.CENTER
+        }
+    }
+    val terrainLabelPaint = remember {
+        Paint().apply {
+            isAntiAlias = true
+            color = android.graphics.Color.parseColor("#6E5438")
+            textSize = 20f
+            typeface = Typeface.create(Typeface.SERIF, Typeface.NORMAL)
             textAlign = Paint.Align.CENTER
         }
     }
     val gridTextPaint = remember {
         Paint().apply {
             isAntiAlias = true
-            color = android.graphics.Color.parseColor("#795735")
-            textSize = 19f
+            color = android.graphics.Color.parseColor("#8A6D4B")
+            textSize = 18f
             textAlign = Paint.Align.LEFT
         }
     }
     val labelBgPaint = remember {
         Paint().apply {
             isAntiAlias = true
-            color = android.graphics.Color.argb(235, 250, 247, 240)
+            color = android.graphics.Color.argb(240, 250, 247, 240)
             style = Paint.Style.FILL
         }
     }
@@ -210,13 +245,20 @@ fun HistoricalMapCanvas(
         }
     }
 
-    val allClickable = remember(geoPoints, importedGeoFeatures) { geoPoints + importedGeoFeatures }
+    val waterFill = Color(0xFFBED6D9)
+    val waterCoast = Color(0xFF6B9398)
+    val mountainFill = Color(0xFFDECBA8)
+    val mountainStroke = Color(0xFFA07E54)
+    val valleyStroke = Color(0xFF7FA3A6)
+    val landColor = Color(0xFFF5EEDF)
+
+    val allClickable = remember(geoPoints, overlayFeatures) { geoPoints + overlayFeatures }
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
-            .background(SeerahParchment)
+            .background(landColor)
             .border(2.dp, SeerahAntiqueGold, RoundedCornerShape(18.dp))
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, gestureZoom, _ ->
@@ -230,16 +272,18 @@ fun HistoricalMapCanvas(
                     val hit = allClickable.firstOrNull { f -> proj.hitTest(tap.x, tap.y, f, tolerancePx = 44f) }
                     if (hit != null) {
                         onFeatureSelected(hit)
-                        lastTwoSelected = (lastTwoSelected + hit).takeLast(2)
+                        if (hit.geometryType == "Point" && hit.coordinates.isNotEmpty()) {
+                            lastTwoSelected = (lastTwoSelected + hit).takeLast(2)
+                        }
                     }
                 }
             }
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             canvasSize = size
-            drawRect(color = SeerahParchment)
+            drawRect(color = landColor)
 
-            // 0. رسم بلاطات MBTiles بإسقاطها الجغرافي الحقيقي (Web Mercator + Zoom + Pan + Viewport Culling)
+            // 0. رسم بلاطات MBTiles إن وُجدت، وإلا رسم طبقة الأساس الجغرافية الأوفلاين (البحار والتضاريس والأودية)
             if (mbTilesReader != null) {
                 val activeReader = mbTilesReader!!
                 val projDraw = MapProjectionEngine(minLat, maxLat, minLon, maxLon, size.width, size.height, zoom, panOffset.x, panOffset.y)
@@ -256,7 +300,6 @@ fun HistoricalMapCanvas(
                         val b = MbTilesReader.tileToBounds(tileZoom, tx, ty)
                         val tl = projectLatLon(b.northLat, b.westLon, size)
                         val br = projectLatLon(b.southLat, b.eastLon, size)
-                        // Viewport culling: لا تحمّل البلاطات خارج الشاشة
                         if (br.x < 0f || tl.x > size.width || br.y < 0f || tl.y > size.height) continue
                         val wPx = ceil(br.x - tl.x).toInt().coerceAtLeast(1)
                         val hPx = ceil(br.y - tl.y).toInt().coerceAtLeast(1)
@@ -271,16 +314,80 @@ fun HistoricalMapCanvas(
                         }
                     }
                 }
+            } else {
+                // رسم المسطحات المائية والتضاريس والأودية المدمجة أوفلاين
+                baseTerrainFeatures.forEach { feat ->
+                    when (feat.geometryType) {
+                        "Polygon", "MultiPolygon" -> {
+                            val isWater = feat.featureType == "WATER"
+                            val fillCol = if (isWater) waterFill else mountainFill.copy(alpha = 0.55f)
+                            val strokeCol = if (isWater) waterCoast else mountainStroke.copy(alpha = 0.70f)
+                            val strokeW = if (isWater) 2.5f else 1.6f
+                            val dash = if (isWater) null else PathEffect.dashPathEffect(floatArrayOf(8f, 6f), 0f)
+
+                            feat.polygons.forEach { polyRings ->
+                                val outer = polyRings.outerRing.map { projectLatLon(it.latitude, it.longitude, size) }
+                                if (outer.size >= 3) {
+                                    val path = Path().apply {
+                                        fillType = PathFillType.EvenOdd
+                                        moveTo(outer.first().x, outer.first().y)
+                                        outer.drop(1).forEach { lineTo(it.x, it.y) }
+                                        close()
+                                        polyRings.holes.forEach { hole ->
+                                            val hPts = hole.map { projectLatLon(it.latitude, it.longitude, size) }
+                                            if (hPts.size >= 3) {
+                                                moveTo(hPts.first().x, hPts.first().y)
+                                                hPts.drop(1).forEach { lineTo(it.x, it.y) }
+                                                close()
+                                            }
+                                        }
+                                    }
+                                    drawPath(path, color = fillCol)
+                                    drawPath(path, color = strokeCol, style = Stroke(strokeW, pathEffect = dash))
+
+                                    // كتابة اسم البحر أو الجبل داخل النطاق المرئي إن ظهر جزء كافٍ منه
+                                    val visiblePts = outer.filter { it.x in 30f..(size.width - 30f) && it.y in 40f..(size.height - 40f) }
+                                    if (visiblePts.size >= 3) {
+                                        val cx = visiblePts.map { it.x }.average().toFloat()
+                                        val cy = visiblePts.map { it.y }.average().toFloat()
+                                        if (isWater) {
+                                            drawContext.canvas.nativeCanvas.drawText(feat.label, cx, cy, waterLabelPaint)
+                                        } else if (feat.id != "mtn_hijaz_sarawat") {
+                                            drawContext.canvas.nativeCanvas.drawText(feat.label, cx, cy, terrainLabelPaint)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        "LineString", "MultiLineString" -> {
+                            val lines = if (feat.multiLines.isNotEmpty()) feat.multiLines else listOf(feat.coordinates)
+                            lines.forEach { lineCoords ->
+                                val screenPts = lineCoords.map { projectLatLon(it.latitude, it.longitude, size) }
+                                if (screenPts.size >= 2) {
+                                    val path = Path().apply {
+                                        moveTo(screenPts.first().x, screenPts.first().y)
+                                        screenPts.drop(1).forEach { lineTo(it.x, it.y) }
+                                    }
+                                    drawPath(
+                                        path,
+                                        color = valleyStroke.copy(alpha = 0.78f),
+                                        style = Stroke(3.2f, cap = StrokeCap.Round, pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 6f), 0f))
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            // 1. شبكة إحداثيات WGS84
-            val latStep = ((maxLat - minLat) / 5.0).coerceAtLeast(0.02)
-            val lonStep = ((maxLon - minLon) / 5.0).coerceAtLeast(0.02)
+            // 1. شبكة إحداثيات WGS84 خفيفة وهادئة
+            val latStep = ((maxLat - minLat) / 4.0).coerceAtLeast(0.02)
+            val lonStep = ((maxLon - minLon) / 4.0).coerceAtLeast(0.02)
             var latCur = minLat
             while (latCur <= maxLat + 0.0001) {
                 val y = projectLatLon(latCur, minLon, size).y
-                if (y in 0f..size.height) {
-                    drawLine(SeerahAntiqueGold.copy(alpha = 0.25f), Offset(0f, y), Offset(size.width, y), 1.1f)
+                if (y in 24f..(size.height - 28f)) {
+                    drawLine(SeerahAntiqueGold.copy(alpha = 0.15f), Offset(0f, y), Offset(size.width, y), 1f)
                     drawContext.canvas.nativeCanvas.drawText("${"%.2f".format(latCur)}°N", 8f, y - 4f, gridTextPaint)
                 }
                 latCur += latStep
@@ -288,31 +395,33 @@ fun HistoricalMapCanvas(
             var lonCur = minLon
             while (lonCur <= maxLon + 0.0001) {
                 val x = projectLatLon(minLat, lonCur, size).x
-                if (x in 0f..size.width) {
-                    drawLine(SeerahAntiqueGold.copy(alpha = 0.25f), Offset(x, 0f), Offset(x, size.height), 1.1f)
-                    drawContext.canvas.nativeCanvas.drawText("${"%.2f".format(lonCur)}°E", x + 4f, 22f, gridTextPaint)
+                if (x in 24f..(size.width - 36f)) {
+                    drawLine(SeerahAntiqueGold.copy(alpha = 0.15f), Offset(x, 0f), Offset(x, size.height), 1f)
+                    drawContext.canvas.nativeCanvas.drawText("${"%.2f".format(lonCur)}°E", x + 4f, 20f, gridTextPaint)
                 }
                 lonCur += lonStep
             }
 
-            // 2. رسم جميع الأنواع السبعة من GeoJSON (Point, MultiPoint, LineString, MultiLineString, Polygon+Holes, MultiPolygon, GeometryCollection)
-            importedGeoFeatures.forEach { feat ->
+            // 2. رسم المسارات والمعالم المستوردة والمدمجة (جميع الأنواع السبعة لـ GeoJSON)
+            overlayFeatures.forEach { feat ->
                 val isDisputed = feat.certainty != GeographicCertainty.CONFIRMED
-                val dash = if (isDisputed) PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f) else null
+                val dash = when {
+                    feat.layerKey == "roads" -> PathEffect.dashPathEffect(floatArrayOf(6f, 8f), 0f)
+                    isDisputed -> PathEffect.dashPathEffect(floatArrayOf(14f, 8f), 0f)
+                    else -> null
+                }
 
                 when (feat.geometryType) {
                     "Polygon", "MultiPolygon" -> {
                         feat.polygons.forEach { polyRings ->
                             val path = Path().apply {
                                 fillType = PathFillType.EvenOdd
-                                // الحلقة الخارجية
                                 val outer = polyRings.outerRing.map { projectLatLon(it.latitude, it.longitude, size) }
                                 if (outer.size >= 3) {
                                     moveTo(outer.first().x, outer.first().y)
                                     outer.drop(1).forEach { lineTo(it.x, it.y) }
                                     close()
                                 }
-                                // الثقوب الداخلية (EvenOdd يفرغها فعليًا)
                                 polyRings.holes.forEach { hole ->
                                     val hPts = hole.map { projectLatLon(it.latitude, it.longitude, size) }
                                     if (hPts.size >= 3) {
@@ -322,7 +431,7 @@ fun HistoricalMapCanvas(
                                     }
                                 }
                             }
-                            drawPath(path, color = SeerahHistoricalBrown.copy(alpha = 0.28f))
+                            drawPath(path, color = SeerahHistoricalBrown.copy(alpha = 0.25f))
                             drawPath(path, color = SeerahMountainDark, style = Stroke(2f, pathEffect = dash))
                         }
                     }
@@ -341,13 +450,17 @@ fun HistoricalMapCanvas(
                                     moveTo(screenPts.first().x, screenPts.first().y)
                                     screenPts.drop(1).forEach { lineTo(it.x, it.y) }
                                 }
-                                drawPath(path, color = lineColor, style = Stroke(4.5f, cap = StrokeCap.Round, pathEffect = dash))
+                                // هالة فاتحة خلف المسار لوضوح ممتاز فوق أي خلفية
+                                drawPath(path, color = SeerahIvory.copy(alpha = 0.72f), style = Stroke(7.5f, cap = StrokeCap.Round))
+                                drawPath(path, color = lineColor, style = Stroke(4.2f, cap = StrokeCap.Round, pathEffect = dash))
                                 val p1 = screenPts[screenPts.lastIndex - 1]
                                 val p2 = screenPts.last()
-                                val angle = atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble())
-                                val aLen = 14f
-                                drawLine(lineColor, p2, Offset(p2.x - (aLen * cos(angle - 0.5)).toFloat(), p2.y - (aLen * sin(angle - 0.5)).toFloat()), 3f)
-                                drawLine(lineColor, p2, Offset(p2.x - (aLen * cos(angle + 0.5)).toFloat(), p2.y - (aLen * sin(angle + 0.5)).toFloat()), 3f)
+                                if (hypot((p2.x - p1.x).toDouble(), (p2.y - p1.y).toDouble()) > 12.0) {
+                                    val angle = atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble())
+                                    val aLen = 14f
+                                    drawLine(lineColor, p2, Offset(p2.x - (aLen * cos(angle - 0.5)).toFloat(), p2.y - (aLen * sin(angle - 0.5)).toFloat()), 3.5f)
+                                    drawLine(lineColor, p2, Offset(p2.x - (aLen * cos(angle + 0.5)).toFloat(), p2.y - (aLen * sin(angle + 0.5)).toFloat()), 3.5f)
+                                }
                             }
                         }
                     }
@@ -361,48 +474,76 @@ fun HistoricalMapCanvas(
                 }
             }
 
-            // 3. خط قياس المسافة المستقيمة بين آخر موقعين
+            // 3. خط قياس المسافة المستقيمة بين آخر موقعين مختارين
             if (lastTwoSelected.size == 2) {
                 val s1 = projectLatLon(lastTwoSelected[0].coordinates.first().latitude, lastTwoSelected[0].coordinates.first().longitude, size)
                 val s2 = projectLatLon(lastTwoSelected[1].coordinates.first().latitude, lastTwoSelected[1].coordinates.first().longitude, size)
                 drawLine(SeerahRouteGreen, s1, s2, strokeWidth = 3f, pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f))
             }
 
-            // 4. رسم المواقع مع منع تصادم الأسماء
+            // 4. رسم المواقع مع توزيع ذكي في 4 اتجاهات لمنع تداخل أو اختفاء الأسماء القريبة
             val placedLabelRects = mutableListOf<RectF>()
             geoPoints.forEach { feat ->
                 val coord = feat.coordinates.first()
                 val pt = projectLatLon(coord.latitude, coord.longitude, size)
+                if (pt.x < -30f || pt.x > size.width + 30f || pt.y < -30f || pt.y > size.height + 30f) return@forEach
+
                 val isDisputed = feat.certainty != GeographicCertainty.CONFIRMED
                 val pinColor = when {
-                    isDisputed -> SeerahAntiqueGold
                     feat.featureType in setOf("badr", "uhud", "khandaq", "khaybar", "hunayn_taif", "tabuk") -> SeerahRouteRed
+                    isDisputed -> SeerahAntiqueGold
                     else -> SeerahEmerald
                 }
-                if (isDisputed) drawCircle(SeerahAntiqueGold.copy(alpha = 0.28f), radius = 18f, center = pt)
+                if (isDisputed) drawCircle(pinColor.copy(alpha = 0.24f), radius = 17f, center = pt)
                 drawCircle(SeerahIvory, radius = 10f, center = pt)
-                drawCircle(pinColor, radius = 7.5f, center = pt)
+                drawCircle(pinColor, radius = 7.2f, center = pt)
 
-                val textW = labelPaint.measureText(feat.label) + 20f
+                val textW = labelPaint.measureText(feat.label) + 22f
                 val boxH = 32f
-                val candidateRect = RectF(pt.x - textW / 2f, pt.y - 12f - boxH - 4f, pt.x + textW / 2f, pt.y - 12f - 4f)
-                if (placedLabelRects.none { RectF.intersects(it, candidateRect) }) {
-                    placedLabelRects.add(candidateRect)
-                    drawContext.canvas.nativeCanvas.drawRoundRect(candidateRect, 10f, 10f, labelBgPaint)
-                    drawContext.canvas.nativeCanvas.drawRoundRect(candidateRect, 10f, 10f, labelBorderPaint)
-                    drawContext.canvas.nativeCanvas.drawText(feat.label, pt.x, candidateRect.top + 23f, labelPaint)
+                val candidates = listOf(
+                    // أعلى النقطة
+                    RectF(pt.x - textW / 2f, pt.y - 16f - boxH, pt.x + textW / 2f, pt.y - 16f),
+                    // أسفل النقطة
+                    RectF(pt.x - textW / 2f, pt.y + 16f, pt.x + textW / 2f, pt.y + 16f + boxH),
+                    // يمين النقطة
+                    RectF(pt.x + 16f, pt.y - boxH / 2f, pt.x + 16f + textW, pt.y + boxH / 2f),
+                    // يسار النقطة
+                    RectF(pt.x - 16f - textW, pt.y - boxH / 2f, pt.x - 16f, pt.y + boxH / 2f)
+                )
+                val chosen = candidates.firstOrNull { rect ->
+                    rect.left >= 6f && rect.right <= size.width - 6f &&
+                        rect.top >= 26f && rect.bottom <= size.height - 34f &&
+                        placedLabelRects.none { RectF.intersects(it, rect) }
+                }
+                if (chosen != null) {
+                    placedLabelRects.add(chosen)
+                    // خط ربط لطيف إذا كانت التسمية على الجانب أو الأسفل
+                    drawLine(SeerahAntiqueGold.copy(alpha = 0.6f), pt, Offset(chosen.centerX(), chosen.centerY()), 1.4f)
+                    drawContext.canvas.nativeCanvas.drawRoundRect(chosen, 10f, 10f, labelBgPaint)
+                    drawContext.canvas.nativeCanvas.drawRoundRect(chosen, 10f, 10f, labelBorderPaint)
+                    drawContext.canvas.nativeCanvas.drawText(feat.label, chosen.centerX(), chosen.top + 22f, labelPaint)
                 }
             }
 
-            // 5. مقياس الرسم الديناميكي عند خط عرض المركز
+            // 5. بوصلة الشمال (Compass Rose) في أسفل اليمين
+            val compassCenter = Offset(size.width - 36f, size.height - 36f)
+            drawCircle(SeerahIvory.copy(alpha = 0.90f), radius = 20f, center = compassCenter)
+            drawCircle(SeerahAntiqueGold, radius = 20f, center = compassCenter, style = Stroke(1.8f))
+            drawLine(SeerahRouteRed, compassCenter, Offset(compassCenter.x, compassCenter.y - 14f), 3f, cap = StrokeCap.Round)
+            drawLine(SeerahInkDark.copy(alpha = 0.5f), compassCenter, Offset(compassCenter.x, compassCenter.y + 12f), 2f, cap = StrokeCap.Round)
+            drawContext.canvas.nativeCanvas.drawText("ش", compassCenter.x, compassCenter.y - 22f, terrainLabelPaint)
+
+            // 6. مقياس الرسم الديناميكي عند خط عرض المركز
             val centerLat = ((minLat + maxLat) / 2.0).coerceIn(-80.0, 80.0)
             val widthKm = GeoJsonParser.haversineKm(GeoPointModel(centerLat, minLon), GeoPointModel(centerLat, maxLon))
             val kmPerPx = (widthKm / (size.width * zoom)).coerceAtLeast(0.001)
-            val barPx = 110f
+            val barPx = 104f
             val barKm = barPx * kmPerPx
             val scaleLabel = if (barKm >= 1.0) "≈ ${"%.1f".format(barKm)} كم" else "≈ ${(barKm * 1000).toInt()} م"
-            val by = size.height - 20f
+            val by = size.height - 18f
             drawLine(SeerahInkDark, Offset(18f, by), Offset(18f + barPx, by), 3f)
+            drawLine(SeerahInkDark, Offset(18f, by - 5f), Offset(18f, by + 5f), 2f)
+            drawLine(SeerahInkDark, Offset(18f + barPx, by - 5f), Offset(18f + barPx, by + 5f), 2f)
             drawContext.canvas.nativeCanvas.drawText("$scaleLabel (${"%.1f".format(centerLat)}°N)", 18f, by - 8f, gridTextPaint)
         }
 
@@ -418,7 +559,7 @@ fun HistoricalMapCanvas(
                     .padding(horizontal = 10.dp, vertical = 5.dp)
             ) {
                 Text(
-                    text = "${mapDefinition.arabicTitle} • ${if (mbTilesReader != null) "MBTiles" else "WGS84"} • ${"%.1f".format(zoom)}x",
+                    text = "${mapDefinition.arabicTitle} • ${if (mbTilesReader != null) "MBTiles" else "أطلس أوفلاين"} • ${"%.1f".format(zoom)}x",
                     style = MaterialTheme.typography.labelSmall,
                     color = SeerahGoldLight
                 )

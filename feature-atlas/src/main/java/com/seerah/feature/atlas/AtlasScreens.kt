@@ -12,13 +12,31 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.seerah.data.geo.GeoJsonParser
+import com.seerah.domain.model.GeoFeatureModel
 import com.seerah.core.components.*
 import com.seerah.core.theme.*
 import com.seerah.data.repository.SeerahRepository
 import com.seerah.domain.model.AtlasMapDefinition
 import com.seerah.domain.model.GeographicCertainty
 import com.seerah.domain.model.MapLayerType
+
+
+@Composable
+private fun rememberBundledAtlasFeatures(): List<GeoFeatureModel> {
+    val context = LocalContext.current
+    return remember {
+        val base = runCatching {
+            context.assets.open("atlas_base_arabia.geojson").bufferedReader().use { it.readText() }
+        }.mapCatching { GeoJsonParser.parseFeatureCollection(it) }.getOrDefault(emptyList())
+        val routes = runCatching {
+            context.assets.open("atlas_routes_seerah.geojson").bufferedReader().use { it.readText() }
+        }.mapCatching { GeoJsonParser.parseFeatureCollection(it) }.getOrDefault(emptyList())
+        base + routes
+    }
+}
 
 @Composable
 fun HistoricalAtlasScreen(
@@ -51,6 +69,7 @@ fun HistoricalAtlasScreen(
 
     val features by repository.observeBattleFeatures(selectedMap.mapId).collectAsState(initial = emptyList())
     val places by repository.observePlacesForMap(selectedMap.mapId).collectAsState(initial = emptyList())
+    val bundledFeatures = rememberBundledAtlasFeatures()
 
     Scaffold(
         topBar = {
@@ -97,6 +116,7 @@ fun HistoricalAtlasScreen(
                         mapDefinition = selectedMap,
                         enabledLayers = enabledLayers,
                         features = features,
+                        bundledBaseFeatures = bundledFeatures,
                         places = allPlaces,
                         coordinates = allCoords,
                         mbtilesLocalPath = activeMbTilesPath,
@@ -219,6 +239,9 @@ fun BattleMapScreen(
     val mapDef = AtlasMapDefinition.fromId(battleMapId)
     val phases by repository.observeBattlePhases(battleMapId).collectAsState(initial = emptyList())
     val allFeatures by repository.observeBattleFeatures(battleMapId).collectAsState(initial = emptyList())
+    val allPlaces by repository.observeAllPlaces().collectAsState(initial = emptyList())
+    val allCoords by repository.observeAllCoordinates().collectAsState(initial = emptyList())
+    val bundledFeatures = rememberBundledAtlasFeatures()
     var selectedPhaseIndex by remember { mutableIntStateOf(0) }
     var zoom by remember { mutableFloatStateOf(1f) }
     var panOffset by remember { mutableStateOf(Offset.Zero) }
@@ -249,6 +272,9 @@ fun BattleMapScreen(
                 mapDefinition = mapDef,
                 enabledLayers = MapLayerType.entries.map { it.key }.toSet(),
                 features = visibleFeatures,
+                bundledBaseFeatures = bundledFeatures,
+                places = allPlaces,
+                coordinates = allCoords,
                 zoom = zoom,
                 panOffset = panOffset,
                 onTransform = { z, p ->
@@ -299,6 +325,7 @@ fun MapLayersScreen(
     val layers by repository.observeLayers().collectAsState(initial = emptyList())
     val places by repository.observeAllPlaces().collectAsState(initial = emptyList())
     val allFeatures by repository.observeAllBattleFeatures().collectAsState(initial = emptyList())
+    val bundledFeatures = rememberBundledAtlasFeatures()
     val scope = rememberCoroutineScope()
 
     Scaffold(topBar = { SeerahTopBar(title = "طبقات الخريطة (12 طبقة)", onBack = onBack) }) { padding ->
@@ -311,7 +338,7 @@ fun MapLayersScreen(
                 val dbLayer = layers.firstOrNull { it.layerKey == layer.key }
                 val hasData = when (layer.key) {
                     "historical_sites", "cities_villages" -> places.isNotEmpty()
-                    else -> allFeatures.any { it.layerKey == layer.key }
+                    else -> allFeatures.any { it.layerKey == layer.key } || bundledFeatures.any { it.layerKey == layer.key }
                 }
                 val checked = if (hasData) (dbLayer?.isEnabledByDefault ?: true) else false
 
